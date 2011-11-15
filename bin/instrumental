@@ -37,9 +37,18 @@ raise "Server error: #{response.message} #{response.code}" if response.code.to_i
 response = JSON.parse(response.body)
 bars = ["\342\226\201", "\342\226\202", "\342\226\203", "\342\226\204", "\342\226\205", "\342\226\206", "\342\226\207"]
 max_key_size = response.collect { |k, v| k.size }.max
+scale = bars.size - 1
 response.each do |metric, data|
   data = data.collect { |h| h["value"].to_f }
-  max = data.max
-  max = 1 if max == 0
-  puts "%#{max_key_size}s | %s" % [metric, data.collect { |v| bars[((v / max) * bars.size).floor] }.join]
+  min = data.min
+  range = data.max - min
+  graph = data.collect do |v|
+    if (idx = (((v - min) / range) * scale)).nan?
+      idx = 0
+    elsif idx.infinite?
+      idx = scale
+    end
+    bars[idx.round]
+  end
+  puts "%#{max_key_size}s | %s" % [metric, graph.join]
 end
