@@ -46,4 +46,3 @@ lines.each do |line|
     ]
   end
 end
-I.close
