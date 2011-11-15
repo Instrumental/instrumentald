@@ -29,7 +29,7 @@ lines.each do |line|
       end
       I.increment("git.#{prolog}.commits.#{name}.add", adds, ts)
       I.increment("git.#{prolog}.commits.#{name}.delete", deletes, ts)
-      I.increment("git.#{prolog}.commits", 1, ts)
+      I.increment("git.#{prolog}.num_commits", 1, ts)
     end
     rec, ts, hash, *name_parts = line.split(" ")
     name = name_parts.join(" ").gsub(/^'([^']+)'$/, "\\1").gsub(/[^a-z0-9]/i, "_")
