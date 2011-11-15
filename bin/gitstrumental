@@ -16,7 +16,7 @@ else
   repo = File.basename(Dir.pwd, ".git")
 end
 prolog = [repo, branch].join(".")
-I = Instrumental::Agent.new(ARGV[0], :collector => "localhost:8000")
+I = Instrumental::Agent.new(ARGV[0])
 curstat = {}
 lines.each do |line|
   if line =~ /^REC/
