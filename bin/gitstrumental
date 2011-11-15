@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+gem 'instrumental_agent'
+require 'instrumental_agent'
+
+if !ARGV[0]
+  puts 'Usage: gitstrumental API_TOKEN'
+  exit 1
+end
+
+lines = `git log --format="REC %at %h '%cn'" --numstat`.chomp.split(/\n+/).reject(&:empty?)
+branch = File.basename(`git symbolic-ref HEAD`.chomp).gsub(/[^a-z0-9]/i, "_")
+if fetch_url = `git remote show origin`.chomp.split(/\n+/).grep(/Fetch URL:/).first
+  repo = File.basename(fetch_url.split("/").last, ".git")
+else
+  repo = File.basename(Dir.pwd, ".git")
+end
+prolog = [repo, branch].join(".")
+I = Instrumental::Agent.new(ARGV[0], :collector => "localhost:8000")
+curstat = {}
+lines.each do |line|
+  if line =~ /^REC/
+    if !curstat.empty?
+      name, ts, changes = curstat[:name], curstat[:timestamp], curstat[:changes]
+      I.increment("git.#{prolog}.commits.#{name}", 1, ts)
+
+      adds, deletes = changes.reduce do |prev, pair|
+        [prev[0] + pair[0], prev[1] + pair[1]]
+      end
+      I.increment("git.#{prolog}.commits.#{name}.add", adds, ts)
+      I.increment("git.#{prolog}.commits.#{name}.delete", deletes, ts)
+      I.increment("git.#{prolog}.commits", 1, ts)
+    end
+    rec, ts, hash, *name_parts = line.split(" ")
+    name = name_parts.join(" ").gsub(/^'([^']+)'$/, "\\1").gsub(/[^a-z0-9]/i, "_")
+    curstat = {
+      :name => name,
+      :timestamp => ts.to_i,
+      :hash => hash,
+      :changes => []
+    }
+  else
+    adds, deletes, file = line.split(/\s+/)
+    curstat[:changes] << [
+      adds.to_i, deletes.to_i
+    ]
+  end
+end
+I.close
