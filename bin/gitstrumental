@@ -3,7 +3,9 @@ require 'rubygems'
 gem 'instrumental_agent'
 require 'instrumental_agent'
 
-if !ARGV[0]
+token = ENV["INSTRUMENTAL_TOKEN"] || ARGV[0]
+
+if !token 
   puts 'Usage: gitstrumental API_TOKEN'
   exit 1
 end
@@ -16,7 +18,7 @@ else
   repo = File.basename(Dir.pwd, ".git")
 end
 prolog = [repo, branch].join(".")
-I = Instrumental::Agent.new(ARGV[0])
+I = Instrumental::Agent.new(token)
 curstat = {}
 lines.each do |line|
   if line =~ /^REC/
