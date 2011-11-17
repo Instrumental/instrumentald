@@ -93,7 +93,7 @@ class SystemInspector
     end
 
     def self.load_disks
-      { :gauges => df }
+      { :gauges => df.merge(iostat) }
     end
 
     def self.df
@@ -108,6 +108,18 @@ class SystemInspector
           output["disk.#{name}.available_mb"] = available.to_f / 1024
           output["disk.#{name}.available_percent"] = available.to_f / total.to_f * 100
         end
+      end
+      output
+    end
+
+    def self.iostat
+      output = {}
+      lines = `iostat -d`.split("\n")
+      disks = lines[0].strip.split(/\s+/)
+      stats = lines[2].strip.split(/\s+/)
+      disks.each_with_index do |disk, i|
+        output["disk.#{disk}.transfers_per_sec"] = stats[i + 1].to_f
+        output["disk.#{disk}.mb_per_sec"] = stats[i + 2].to_f
       end
       output
     end
