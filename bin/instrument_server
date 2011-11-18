@@ -192,7 +192,7 @@ class SystemInspector
     end
 
     def self.load_disks
-      { :gauges => disks }
+      { :gauges => disks.merge(iostat) }
     end
 
     def self.disks
@@ -207,6 +207,24 @@ class SystemInspector
           output["disk.#{name}.available_mb"] = available.to_f / 1024
           output["disk.#{name}.available_percent"] = available.to_f / total.to_f * 100
         end
+      end
+      output
+    end
+
+    def self.iostat
+      output = {}
+      if system('iostat > /dev/null 2>&1')
+        lines = `iostat -dm`.split("\n")
+        header_index = lines.index(lines.grep(/^Device/).first)
+        dev_lines = lines[(header_index + 1)..-1]
+        dev_lines.map! { |dev_line| dev_line.strip.split(/\s+/) }
+        dev_lines.each do |dev_line|
+          disk = dev_line[0]
+          output["disk.#{disk}.transfers_per_sec"] = dev_line[1].to_f
+          output["disk.#{disk}.mb_per_sec"] = dev_line[2].to_f + dev_line[3].to_f
+        end
+      else
+        puts 'Install iostat (sysstats) to collect disk I/O metrics.'
       end
       output
     end
