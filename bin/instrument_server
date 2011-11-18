@@ -231,7 +231,6 @@ class SystemInspector
   end
 end
 
-# TODO: utilization
 token = ENV["INSTRUMENTAL_TOKEN"]
 if !token
   token, collector = *ARGV
