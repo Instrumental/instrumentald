@@ -6,6 +6,8 @@ Use to collect various monitoring statistics of a server. Execute with:
 
 instrument_server [INSTRUMENTAL_API_KEY]
 
+Linux note: Install iostat (part of sysstats package) in order to collect disk I/O metrics.
+
 == instrumental ==
 
 Output text graphs of the different metrics in your project.
