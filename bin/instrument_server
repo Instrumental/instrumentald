@@ -214,17 +214,17 @@ class SystemInspector
     def self.iostat
       output = {}
       if system('iostat > /dev/null 2>&1')
-        lines = `iostat -dm`.split("\n")
-        header_index = lines.index(lines.grep(/^Device/).first)
-        dev_lines = lines[(header_index + 1)..-1]
+        lines      = `iostat -dx`.split("\n")
+        header     = lines.grep(/^Device/i).first
+        dev_lines  = lines[(lines.index(header) + 1)..-1]
+        util_index = header.strip.split(/\s+/).index('%util')
         dev_lines.map! { |dev_line| dev_line.strip.split(/\s+/) }
         dev_lines.each do |dev_line|
           disk = dev_line[0]
-          output["disk.#{disk}.transfers_per_sec"] = dev_line[1].to_f
-          output["disk.#{disk}.mb_per_sec"] = dev_line[2].to_f + dev_line[3].to_f
+          output["disk.#{disk}.percent_utilization"] = dev_line[util_index].to_f
         end
       else
-        puts 'Install iostat (sysstats) to collect disk I/O metrics.'
+        puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
       end
       output
     end
