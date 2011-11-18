@@ -210,8 +210,6 @@ class SystemInspector
           values = dev_line.split
           output["disk.#{values[0]}.percent_utilization"] = values[util_index].to_f
         end
-      else
-        puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
       end
       output
     end
@@ -233,6 +231,10 @@ I = Instrumental::Agent.new(token, :collector => collector)
 host = `hostname`.chomp
 
 puts "Collecting stats under the hostname: #{host}"
+
+unless system('iostat > /dev/null 2>&1')
+  puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
+end
 
 loop do
   inspector = SystemInspector.new
