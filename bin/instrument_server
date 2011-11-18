@@ -218,10 +218,9 @@ class SystemInspector
         header     = lines.grep(/^Device/i).first
         dev_lines  = lines[(lines.index(header) + 1)..-1]
         util_index = header.split.index('%util')
-        dev_lines.map! { |dev_line| dev_line.split }
         dev_lines.each do |dev_line|
-          disk = dev_line[0]
-          output["disk.#{disk}.percent_utilization"] = dev_line[util_index].to_f
+          values = dev_line.split
+          output["disk.#{values[0]}.percent_utilization"] = values[util_index].to_f
         end
       else
         puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
