@@ -125,6 +125,7 @@ class SystemInspector
     end
 
     def self.load_filesystem
+      {}
     end
 
   end
