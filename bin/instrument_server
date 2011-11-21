@@ -27,6 +27,7 @@ class SystemInspector
     load @platform.load_cpu
     load @platform.load_memory
     load @platform.load_disks
+    load @platform.load_filesystem
   end
 
   def load(stats)
@@ -122,6 +123,10 @@ class SystemInspector
         end
       end
     end
+
+    def self.load_filesystem
+    end
+
   end
 
   module Linux
@@ -198,6 +203,16 @@ class SystemInspector
       end
       output
     end
+
+    def self.load_filesystem
+      { :gauges => filesystem }
+    end
+
+    def self.filesystem
+      allocated, unused = `sysctl fs.file-nr`.split[-3..-2].map(&:to_i)
+      { "filesystem.open_files" => allocated - unused }
+    end
+
   end
 end
 
