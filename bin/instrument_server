@@ -209,8 +209,12 @@ class SystemInspector
     end
 
     def self.filesystem
-      allocated, unused = `sysctl fs.file-nr`.split[-3..-2].map(&:to_i)
-      { "filesystem.open_files" => allocated - unused }
+      allocated, unused, max = `sysctl fs.file-nr`.split[-3..-1].map(&:to_i)
+      open_files = allocated - unused
+      { 'filesystem.open_files' => open_files,
+        'filesystem.max_open_files' => max,
+        'filesystem.open_files_pct_max' => (open_files.to_f / max.to_f) * 100,
+      }
     end
 
   end
