@@ -27,6 +27,7 @@ class SystemInspector
     load @platform.load_cpu
     load @platform.load_memory
     load @platform.load_disks
+    load @platform.load_filesystem
   end
 
   def load(stats)
@@ -122,6 +123,11 @@ class SystemInspector
         end
       end
     end
+
+    def self.load_filesystem
+      {}
+    end
+
   end
 
   module Linux
@@ -213,7 +219,21 @@ class SystemInspector
       end
       output
     end
+
+    def self.load_filesystem
+      { :gauges => filesystem }
+    end
+
+    def self.filesystem
+      allocated, unused, max = `sysctl fs.file-nr`.split[-3..-1].map(&:to_i)
+      open_files = allocated - unused
+      { 'filesystem.open_files' => open_files,
+        'filesystem.max_open_files' => max,
+        'filesystem.open_files_pct_max' => (open_files.to_f / max.to_f) * 100,
+      }
+    end
   end
+
 end
 
 token = ENV["INSTRUMENTAL_TOKEN"]
