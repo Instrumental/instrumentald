@@ -4,7 +4,7 @@ require 'instrumental_tools/version'
 Gem::Specification.new do |s|
   s.name        = "instrumental_tools"
   s.version     = Instrumental::Tools::VERSION
-  s.authors     = ["Elijah Miller", "Christopher Zelenak", "Kristopher Chambers"]
+  s.authors     = ["Elijah Miller", "Christopher Zelenak", "Kristopher Chambers", "Matthew Hassfurder"]
   s.email       = ["support@instrumentalapp.com"]
   s.homepage    = "http://github.com/fastestforward/instrumental_tools"
   s.summary     = %q{Command line tools for Instrumental}
