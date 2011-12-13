@@ -246,7 +246,8 @@ unless token
   puts "Usage: #{$0} <token> [collector]"
   exit 1
 end
-I = Instrumental::Agent.new(token, :collector => collector)
+options = collector.nil? ? {} : { :collector => collector }
+I = Instrumental::Agent.new(token, options)
 
 host = `hostname`.chomp
 
