@@ -10,6 +10,7 @@ rescue Gem::LoadError
 end
 require 'instrumental_agent'
 require 'pidly'
+require 'tmpdir'
 require 'optparse'
 
 class SystemInspector
@@ -241,6 +242,60 @@ class SystemInspector
   end
 end
 
+class ServerController < Pidly::Control
+  COMMANDS = [:start, :stop, :status, :restart, :clean, :kill]
+
+  attr_accessor :run_options
+
+  before_start do
+    puts "Starting daemon process: #{@pid}"
+  end
+
+  start :run
+
+  stop do
+    puts "Attempting to kill daemon process: #{@pid}"
+  end
+
+  # after_stop :something
+
+  error do
+    puts 'Error encountered'
+  end
+
+  def self.run(options)
+    agent = Instrumental::Agent.new(options[:api_key], :collector => [options[:collector], options[:port]].compact.join(':'))
+    host = `hostname`.chomp
+    puts "Collecting stats under the hostname: #{host}"
+
+    unless system('iostat > /dev/null 2>&1')
+      puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
+    end
+
+    loop do
+      inspector = SystemInspector.new
+      inspector.load_all
+      inspector.gauges.each do |stat, value|
+        agent.gauge("#{host}.#{stat}", value)
+      end
+      # agent.increment("#{host}.#{stat}", delta)
+      sleep 10
+    end
+  end
+
+  def initialize(options={})
+    @run_options = options.delete(:run_options) || {}
+    super(options)
+  end
+
+  def run
+    puts "run options: #{run_options.inspect}"
+    self.class.run(run_options)
+  end
+
+  alias_method :clean, :clean!
+end
+
 options = {
   :daemon => false,
   :collector => 'instrumentalapp.com',
@@ -248,11 +303,11 @@ options = {
 }
 
 option_parser = OptionParser.new do |opts|
-  opts.banner = 'Usage: instrument_server -k <API_KEY> [options]'
+  opts.banner = "Usage: instrument_server -k <API_KEY> [options] [-d #{ServerController::COMMANDS.join('|')}]"
   opts.on('-k', '--api_key API_KEY', 'API key of your project') do |api_key|
     options[:api_key] = api_key
   end
-  opts.on('-c', '--collector [COLLECTOR[:PORT]]', "Collector (default #{options[:collector]}:#{options[:port]})") do |collector|
+  opts.on('-c', '--collector COLLECTOR[:PORT]', "Collector (default #{options[:collector]}:#{options[:port]})") do |collector|
     address, port = collector.split(':')
     options[:collector] = address
     options[:port] = port if port
@@ -274,22 +329,26 @@ unless options[:api_key] # present?
   exit 1
 end
 
-I = Instrumental::Agent.new(options[:api_key], :collector => [options[:collector], options[:port]].compact.join(':'))
-
-host = `hostname`.chomp
-
-puts "Collecting stats under the hostname: #{host}"
-
-unless system('iostat > /dev/null 2>&1')
-  puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
-end
-
-loop do
-  inspector = SystemInspector.new
-  inspector.load_all
-  inspector.gauges.each do |stat, value|
-    I.gauge("#{host}.#{stat}", value)
+if options.delete(:daemon)
+  @server_controller = ServerController.spawn(
+    :name => 'instrument_server',
+    :path => Dir.tmpdir,
+    :pid_file => File.join(Dir.tmpdir, 'pids', 'instrument_server.pid'),
+    :verbose => true,
+    # :signal => 'kill',
+    :log_file => File.join(Dir.tmpdir, 'log', 'instrument_server.log'),
+    :run_options => options
+    )
+  command = ARGV.first && ARGV.first.to_sym
+  if ServerController::COMMANDS.include?(command)
+    @server_controller.send command
+  else
+    if command.nil?
+      puts %q(Must supply a command with daemonize option, e.g. 'start')
+    else
+      puts "Command must be one of: #{ServerController::COMMANDS.join(', ')}"
+    end
   end
-  # I.increment("#{host}.#{stat}", delta)
-  sleep 10
+else
+  ServerController.run(options)
 end
