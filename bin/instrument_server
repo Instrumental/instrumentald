@@ -340,14 +340,11 @@ if options.delete(:daemon)
     :run_options => options
     )
   command = ARGV.first && ARGV.first.to_sym
+  command ||= :start
   if ServerController::COMMANDS.include?(command)
     @server_controller.send command
   else
-    if command.nil?
-      puts %q(Must supply a command with daemonize option, e.g. 'start')
-    else
-      puts "Command must be one of: #{ServerController::COMMANDS.join(', ')}"
-    end
+    puts "Command must be one of: #{ServerController::COMMANDS.join(', ')}"
   end
 else
   ServerController.run(options)
