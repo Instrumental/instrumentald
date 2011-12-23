@@ -265,18 +265,11 @@ class ServerController < Pidly::Control
 
   def self.run(options)
     agent = Instrumental::Agent.new(options[:api_key], :collector => [options[:collector], options[:port]].compact.join(':'))
-    host = `hostname`.chomp
-    puts "Collecting stats under the hostname: #{host}"
-
-    unless system('iostat > /dev/null 2>&1')
-      puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
-    end
-
     loop do
       inspector = SystemInspector.new
       inspector.load_all
       inspector.gauges.each do |stat, value|
-        agent.gauge("#{host}.#{stat}", value)
+        agent.gauge("#{options[:hostname]}.#{stat}", value)
       end
       # agent.increment("#{host}.#{stat}", delta)
       sleep 10
@@ -289,17 +282,25 @@ class ServerController < Pidly::Control
   end
 
   def run
-    puts "run options: #{run_options.inspect}"
     self.class.run(run_options)
   end
 
   alias_method :clean, :clean!
 end
 
+def terminal_messages(options)
+  if `which iostat`.chomp.empty?
+    puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
+  end
+
+  puts "Collecting stats under the hostname: #{options[:hostname]}"
+end
+
 options = {
   :daemon => false,
   :collector => 'instrumentalapp.com',
   :port => '8000',
+  :hostname => `hostname`.chomp,
 }
 
 option_parser = OptionParser.new do |opts|
@@ -342,10 +343,12 @@ if options.delete(:daemon)
   command = ARGV.first && ARGV.first.to_sym
   command ||= :start
   if ServerController::COMMANDS.include?(command)
+    terminal_messages(options)
     @server_controller.send command
   else
     puts "Command must be one of: #{ServerController::COMMANDS.join(', ')}"
   end
 else
+  terminal_messages(options)
   ServerController.run(options)
 end
