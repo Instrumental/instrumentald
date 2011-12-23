@@ -265,6 +265,7 @@ class ServerController < Pidly::Control
 
   def self.run(options)
     agent = Instrumental::Agent.new(options[:api_key], :collector => [options[:collector], options[:port]].compact.join(':'))
+    puts "Collecting stats under the hostname: #{options[:hostname]}"
     loop do
       inspector = SystemInspector.new
       inspector.load_all
@@ -292,8 +293,13 @@ def terminal_messages(options)
   if `which iostat`.chomp.empty?
     puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
   end
+end
 
-  puts "Collecting stats under the hostname: #{options[:hostname]}"
+def require_api_key(options, parser)
+  unless options[:api_key] # present?
+    print parser.help
+    exit 1
+  end
 end
 
 options = {
@@ -304,7 +310,7 @@ options = {
 }
 
 option_parser = OptionParser.new do |opts|
-  opts.banner = "Usage: instrument_server -k <API_KEY> [options] [-d #{ServerController::COMMANDS.join('|')}]"
+  opts.banner = "Usage: instrument_server [-k API_KEY] [options] [-d #{ServerController::COMMANDS.join('|')}]"
   opts.on('-k', '--api_key API_KEY', 'API key of your project') do |api_key|
     options[:api_key] = api_key
   end
@@ -323,12 +329,7 @@ option_parser = OptionParser.new do |opts|
 end
 
 option_parser.parse!
-
 options[:api_key] ||= ENV["INSTRUMENTAL_TOKEN"]
-unless options[:api_key] # present?
-  print option_parser.help
-  exit 1
-end
 
 if options.delete(:daemon)
   @server_controller = ServerController.spawn(
@@ -342,6 +343,9 @@ if options.delete(:daemon)
     )
   command = ARGV.first && ARGV.first.to_sym
   command ||= :start
+  if [:start, :restart].include?(command)
+    require_api_key(options, option_parser)
+  end
   if ServerController::COMMANDS.include?(command)
     terminal_messages(options)
     @server_controller.send command
@@ -349,6 +353,7 @@ if options.delete(:daemon)
     puts "Command must be one of: #{ServerController::COMMANDS.join(', ')}"
   end
 else
+  require_api_key(options, option_parser)
   terminal_messages(options)
   ServerController.run(options)
 end
