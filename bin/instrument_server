@@ -289,7 +289,7 @@ class ServerController < Pidly::Control
   alias_method :clean, :clean!
 end
 
-def terminal_messages(options)
+def terminal_messages
   if `which iostat`.chomp.empty?
     puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
   end
@@ -324,6 +324,7 @@ option_parser = OptionParser.new do |opts|
   end
   opts.on('-h', '--help', 'Display this screen') do
     puts opts
+    terminal_messages
     exit
   end
 end
@@ -340,20 +341,18 @@ if options.delete(:daemon)
     # :signal => 'kill',
     :log_file => File.join(Dir.tmpdir, 'log', 'instrument_server.log'),
     :run_options => options
-    )
+  )
   command = ARGV.first && ARGV.first.to_sym
   command ||= :start
   if [:start, :restart].include?(command)
     require_api_key(options, option_parser)
   end
   if ServerController::COMMANDS.include?(command)
-    terminal_messages(options)
     @server_controller.send command
   else
     puts "Command must be one of: #{ServerController::COMMANDS.join(', ')}"
   end
 else
   require_api_key(options, option_parser)
-  terminal_messages(options)
   ServerController.run(options)
 end
