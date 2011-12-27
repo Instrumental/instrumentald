@@ -7,7 +7,7 @@ A collection of tools for use with Instrumental ([www.instrumental.com](http://w
 Use to collect various monitoring statistics of a server. Execute with:
 
 ```sh
-instrument_server [INSTRUMENTAL_API_KEY]
+instrument_server -k <INSTRUMENTAL_API_KEY>
 ```
 
 Linux note: Install iostat (part of the sysstat package) in order to collect disk I/O metrics.
