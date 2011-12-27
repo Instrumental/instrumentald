@@ -1,6 +1,6 @@
 # Instrumental Tools
 
-Collection of tools for use with the Instrumental (http://www.instrumentalapp.com/) app
+A collection of tools for use with Instrumental ([www.instrumental.com](http://www.instrumentalapp.com/))
 
 ## instrument_server
 
