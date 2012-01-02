@@ -27,3 +27,21 @@ Collect statistics on commit counts in a given git repo.  Execute in the repo di
 ```sh
 gitstrumental [INSTRUMENTAL_API_KEY]
 ```
+
+## Capistrano Integration
+
+Add `require "instrumental_tools/capistrano"` to your capistrano
+configuration and instrument_server will be restarted after your
+deploy is finished. Additionally, you will need to add a new variable
+to your capistrano file.
+
+```ruby
+set :instrumental_key, "YOUR_KEY_HERE"
+```
+
+The following configuration will be added:
+
+```ruby
+after "deploy", "instrumental:restart_daemonized_server"
+after "deploy:migrations", "instrumental:restart_daemonized_server"
+```
