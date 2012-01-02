@@ -42,6 +42,6 @@ set :instrumental_key, "YOUR_KEY_HERE"
 The following configuration will be added:
 
 ```ruby
-after "deploy", "instrumental:restart_daemonized_server"
-after "deploy:migrations", "instrumental:restart_daemonized_server"
+after "deploy", "instrumental:restart_instrument_server"
+after "deploy:migrations", "instrumental:restart_instrument_server"
 ```
