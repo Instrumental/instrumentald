@@ -45,3 +45,12 @@ The following configuration will be added:
 after "deploy", "instrumental:restart_instrument_server"
 after "deploy:migrations", "instrumental:restart_instrument_server"
 ```
+
+By default, this will attempt to restart the instrument_server command
+on all the servers specified in your configuration. If you need to
+limit the servers on which you restart the server, you can do
+something like this in your capistrano configuration:
+
+```ruby
+namespaces[:instrumental].tasks[:restart_instrument_server].options[:roles] = [:web, :worker]
+```
