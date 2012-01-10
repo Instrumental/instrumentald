@@ -146,14 +146,16 @@ class SystemInspector
     end
 
     def self.cpu
-      cpu, user, nice, system, idle, iowait = `cat /proc/stat | grep cpu[^0-9]`.chomp.split(/\s+/)
-      total = user.to_i + system.to_i + idle.to_i + iowait.to_i
-      {
-        'cpu.user' => (user.to_f / total) * 100,
-        'cpu.system' => (system.to_f / total) * 100,
-        'cpu.idle' => (idle.to_f / total) * 100,
-        'cpu.iowait' => (iowait.to_f / total) * 100,
-      }
+      categories = [:user, :nice, :system, :idle, :iowait]
+      values = `cat /proc/stat | grep cpu[^0-9]`.chomp.split(/\s+/).slice(1, 5).map(&:to_f)
+      data = Hash[*categories.zip(values).flatten]
+      total = values.inject { |memo, value| memo + value }
+
+      output = {}
+      data.keys.each do |category|
+        output["cpu.#{category}"] = "%.10f" % ((data[category] / total) * 100)
+      end
+      output
     end
 
     def self.loadavg
