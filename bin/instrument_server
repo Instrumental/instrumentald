@@ -17,6 +17,10 @@ class SystemInspector
   TYPES = [:gauges, :incrementors]
   attr_accessor *TYPES
 
+  def self.memory
+    @memory ||= Memory.new
+  end
+
   def initialize
     @gauges = {}
     @incrementors = {}
@@ -32,6 +36,8 @@ class SystemInspector
   end
 
   def load_all
+    self.class.memory.cycle
+
     load @platform.load_cpu
     load @platform.load_memory
     load @platform.load_disks
@@ -148,12 +154,18 @@ class SystemInspector
     def self.cpu
       categories = [:user, :nice, :system, :idle, :iowait]
       values = `cat /proc/stat | grep cpu[^0-9]`.chomp.split(/\s+/).slice(1, 5).map(&:to_f)
+      SystemInspector.memory.store(:cpu_values, values.dup)
+      if previous_values = SystemInspector.memory.retrieve(:cpu_values)
+        values.map!.with_index { |value, index| (previous_values[index] - value).abs }
+      end
       data = Hash[*categories.zip(values).flatten]
       total = values.inject { |memo, value| memo + value }
 
       output = {}
-      data.keys.each do |category|
-        output["cpu.#{category}"] = "%.10f" % ((data[category] / total) * 100)
+      if previous_values
+        data.keys.each do |category|
+          output["cpu.#{category}"] = "%.10f" % ((data[category] / total) * 100)
+        end
       end
       output
     end
@@ -242,6 +254,29 @@ class SystemInspector
       }
     end
   end
+
+  class Memory
+    attr_reader :past_values, :current_values
+
+    def initialize
+      @past_values = {}
+      @current_values = {}
+    end
+
+    def store(attribute, value)
+      @current_values[attribute] = value
+    end
+
+    def retrieve(attribute)
+      @past_values[attribute]
+    end
+
+    def cycle
+      @past_values = @current_values
+      @current_values = {}
+    end
+  end
+
 end
 
 class ServerController < Pidly::Control
