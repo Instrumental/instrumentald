@@ -167,7 +167,7 @@ class SystemInspector
           output["cpu.#{category}"] = value / total * 100
         end
       end
-      output["cpu.in_use"] = 100 - data['idle'] / total * 100
+      output["cpu.in_use"] = 100 - data[:idle] / total * 100
       output
     end
 
