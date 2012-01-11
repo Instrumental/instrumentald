@@ -353,9 +353,6 @@ options = {
 
 option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: instrument_server -k API_KEY [options] [-d #{ServerController::COMMANDS.join('|')}]"
-  opts.on('-H', '--hostname HOSTNAME', 'Hostname to report as') do |hostname|
-    options[:hostname] = hostname
-  end
   opts.on('-k', '--api_key API_KEY', 'API key of your project') do |api_key|
     options[:api_key] = api_key
   end
@@ -363,6 +360,9 @@ option_parser = OptionParser.new do |opts|
     address, port = collector.split(':')
     options[:collector] = address
     options[:port] = port if port
+  end
+  opts.on('-H', '--hostname HOSTNAME', 'Hostname to report as') do |hostname|
+    options[:hostname] = hostname
   end
   opts.on('-d', '--daemonize', 'Run as daemon') do
     options[:daemon] = true
