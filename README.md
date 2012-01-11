@@ -10,8 +10,6 @@ Use to collect various monitoring statistics of a server. Execute with:
 instrument_server -k <INSTRUMENTAL_API_KEY>
 ```
 
-Linux note: Install iostat (part of the sysstat package) in order to collect disk I/O metrics.
-
 Mac OS note: Due to a bug in Ruby, instrument_server can occasionally deadlock ([bug report](http://bugs.ruby-lang.org/issues/5811)).
 
 ## instrumental

@@ -17,6 +17,10 @@ class SystemInspector
   TYPES = [:gauges, :incrementors]
   attr_accessor *TYPES
 
+  def self.memory
+    @memory ||= Memory.new
+  end
+
   def initialize
     @gauges = {}
     @incrementors = {}
@@ -32,6 +36,8 @@ class SystemInspector
   end
 
   def load_all
+    self.class.memory.cycle
+
     load @platform.load_cpu
     load @platform.load_memory
     load @platform.load_disks
@@ -146,14 +152,23 @@ class SystemInspector
     end
 
     def self.cpu
-      cpu, user, nice, system, idle, iowait = `cat /proc/stat | grep cpu[^0-9]`.chomp.split(/\s+/)
-      total = user.to_i + system.to_i + idle.to_i + iowait.to_i
-      {
-        'cpu.user' => (user.to_f / total) * 100,
-        'cpu.system' => (system.to_f / total) * 100,
-        'cpu.idle' => (idle.to_f / total) * 100,
-        'cpu.iowait' => (iowait.to_f / total) * 100,
-      }
+      categories = [:user, :nice, :system, :idle, :iowait]
+      values = `cat /proc/stat | grep cpu[^0-9]`.chomp.split(/\s+/).slice(1, 5).map(&:to_f)
+      SystemInspector.memory.store(:cpu_values, values.dup)
+      if previous_values = SystemInspector.memory.retrieve(:cpu_values)
+        values.map!.with_index { |value, index| (previous_values[index] - value).abs }
+      end
+      data = Hash[*categories.zip(values).flatten]
+      total = values.inject { |memo, value| memo + value }
+
+      output = {}
+      if previous_values
+        data.each do |category, value|
+          output["cpu.#{category}"] = value / total * 100
+        end
+      end
+      output["cpu.in_use"] = 100 - data[:idle] / total * 100
+      output
     end
 
     def self.loadavg
@@ -193,7 +208,7 @@ class SystemInspector
     end
 
     def self.load_disks
-      { :gauges => disks.merge(iostat) }
+      { :gauges => disks.merge(diskstats) }
     end
 
     def self.disks
@@ -212,16 +227,26 @@ class SystemInspector
       output
     end
 
-    def self.iostat
+    def self.diskstats
+      entries = `cat /proc/diskstats`.chomp.split("\n").map do |line|
+        values = line.split
+        entry = {}
+        entry[:time]   = Time.now
+        entry[:device] = values[2]
+        entry[:read]   = values[6].to_f
+        entry[:write]  = values[10].to_f
+        entry[:io]     = entry[:read] + entry[:write]
+        SystemInspector.memory.store("disk_stats_#{entry[:device]}".to_sym, entry)
+      end
+
       output = {}
-      if system('iostat > /dev/null 2>&1')
-        lines      = `iostat -dx`.split("\n")
-        header     = lines.grep(/^Device/i).first
-        dev_lines  = lines[(lines.index(header) + 1)..-1]
-        util_index = header.split.index('%util')
-        dev_lines.each do |dev_line|
-          values = dev_line.split
-          output["disk.#{values[0]}.percent_utilization"] = values[util_index].to_f
+      entries.each do |entry|
+        if previous_entry = SystemInspector.memory.retrieve("disk_stats_#{entry[:device]}".to_sym)
+          time_delta = (entry[:time] - previous_entry[:time]) * 1000
+          [:read, :write, :io].each do |type|
+            utilization_delta = entry[type] - previous_entry[type]
+            output["disk.#{entry[:device]}.#{type}_utilization"] = utilization_delta / time_delta * 100
+          end
         end
       end
       output
@@ -240,6 +265,29 @@ class SystemInspector
       }
     end
   end
+
+  class Memory
+    attr_reader :past_values, :current_values
+
+    def initialize
+      @past_values = {}
+      @current_values = {}
+    end
+
+    def store(attribute, value)
+      @current_values[attribute] = value
+    end
+
+    def retrieve(attribute)
+      @past_values[attribute]
+    end
+
+    def cycle
+      @past_values = @current_values
+      @current_values = {}
+    end
+  end
+
 end
 
 class ServerController < Pidly::Control
@@ -289,12 +337,6 @@ class ServerController < Pidly::Control
   alias_method :clean, :clean!
 end
 
-def terminal_messages
-  if `which iostat`.chomp.empty?
-    puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
-  end
-end
-
 def require_api_key(options, parser)
   unless options[:api_key] # present?
     print parser.help
@@ -311,6 +353,9 @@ options = {
 
 option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: instrument_server [-k API_KEY] [options] [-d #{ServerController::COMMANDS.join('|')}]"
+  opts.on('-H', '--hostname HOSTNAME', 'Hostname to report as') do |hostname|
+    options[:hostname] = hostname
+  end
   opts.on('-k', '--api_key API_KEY', 'API key of your project') do |api_key|
     options[:api_key] = api_key
   end
@@ -324,7 +369,6 @@ option_parser = OptionParser.new do |opts|
   end
   opts.on('-h', '--help', 'Display this screen') do
     puts opts
-    terminal_messages
     exit
   end
 end
