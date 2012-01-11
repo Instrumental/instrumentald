@@ -10,9 +10,9 @@ Use to monitor server activity by collecting information on CPU and memory usage
 instrument_server -k <INSTRUMENTAL_API_KEY>
 ```
 
-Your project's API_KEY can also be provided by setting the INSTRUMENTAL_TOKEN environment variable, bypassing the need to supply a command line option.
+The API key can also be provided by setting the INSTRUMENTAL_TOKEN environment variable, which eliminates the need to supply the key via command line option.
 
-Mac OS note: Due to a bug in Ruby, instrument_server can occasionally deadlock ([bug report](http://bugs.ruby-lang.org/issues/5811)).
+NOTE for Mac OS users: Due to a bug in Ruby, instrument_server can occasionally deadlock ([bug report](http://bugs.ruby-lang.org/issues/5811)).
 
 ## instrumental
 
