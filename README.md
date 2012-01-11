@@ -10,6 +10,8 @@ Use to collect various monitoring statistics of a server. Execute with:
 instrument_server -k <INSTRUMENTAL_API_KEY>
 ```
 
+Your project's API_KEY can also be provided by setting the INSTRUMENTAL_TOKEN environment variable, bypassing the need to supply a command line option.
+
 Mac OS note: Due to a bug in Ruby, instrument_server can occasionally deadlock ([bug report](http://bugs.ruby-lang.org/issues/5811)).
 
 ## instrumental

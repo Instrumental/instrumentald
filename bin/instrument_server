@@ -352,7 +352,7 @@ options = {
 }
 
 option_parser = OptionParser.new do |opts|
-  opts.banner = "Usage: instrument_server [-k API_KEY] [options] [-d #{ServerController::COMMANDS.join('|')}]"
+  opts.banner = "Usage: instrument_server -k API_KEY [options] [-d #{ServerController::COMMANDS.join('|')}]"
   opts.on('-H', '--hostname HOSTNAME', 'Hostname to report as') do |hostname|
     options[:hostname] = hostname
   end
