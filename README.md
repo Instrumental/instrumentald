@@ -4,7 +4,7 @@ A collection of tools for use with Instrumental ([www.instrumental.com](http://w
 
 ## instrument_server
 
-Use to collect various monitoring statistics of a server. Execute with:
+Use to monitor server activity by collecting information on CPU and memory usage, disk IO, filesystem usage, etc. Execute with:
 
 ```sh
 instrument_server -k <INSTRUMENTAL_API_KEY>
