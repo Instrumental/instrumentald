@@ -337,12 +337,6 @@ class ServerController < Pidly::Control
   alias_method :clean, :clean!
 end
 
-def terminal_messages
-  if `which iostat`.chomp.empty?
-    puts 'Install iostat (sysstat package) to collect disk I/O metrics.'
-  end
-end
-
 def require_api_key(options, parser)
   unless options[:api_key] # present?
     print parser.help
@@ -375,7 +369,6 @@ option_parser = OptionParser.new do |opts|
   end
   opts.on('-h', '--help', 'Display this screen') do
     puts opts
-    terminal_messages
     exit
   end
 end
