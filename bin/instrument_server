@@ -163,8 +163,8 @@ class SystemInspector
 
       output = {}
       if previous_values
-        data.keys.each do |category|
-          output["cpu.#{category}"] = "%.10f" % ((data[category] / total) * 100)
+        data.each do |category, value|
+          output["cpu.#{category}"] = value / total * 100
         end
       end
       output
