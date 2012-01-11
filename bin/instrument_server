@@ -361,7 +361,7 @@ option_parser = OptionParser.new do |opts|
     options[:collector] = address
     options[:port] = port if port
   end
-  opts.on('-H', '--hostname HOSTNAME', 'Hostname to report as') do |hostname|
+  opts.on('-H', '--hostname HOSTNAME', "Hostname to report as (default #{options[:hostname]})") do |hostname|
     options[:hostname] = hostname
   end
   opts.on('-d', '--daemonize', 'Run as daemon') do
