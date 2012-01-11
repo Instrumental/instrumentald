@@ -1,6 +1,6 @@
 # Instrumental Tools
 
-A collection of scripts useful in monitoring servers and services with Instrumental ([www.instrumental.com](http://www.instrumentalapp.com/)).
+A collection of scripts useful in monitoring servers and services with Instrumental ([www.instrumentalapp.com](http://www.instrumentalapp.com/)).
 
 ## instrument_server
 
