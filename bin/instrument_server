@@ -228,7 +228,9 @@ class SystemInspector
     end
 
     def self.disk_io
-      entries = `cat /proc/diskstats`.chomp.split("\n").map do |line|
+      mounted_devices = `mount`.split("\n").grep(/^\/dev\/(\w+)/) { $1 }
+      diskstats_lines = `cat /proc/diskstats`.split("\n").grep(/#{mounted_devices.join('|')}/)
+      entries = diskstats_lines.map do |line|
         values = line.split
         entry = {}
         entry[:time] = Time.now
