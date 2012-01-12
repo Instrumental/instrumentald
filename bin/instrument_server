@@ -208,10 +208,10 @@ class SystemInspector
     end
 
     def self.load_disks
-      { :gauges => disks.merge(disk_io) }
+      { :gauges => disk_storage.merge(disk_io) }
     end
 
-    def self.disks
+    def self.disk_storage
       output = {}
       `df -Pk`.split("\n").grep(%r{^/dev/}).each do |line|
         device, total, used, available, capacity, mount = line.split(/\s+/)
