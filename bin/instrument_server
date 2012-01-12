@@ -208,7 +208,7 @@ class SystemInspector
     end
 
     def self.load_disks
-      { :gauges => disks.merge(diskstats) }
+      { :gauges => disks.merge(disk_io) }
     end
 
     def self.disks
@@ -227,15 +227,13 @@ class SystemInspector
       output
     end
 
-    def self.diskstats
+    def self.disk_io
       entries = `cat /proc/diskstats`.chomp.split("\n").map do |line|
         values = line.split
         entry = {}
-        entry[:time]   = Time.now
+        entry[:time] = Time.now
         entry[:device] = values[2]
-        entry[:read]   = values[6].to_f
-        entry[:write]  = values[10].to_f
-        entry[:io]     = entry[:read] + entry[:write]
+        entry[:utilization] = values[12].to_f
         SystemInspector.memory.store("disk_stats_#{entry[:device]}".to_sym, entry)
       end
 
@@ -243,10 +241,8 @@ class SystemInspector
       entries.each do |entry|
         if previous_entry = SystemInspector.memory.retrieve("disk_stats_#{entry[:device]}".to_sym)
           time_delta = (entry[:time] - previous_entry[:time]) * 1000
-          [:read, :write, :io].each do |type|
-            utilization_delta = entry[type] - previous_entry[type]
-            output["disk.#{entry[:device]}.#{type}_utilization"] = utilization_delta / time_delta * 100
-          end
+          utilization_delta = entry[:utilization] - previous_entry[:utilization]
+          output["disk.#{entry[:device]}.percent_utilization"] = utilization_delta / time_delta * 100
         end
       end
       output
