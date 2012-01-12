@@ -1,10 +1,10 @@
 # Instrumental Tools
 
-A collection of scripts useful in monitoring servers and services with Instrumental ([www.instrumentalapp.com](http://www.instrumentalapp.com/)).
+A collection of scripts useful for monitoring servers and services with Instrumental ([www.instrumentalapp.com](http://www.instrumentalapp.com/)).
 
 ## instrument_server
 
-Use to monitor server activity by collecting information on CPU and memory usage, disk IO, filesystem usage, etc. Execute with:
+Monitor server activity by collecting information on CPU and memory usage, disk IO, filesystem usage, etc.
 
 ```sh
 instrument_server -k <API_KEY>
@@ -22,10 +22,11 @@ See all options with: `instrumental --help`
 
 ## gitstrumental
 
-Collect statistics on commit counts in a given git repo.  Execute in the repo directory with:
+Collect commit counts from git repositories.
 
 ```sh
-gitstrumental [API_KEY]
+cd project_directory
+gitstrumental <API_KEY>
 ```
 
 ## Capistrano Integration

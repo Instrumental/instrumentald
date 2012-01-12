@@ -6,7 +6,7 @@ require 'instrumental_agent'
 token = ENV["INSTRUMENTAL_TOKEN"] || ARGV[0]
 
 if !token 
-  puts 'Usage: gitstrumental API_TOKEN'
+  puts 'Usage: gitstrumental API_KEY'
   exit 1
 end
 
