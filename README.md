@@ -35,26 +35,8 @@ While the -d flag alone is sufficient for starting instrument_server as a daemon
 * clean - remove any files created by the daemon
 * kill - forcibly halt the daemon and remove its pid file
 
-### NOTEs
 
-Mac OS users: Due to a bug in Ruby, instrument_server can occasionally deadlock ([bug report](http://bugs.ruby-lang.org/issues/5811)).
-
-## instrumental
-
-Output text graphs of the different metrics in your project.
-
-See all options with: `instrumental --help`
-
-## gitstrumental
-
-Collect commit counts from git repositories:
-
-```sh
-cd project_directory
-gitstrumental <API_KEY>
-```
-
-## Capistrano Integration
+### Capistrano Integration
 
 Add `require "instrumental_tools/capistrano"` to your capistrano
 configuration and instrument_server will be restarted after your
@@ -79,4 +61,23 @@ something like this in your capistrano configuration:
 
 ```ruby
 namespaces[:instrumental].tasks[:restart_instrument_server].options[:roles] = [:web, :worker]
+```
+
+### NOTEs
+
+Mac OS users: Due to a bug in Ruby, instrument_server can occasionally deadlock ([bug report](http://bugs.ruby-lang.org/issues/5811)).
+
+## instrumental
+
+Output text graphs of the different metrics in your project.
+
+See all options with: `instrumental --help`
+
+## gitstrumental
+
+Collect commit counts from git repositories:
+
+```sh
+cd project_directory
+gitstrumental <API_KEY>
 ```
