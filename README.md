@@ -67,12 +67,6 @@ namespaces[:instrumental].tasks[:restart_instrument_server].options[:roles] = [:
 
 Mac OS users: Due to a bug in Ruby, instrument_server can occasionally deadlock ([bug report](http://bugs.ruby-lang.org/issues/5811)).
 
-## instrumental
-
-Output text graphs of the different metrics in your project.
-
-See all options with: `instrumental --help`
-
 ## gitstrumental
 
 Collect commit counts from git repositories:
