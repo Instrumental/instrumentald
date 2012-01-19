@@ -153,10 +153,11 @@ class SystemInspector
 
     def self.cpu
       categories = [:user, :nice, :system, :idle, :iowait]
-      values = `cat /proc/stat | grep cpu[^0-9]`.chomp.split(/\s+/).slice(1, 5).map(&:to_f)
+      values = `cat /proc/stat | grep cpu[^0-9]`.chomp.split(/\s+/).slice(1, 5).map { |v| v.to_f }
       SystemInspector.memory.store(:cpu_values, values.dup)
       if previous_values = SystemInspector.memory.retrieve(:cpu_values)
-        values.map!.with_index { |value, index| (previous_values[index] - value).abs }
+        index = -1
+        values.collect!{ |value| (previous_values[index += 1] - value).abs }
       end
       data = Hash[*categories.zip(values).flatten]
       total = values.inject { |memo, value| memo + value }
@@ -255,7 +256,7 @@ class SystemInspector
     end
 
     def self.filesystem
-      allocated, unused, max = `sysctl fs.file-nr`.split[-3..-1].map(&:to_i)
+      allocated, unused, max = `sysctl fs.file-nr`.split[-3..-1].map { |v| v.to_i }
       open_files = allocated - unused
       { 'filesystem.open_files' => open_files,
         'filesystem.max_open_files' => max,
