@@ -1,3 +1,6 @@
+### 0.5.1 [February 9th, 2012]
+* Removing symbol to proc use for compatibility with older version of Ruby
+
 ### 0.5.0 [January 16, 2012]
 * Remove out-dated instrumental binary
 
