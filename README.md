@@ -75,3 +75,7 @@ Collect commit counts from git repositories:
 cd project_directory
 gitstrumental <API_KEY>
 ```
+
+## Troubleshooting & Help
+
+We are here to help. Email us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com), or visit the [Instrumental Support](https://fastestforward.campfirenow.com/6b934) Campfire room.
