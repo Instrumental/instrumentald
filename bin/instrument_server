@@ -58,7 +58,11 @@ class SystemInspector
 
   module OSX
     def self.load_cpu
-      { :gauges => top }
+      output = {}
+      if SystemInspector.command_present?('top', 'CPU')
+        output[:gauges].merge!(top)
+      end
+      output
     end
 
     def self.top
@@ -92,7 +96,11 @@ class SystemInspector
 
     def self.load_memory
       # TODO: swap
-      { :gauges => vm_stat }
+      output = {}
+      if SystemInspector.command_present?('vm_stat', 'memory')
+        output[:gauges].merge!(vm_stat)
+      end
+      output
     end
 
     def self.vm_stat
@@ -116,7 +124,11 @@ class SystemInspector
     end
 
     def self.load_disks
-      { :gauges => df }
+      output = {}
+      if SystemInspector.command_present?('df', 'disk')
+        output[:gauges].merge!(df)
+      end
+      output
     end
 
     def self.df
@@ -191,8 +203,12 @@ class SystemInspector
 
     def self.load_memory
       output = { :gauges => {} }
-      output[:gauges].merge!(memory)
-      output[:gauges].merge!(swap)
+      if SystemInspector.command_present?('free', 'memory')
+        output[:gauges].merge!(memory)
+      end
+      if SystemInspector.command_present?('free', 'swap')
+        output[:gauges].merge!(swap)
+      end
       output
     end
 
@@ -217,7 +233,14 @@ class SystemInspector
     end
 
     def self.load_disks
-      { :gauges => disk_storage.merge(disk_io) }
+      output = { :gauges => {} }
+      if SystemInspector.command_present?('df', 'disk storage')
+        output[:gauges].merge!(disk_storage)
+      end
+      if SystemInspector.command_present?('mount', 'disk IO')
+        output[:gauges].merge!(disk_io)
+      end
+      output
     end
 
     def self.disk_storage
@@ -260,7 +283,11 @@ class SystemInspector
     end
 
     def self.load_filesystem
-      { :gauges => filesystem }
+      output = { :gauges => {} }
+      if SystemInspector.command_present?('sysctl', 'filesystem')
+        output[:gauges].merge!(filesystem)
+      end
+      output
     end
 
     def self.filesystem
