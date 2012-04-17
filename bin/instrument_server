@@ -35,6 +35,14 @@ class SystemInspector
       end
   end
 
+  def self.command_missing(command, section)
+    puts "Command #{command} not found. Metrics for #{section} will not be collected."
+  end
+
+  def self.command_present?(command, section)
+    `command -v #{command}`.length > 0 || command_missing(command, section)
+  end
+
   def load_all
     self.class.memory.cycle
 
