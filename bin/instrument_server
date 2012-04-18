@@ -40,7 +40,8 @@ class SystemInspector
   end
 
   def self.command_present?(command, section)
-    `command -v #{command}`.length > 0 || command_missing(command, section)
+    system("command -v #{command}", :out => :close, :err => :close) ||
+      command_missing(command, section)
   end
 
   def load_all
