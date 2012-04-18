@@ -58,7 +58,7 @@ class SystemInspector
 
   module OSX
     def self.load_cpu
-      output = {}
+      output = { :gauges => {} }
       if SystemInspector.command_present?('top', 'CPU')
         output[:gauges].merge!(top)
       end
@@ -96,7 +96,7 @@ class SystemInspector
 
     def self.load_memory
       # TODO: swap
-      output = {}
+      output = { :gauges => {} }
       if SystemInspector.command_present?('vm_stat', 'memory')
         output[:gauges].merge!(vm_stat)
       end
@@ -124,7 +124,7 @@ class SystemInspector
     end
 
     def self.load_disks
-      output = {}
+      output = { :gauges => {} }
       if SystemInspector.command_present?('df', 'disk')
         output[:gauges].merge!(df)
       end
