@@ -40,7 +40,7 @@ class SystemInspector
   end
 
   def self.command_present?(command, section)
-    system("which #{command} &> /dev/null") || command_missing(command, section)
+    `which #{command}`.length > 0 || command_missing(command, section)
   end
 
   def load_all
