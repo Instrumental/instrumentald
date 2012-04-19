@@ -1,3 +1,6 @@
+### 0.5.2 [April 19th, 2012]
+* Check for existence of system commands prior to usage in instrument_server.
+
 ### 0.5.1 [February 9th, 2012]
 * Removing symbol to proc use for compatibility with older version of Ruby
 
