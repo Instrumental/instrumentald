@@ -12,6 +12,7 @@ require 'instrumental_agent'
 require 'pidly'
 require 'tmpdir'
 require 'optparse'
+require 'socket'
 
 class SystemInspector
   TYPES = [:gauges, :incrementors]
@@ -382,7 +383,7 @@ options = {
   :daemon => false,
   :collector => 'instrumentalapp.com',
   :port => '8000',
-  :hostname => `hostname`.chomp,
+  :hostname => Socket.gethostname,
 }
 
 option_parser = OptionParser.new do |opts|
