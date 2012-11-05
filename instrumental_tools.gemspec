@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
   s.add_runtime_dependency(%q<json>, [">=0"])
-  s.add_runtime_dependency(%q<instrumental_agent>, [">=0.8.3"])
+  s.add_runtime_dependency(%q<instrumental_agent>, [">=0.12.1"])
   s.add_runtime_dependency(%q<pidly>, [">=0.1.3"])
   s.add_development_dependency(%q<rake>, [">=0"])
 end
