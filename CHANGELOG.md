@@ -1,3 +1,6 @@
+### 0.5.3 [November 5th, 2012]
+* Upgraded instrumental_agent gem to the latest version
+
 ### 0.5.2 [April 19th, 2012]
 * Check for existence of system commands prior to usage in instrument_server.
 
