@@ -1,3 +1,7 @@
+### 0.5.4 [March 19th, 2013]
+* Reduce polling frequency of instrument_server to every minute
+* Remove gitstrumental
+
 ### 0.5.3 [November 5th, 2012]
 * Upgraded instrumental_agent gem to the latest version
 
