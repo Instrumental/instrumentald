@@ -350,7 +350,9 @@ class ServerController < Pidly::Control
     agent = Instrumental::Agent.new(options[:api_key], :collector => [options[:collector], options[:port]].compact.join(':'))
     puts "Collecting stats under the hostname: #{options[:hostname]}"
     loop do
-      sleep 10
+      t = Time.now.to_i
+      next_minute = (t - t % 60) + 60
+      sleep [next_minute - t, 0].max
       inspector = SystemInspector.new
       inspector.load_all
       inspector.gauges.each do |stat, value|
