@@ -1,3 +1,6 @@
+### 0.5.5 [April 30th, 2013]
+* Update to latest instrumental_agent
+
 ### 0.5.4 [March 19th, 2013]
 * Reduce polling frequency of instrument_server to every minute
 * Remove gitstrumental
