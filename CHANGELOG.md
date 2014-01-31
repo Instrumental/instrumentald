@@ -1,3 +1,6 @@
+### 0.5.7 [January 31st, 2014]
+* tmpfs tracking actually works now!
+
 ### 0.5.6 [January 31st, 2014]
 * Add tmpfs to disk stats
 
