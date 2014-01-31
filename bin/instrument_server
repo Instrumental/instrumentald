@@ -13,6 +13,8 @@ require 'pidly'
 require 'tmpdir'
 require 'optparse'
 require 'socket'
+$: << File.join(File.dirname(__FILE__), "..", "lib")
+require 'instrumental_tools/version'
 
 class SystemInspector
   TYPES = [:gauges, :incrementors]
@@ -349,6 +351,7 @@ class ServerController < Pidly::Control
 
   def self.run(options)
     agent = Instrumental::Agent.new(options[:api_key], :collector => [options[:collector], options[:port]].compact.join(':'))
+    puts "insrument_server version #{Instrumental::Tools::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{options[:hostname]}"
     loop do
       t = Time.now.to_i
