@@ -1,3 +1,6 @@
+### 0.5.6 [January 31st, 2014]
+* Add tmpfs to disk stats
+
 ### 0.5.5 [April 30th, 2013]
 * Update to latest instrumental_agent
 
