@@ -134,9 +134,13 @@ class SystemInspector
 
     def self.df
       output = {}
-      `df -k`.split("\n").grep(%r{^/dev/}).each do |line|
+      `df -ka`.split("\n").grep(%r{^(/dev/|tmpfs)}).each do |line|
         device, total, used, available, capacity, mount = line.split(/\s+/)
-        names = [File.basename(device)]
+        if device == "tmpfs"
+          names = ["tmpfs_#{mount.gsub(/[^[:alnum:]]/, "_")}".gsub(/_+/, "_")]
+        else
+          names = [File.basename(device)]
+        end
         names << 'root' if mount == '/'
         names.each do |name|
           output["disk.#{name}.total_mb"] = total.to_f / 1024
