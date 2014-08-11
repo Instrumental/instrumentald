@@ -1,3 +1,6 @@
+### 0.5.8 [August 11th, 2014]
+* Upgraded instrumental_agent gem to the latest version
+
 ### 0.5.7 [January 31st, 2014]
 * tmpfs tracking actually works now!
 
