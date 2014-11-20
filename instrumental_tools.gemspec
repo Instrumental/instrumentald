@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.version     = Instrumental::Tools::VERSION
   s.authors     = ["Elijah Miller", "Christopher Zelenak", "Kristopher Chambers", "Matthew Hassfurder"]
   s.email       = ["support@instrumentalapp.com"]
-  s.homepage    = "http://github.com/fastestforward/instrumental_tools"
+  s.homepage    = "http://github.com/expectedbehavior/instrumental_tools"
   s.summary     = %q{Command line tools for Instrumental}
   s.description = %q{A collection of scripts useful for monitoring servers and services with Instrumental (instrumentalapp.com)}
 
