@@ -1,3 +1,6 @@
+### 0.6.0 [August 11th, 2014]
+* Upgraded instrumental_agent gem to the latest version
+
 ### 0.5.8 [August 11th, 2014]
 * Upgraded instrumental_agent gem to the latest version
 
