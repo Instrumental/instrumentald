@@ -228,6 +228,7 @@ class SystemInspector
 
     def self.swap
       _, total, used, free = `free -k -o | grep Swap`.chomp.split(/\s+/)
+      return {} if total.to_i == 0
       {
         'swap.used_mb' => used.to_f / 1024,
         'swap.free_mb' => free.to_f / 1024,
