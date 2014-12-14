@@ -1,5 +1,5 @@
 ### 0.6.0 [August 11th, 2014]
-* Upgraded instrumental_agent gem to the latest version
+* Don't report swap usage if it's zero (Patrick Wyatt)
 
 ### 0.5.8 [August 11th, 2014]
 * Upgraded instrumental_agent gem to the latest version
