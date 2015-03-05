@@ -9,412 +9,62 @@ rescue Gem::LoadError
   exit 1
 end
 require 'instrumental_agent'
-require 'pidly'
-require 'tmpdir'
 require 'optparse'
 require 'socket'
 $: << File.join(File.dirname(__FILE__), "..", "lib")
 require 'instrumental_tools/version'
-
-class SystemInspector
-  TYPES = [:gauges, :incrementors]
-  attr_accessor *TYPES
-
-  def self.memory
-    @memory ||= Memory.new
-  end
-
-  def initialize
-    @gauges = {}
-    @incrementors = {}
-    @platform =
-      case RUBY_PLATFORM
-      when /linux/
-        Linux
-      when /darwin/
-        OSX
-      else
-        raise "unsupported OS"
-      end
-  end
-
-  def self.command_missing(command, section)
-    puts "Command #{command} not found. Metrics for #{section} will not be collected."
-  end
-
-  def self.command_present?(command, section)
-    `which #{command}`.length > 0 || command_missing(command, section)
-  end
-
-  def load_all
-    self.class.memory.cycle
-
-    load @platform.load_cpu
-    load @platform.load_memory
-    load @platform.load_disks
-    load @platform.load_filesystem
-  end
-
-  def load(stats)
-    @gauges.merge!(stats[:gauges] || {})
-  end
-
-  module OSX
-    def self.load_cpu
-      output = { :gauges => {} }
-      if SystemInspector.command_present?('top', 'CPU')
-        output[:gauges].merge!(top)
-      end
-      output
-    end
-
-    def self.top
-      lines = []
-      processes = date = load = cpu = nil
-      IO.popen('top -l 1 -n 0') do |top|
-        processes = top.gets.split(': ')[1]
-        date = top.gets
-        load = top.gets.split(': ')[1]
-        cpu = top.gets.split(': ')[1]
-      end
-
-      user, system, idle = cpu.split(", ").map { |v| v.to_f }
-      load1, load5, load15 = load.split(", ").map { |v| v.to_f }
-      total, running, stuck, sleeping, threads = processes.split(", ").map { |v| v.to_i }
-
-      {
-        'cpu.user' => user,
-        'cpu.system' => system,
-        'cpu.idle' => idle,
-        'load.1min' => load1,
-        'load.5min' => load5,
-        'load.15min' => load15,
-        'processes.total' => total,
-        'processes.running' => running,
-        'processes.stuck' => stuck,
-        'processes.sleeping' => sleeping,
-        'threads' => threads,
-      }
-    end
-
-    def self.load_memory
-      # TODO: swap
-      output = { :gauges => {} }
-      if SystemInspector.command_present?('vm_stat', 'memory')
-        output[:gauges].merge!(vm_stat)
-      end
-      output
-    end
-
-    def self.vm_stat
-      header, *rows = `vm_stat`.split("\n")
-      page_size = header.match(/page size of (\d+) bytes/)[1].to_i
-      sections = ["free", "active", "inactive", "wired", "speculative", "wired down"]
-      output = {}
-      total = 0.0
-      rows.each do |row|
-        if match = row.match(/Pages (.*):\s+(\d+)\./)
-          section, value = match[1, 2]
-          if sections.include?(section)
-            value = value.to_f * page_size / 1024 / 1024
-            output["memory.#{section.gsub(' ', '_')}_mb"] = value
-            total += value
-          end
-        end
-      end
-      output["memory.free_percent"] = output["memory.free_mb"] / total * 100 # TODO: verify
-      output
-    end
-
-    def self.load_disks
-      output = { :gauges => {} }
-      if SystemInspector.command_present?('df', 'disk')
-        output[:gauges].merge!(df)
-      end
-      output
-    end
-
-    def self.df
-      output = {}
-      `df -k`.split("\n").grep(%r{^/dev/}).each do |line|
-        device, total, used, available, capacity, mount = line.split(/\s+/)
-        names = [File.basename(device)]
-        names << 'root' if mount == '/'
-        names.each do |name|
-          output["disk.#{name}.total_mb"] = total.to_f / 1024
-          output["disk.#{name}.used_mb"] = used.to_f / 1024
-          output["disk.#{name}.available_mb"] = available.to_f / 1024
-          output["disk.#{name}.available_percent"] = available.to_f / total.to_f * 100
-        end
-      end
-      output
-    end
-
-    def self.netstat(interface = 'en1')
-      # mostly functional network io stats
-      headers, *lines = `netstat -ibI #{interface}`.split("\n").map { |l| l.split(/\s+/) } # FIXME: vulnerability?
-      headers = headers.map { |h| h.downcase }
-      lines.each do |line|
-        if !line[3].include?(':')
-          return Hash[headers.zip(line)]
-        end
-      end
-    end
-
-    def self.load_filesystem
-      {}
-    end
-  end
-
-  module Linux
-    def self.load_cpu
-      output = { :gauges => {} }
-      output[:gauges].merge!(cpu)
-      output[:gauges].merge!(loadavg)
-      output
-    end
-
-    def self.cpu
-      categories = [:user, :nice, :system, :idle, :iowait]
-      values = `cat /proc/stat | grep cpu[^0-9]`.chomp.split(/\s+/).slice(1, 5).map { |v| v.to_f }
-      SystemInspector.memory.store(:cpu_values, values.dup)
-      if previous_values = SystemInspector.memory.retrieve(:cpu_values)
-        index = -1
-        values.collect!{ |value| (previous_values[index += 1] - value).abs }
-      end
-      data = Hash[*categories.zip(values).flatten]
-      total = values.inject { |memo, value| memo + value }
-
-      output = {}
-      if previous_values
-        data.each do |category, value|
-          output["cpu.#{category}"] = value / total * 100
-        end
-      end
-      output["cpu.in_use"] = 100 - data[:idle] / total * 100
-      output
-    end
-
-    def self.loadavg
-      min_1, min_5, min_15 = `cat /proc/loadavg`.split(/\s+/)
-      {
-        'load.1min' => min_1.to_f,
-        'load.5min' => min_5.to_f,
-        'load.15min' => min_15.to_f,
-      }
-    end
-
-    def self.load_memory
-      output = { :gauges => {} }
-      if SystemInspector.command_present?('free', 'memory')
-        output[:gauges].merge!(memory)
-      end
-      if SystemInspector.command_present?('free', 'swap')
-        output[:gauges].merge!(swap)
-      end
-      output
-    end
-
-    def self.memory
-      _, total, used, free, shared, buffers, cached = `free -k -o | grep Mem`.chomp.split(/\s+/)
-      {
-        'memory.used_mb' => used.to_f / 1024,
-        'memory.free_mb' => free.to_f / 1024,
-        'memory.buffers_mb' => buffers.to_f / 1024,
-        'memory.cached_mb' => cached.to_f / 1024,
-        'memory.free_percent' => (free.to_f / total.to_f) * 100,
-      }
-    end
-
-    def self.swap
-      _, total, used, free = `free -k -o | grep Swap`.chomp.split(/\s+/)
-      return {} if total.to_i == 0
-      {
-        'swap.used_mb' => used.to_f / 1024,
-        'swap.free_mb' => free.to_f / 1024,
-        'swap.free_percent' => (free.to_f / total.to_f) * 100,
-      }
-    end
-
-    def self.load_disks
-      output = { :gauges => {} }
-      if SystemInspector.command_present?('df', 'disk storage')
-        output[:gauges].merge!(disk_storage)
-      end
-      if SystemInspector.command_present?('mount', 'disk IO')
-        output[:gauges].merge!(disk_io)
-      end
-      output
-    end
-
-    def self.disk_storage
-      output = {}
-      `df -Pka`.split("\n").each do |line|
-        device, total, used, available, capacity, mount = line.split(/\s+/)
-        if device == "tmpfs"
-          names = ["tmpfs_#{mount.gsub(/[^[:alnum:]]/, "_")}".gsub(/_+/, "_")]
-        elsif device =~ %r{/dev/}
-          names = [File.basename(device)]
-        else
-          next
-        end
-        names << 'root' if mount == '/'
-        names.each do |name|
-          output["disk.#{name}.total_mb"] = total.to_f / 1024
-          output["disk.#{name}.used_mb"] = used.to_f / 1024
-          output["disk.#{name}.available_mb"] = available.to_f / 1024
-          output["disk.#{name}.available_percent"] = available.to_f / total.to_f * 100
-        end
-      end
-      output
-    end
-
-    def self.disk_io
-      mounted_devices = `mount`.split("\n").grep(/^\/dev\/(\w+)/) { $1 }
-      diskstats_lines = `cat /proc/diskstats`.split("\n").grep(/#{mounted_devices.join('|')}/)
-      entries = diskstats_lines.map do |line|
-        values = line.split
-        entry = {}
-        entry[:time] = Time.now
-        entry[:device] = values[2]
-        entry[:utilization] = values[12].to_f
-        SystemInspector.memory.store("disk_stats_#{entry[:device]}".to_sym, entry)
-      end
-
-      output = {}
-      entries.each do |entry|
-        if previous_entry = SystemInspector.memory.retrieve("disk_stats_#{entry[:device]}".to_sym)
-          time_delta = (entry[:time] - previous_entry[:time]) * 1000
-          utilization_delta = entry[:utilization] - previous_entry[:utilization]
-          output["disk.#{entry[:device]}.percent_utilization"] = utilization_delta / time_delta * 100
-        end
-      end
-      output
-    end
-
-    def self.load_filesystem
-      output = { :gauges => {} }
-      if SystemInspector.command_present?('sysctl', 'filesystem')
-        output[:gauges].merge!(filesystem)
-      end
-      output
-    end
-
-    def self.filesystem
-      allocated, unused, max = `sysctl fs.file-nr`.split[-3..-1].map { |v| v.to_i }
-      open_files = allocated - unused
-      { 'filesystem.open_files' => open_files,
-        'filesystem.max_open_files' => max,
-        'filesystem.open_files_pct_max' => (open_files.to_f / max.to_f) * 100,
-      }
-    end
-  end
-
-  class Memory
-    attr_reader :past_values, :current_values
-
-    def initialize
-      @past_values = {}
-      @current_values = {}
-    end
-
-    def store(attribute, value)
-      @current_values[attribute] = value
-    end
-
-    def retrieve(attribute)
-      @past_values[attribute]
-    end
-
-    def cycle
-      @past_values = @current_values
-      @current_values = {}
-    end
-  end
-
-end
-
-class ServerController < Pidly::Control
-  COMMANDS = [:start, :stop, :status, :restart, :clean, :kill]
-  REPORT_INTERVAL = 60
-
-  attr_accessor :run_options
-
-  before_start do
-    puts "Starting daemon process: #{@pid}"
-  end
-
-  start :run
-
-  stop do
-    puts "Attempting to kill daemon process: #{@pid}"
-  end
-
-  # after_stop :something
-
-  error do
-    puts 'Error encountered'
-  end
-
-  def self.run(options)
-    agent = Instrumental::Agent.new(options[:api_key], :collector => [options[:collector], options[:port]].compact.join(':'))
-    puts "insrument_server version #{Instrumental::Tools::VERSION} started at #{Time.now.utc}"
-    puts "Collecting stats under the hostname: #{options[:hostname]}"
-    loop do
-      t = Time.now.to_i
-      next_run_at = (t - t % REPORT_INTERVAL) + REPORT_INTERVAL
-      sleep [next_run_at - t, 0].max
-      inspector = SystemInspector.new
-      inspector.load_all
-      inspector.gauges.each do |stat, value|
-        agent.gauge("#{options[:hostname]}.#{stat}", value)
-      end
-      # agent.increment("#{host}.#{stat}", delta)
-    end
-  end
-
-  def initialize(options={})
-    @run_options = options.delete(:run_options) || {}
-    super(options)
-  end
-
-  def run
-    self.class.run(run_options)
-  end
-
-  alias_method :clean, :clean!
-end
+require 'instrumental_tools/server_controller'
 
 def require_api_key(options, parser)
-  unless options[:api_key] # present?
+  if options[:api_key].to_s.strip.empty?
     print parser.help
     exit 1
   end
 end
 
 options = {
-  :daemon => false,
-  :collector => 'collector.instrumentalapp.com',
-  :port => '8000',
-  :hostname => Socket.gethostname,
+  :daemon          => false,
+  :collector       => 'collector.instrumentalapp.com',
+  :port            => '8000',
+  :hostname        => Socket.gethostname,
+  :pid_location    => File.join(Dir.home, 'instrument_server.pid'),
+  :log_location    => File.join(Dir.home, 'instrument_server.log'),
+  :report_interval => 30
 }
 
 option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: instrument_server -k API_KEY [options] [-d #{ServerController::COMMANDS.join('|')}]"
+
   opts.on('-k', '--api_key API_KEY', 'API key of your project') do |api_key|
     options[:api_key] = api_key
   end
+
   opts.on('-c', '--collector COLLECTOR[:PORT]', "Collector (default #{options[:collector]}:#{options[:port]})") do |collector|
     address, port = collector.split(':')
     options[:collector] = address
     options[:port] = port if port
   end
+
   opts.on('-H', '--hostname HOSTNAME', "Hostname to report as (default #{options[:hostname]})") do |hostname|
     options[:hostname] = hostname
   end
+
   opts.on('-d', '--daemonize', 'Run as daemon') do
     options[:daemon] = true
   end
+
+  opts.on('-p', '--pid LOCATION', "Where daemon PID file is located (default #{options[:pid_location]})") do |pid_location|
+    options[:pid_location] = pid_location
+  end
+
+  opts.on('-l', '--log LOCATION', "Where to put the instrument_server log file (default #{options[:log_location]})") do |log_location|
+    options[:log_location] = log_location
+  end
+
+  opts.on('-r', '--report-interval INTERVAL_IN_SECONDS', "How often to report metrics to Instrumental (default #{options[:report_interval]})") do |interval|
+    options[:report_interval] = interval.to_i
+  end
+
   opts.on('-h', '--help', 'Display this screen') do
     puts opts
     exit
@@ -422,29 +72,63 @@ option_parser = OptionParser.new do |opts|
 end
 
 option_parser.parse!
+
+command = ARGV.first && ARGV.first.to_sym
+command ||= :start
+
 options[:api_key] ||= ENV["INSTRUMENTAL_TOKEN"]
 
-if options.delete(:daemon)
-  @server_controller = ServerController.spawn(
-    :name => 'instrument_server',
-    :path => Dir.tmpdir,
-    :pid_file => File.join(Dir.tmpdir, 'pids', 'instrument_server.pid'),
-    :verbose => true,
-    # :signal => 'kill',
-    :log_file => File.join(Dir.tmpdir, 'log', 'instrument_server.log'),
-    :run_options => options
-  )
-  command = ARGV.first && ARGV.first.to_sym
-  command ||= :start
-  if [:start, :restart].include?(command)
-    require_api_key(options, option_parser)
-  end
-  if ServerController::COMMANDS.include?(command)
-    @server_controller.send command
-  else
-    puts "Command must be one of: #{ServerController::COMMANDS.join(', ')}"
-  end
-else
+if options[:pid_location].to_s.strip.empty?
+  raise "You must provide a valid path for the PID file (-p PID_PATH)"
+end
+
+if !File.exists?(File.dirname(options[:pid_location]))
+  raise "The directory specified for the pid file #{options[:pid_location]} does not exist, please create"
+end
+
+if options[:log_location].to_s.strip.empty?
+  raise "You must provide a valid path for the log file (-l LOG_PATH)"
+end
+
+if !File.exists?(File.dirname(options[:log_location]))
+  raise "The directory specified for the log file #{options[:log_location]} does not exist, please create"
+end
+
+if options[:report_interval].to_i < 1
+  raise "You must specify a reporting interval greater than 0"
+end
+
+if [:start, :restart].include?(command)
   require_api_key(options, option_parser)
-  ServerController.run(options)
+end
+
+running_as_daemon = options[:daemon]
+
+controller = ServerController.spawn(
+               :name        => File.basename(__FILE__),
+               :path        => Dir.pwd,
+               :pid_file    => options[:pid_location],
+               :verbose     => true,
+               :log_file    => options[:log_location],
+               :run_options => options
+             )
+
+if ServerController::COMMANDS.include?(command)
+  controller.send command
+else
+  raise "Command must be one of: #{ServerController::COMMANDS.join(', ')}"
+end
+
+
+
+if running_as_daemon
+  begin
+    Timeout.timeout(5) do
+      Process.waitpid(controller.pid)
+    end
+  rescue Timeout::Error
+  end
+  if !controller.running?
+    raise "Failed to start process, see #{options[:log_location]}"
+  end
 end
