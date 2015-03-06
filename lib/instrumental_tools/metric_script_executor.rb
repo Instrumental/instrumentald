@@ -58,7 +58,9 @@ class MetricScriptExecutor
 
           [full_path, [status, Time.now, output]]
         else
-          puts "[INFO] Skipping #{full_path}, not executable"
+          if !File.directory?(full_path)
+            puts "[INFO] Skipping #{full_path}, not executable"
+          end
           [full_path, []]
         end
       end
