@@ -138,7 +138,7 @@ controller = ServerController.spawn(
                :pid_file    => options[:pid_location],
                :verbose     => true,
                :log_file    => options[:log_location],
-               :run_options => options
+               :run_options => options.merge(:daemon => running_as_daemon)
              )
 
 if ServerController::COMMANDS.include?(command)
@@ -150,7 +150,6 @@ end
 
 
 if running_as_daemon
-  puts "Running as daemon"
   begin
     Timeout.timeout(5) do
       Process.waitpid(controller.pid)
