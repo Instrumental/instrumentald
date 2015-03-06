@@ -1,8 +1,9 @@
 require 'pidly'
+require 'instrumental_tools/metric_script_executor'
 require 'instrumental_tools/system_inspector'
 
 class ServerController < Pidly::Control
-  COMMANDS = [:start, :stop, :status, :restart, :clean, :kill]
+  COMMANDS = [:start, :stop, :status, :restart, :clean, :kill, :foreground]
 
   attr_accessor :run_options, :pid
 
@@ -13,7 +14,7 @@ class ServerController < Pidly::Control
     puts "Starting daemon process: #{@pid} #{extra_info}"
   end
 
-  start :run
+  start :foreground
 
   stop do
     puts "Attempting to kill daemon process: #{@pid}"
@@ -28,6 +29,7 @@ class ServerController < Pidly::Control
     puts "insrument_server version #{Instrumental::Tools::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{options[:hostname]}"
     report_interval = options[:report_interval]
+    custom_metrics  = MetricScriptExecutor.new(options[:script_location])
     loop do
       t = Time.now.to_i
       next_run_at = (t - t % report_interval) + report_interval
@@ -37,7 +39,9 @@ class ServerController < Pidly::Control
       inspector.gauges.each do |stat, value|
         agent.gauge("#{options[:hostname]}.#{stat}", value)
       end
-      # agent.increment("#{host}.#{stat}", delta)
+      custom_metrics.run.each do |(stat, value)|
+        agent.gauge("#{options[:hostname]}.#{stat}", value)
+      end
     end
   end
 
@@ -46,7 +50,7 @@ class ServerController < Pidly::Control
     super(options)
   end
 
-  def run
+  def foreground
     self.class.run(run_options)
   end
 

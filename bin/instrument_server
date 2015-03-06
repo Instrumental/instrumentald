@@ -9,6 +9,7 @@ rescue Gem::LoadError
   exit 1
 end
 require 'instrumental_agent'
+require 'fileutils'
 require 'optparse'
 require 'socket'
 $: << File.join(File.dirname(__FILE__), "..", "lib")
@@ -22,18 +23,25 @@ def require_api_key(options, parser)
   end
 end
 
+default_script_directory = File.join(Dir.home, '.instrumental_scripts')
+default_command          = :foreground
+
 options = {
-  :daemon          => false,
   :collector       => 'collector.instrumentalapp.com',
   :port            => '8000',
   :hostname        => Socket.gethostname,
   :pid_location    => File.join(Dir.home, 'instrument_server.pid'),
   :log_location    => File.join(Dir.home, 'instrument_server.log'),
+  :enable_scripts  => false,
+  :script_location => default_script_directory,
   :report_interval => 30
 }
 
 option_parser = OptionParser.new do |opts|
-  opts.banner = "Usage: instrument_server -k API_KEY [options] [-d #{ServerController::COMMANDS.join('|')}]"
+  opts.banner = <<-EOBANNER
+Usage: instrument_server -k API_KEY [options] [#{ServerController::COMMANDS.join('|')}]"
+Default command: #{default_command.to_s}
+  EOBANNER
 
   opts.on('-k', '--api_key API_KEY', 'API key of your project') do |api_key|
     options[:api_key] = api_key
@@ -49,10 +57,6 @@ option_parser = OptionParser.new do |opts|
     options[:hostname] = hostname
   end
 
-  opts.on('-d', '--daemonize', 'Run as daemon') do
-    options[:daemon] = true
-  end
-
   opts.on('-p', '--pid LOCATION', "Where daemon PID file is located (default #{options[:pid_location]})") do |pid_location|
     options[:pid_location] = pid_location
   end
@@ -65,6 +69,14 @@ option_parser = OptionParser.new do |opts|
     options[:report_interval] = interval.to_i
   end
 
+  opts.on('-e', '--enable-scripts', "Enable custom metric gathering from local scripts (default #{options[:enable_scripts]})") do
+    options[:enable_scripts] = true
+  end
+
+  opts.on('-s', '--script-location PATH_TO_DIRECTORY', "Directory where local scripts for custom metrics are located (default #{options[:script_location]})") do |path|
+    options[:script_location] = path
+  end
+
   opts.on('-h', '--help', 'Display this screen') do
     puts opts
     exit
@@ -74,7 +86,7 @@ end
 option_parser.parse!
 
 command = ARGV.first && ARGV.first.to_sym
-command ||= :start
+command ||= default_command
 
 options[:api_key] ||= ENV["INSTRUMENTAL_TOKEN"]
 
@@ -82,7 +94,7 @@ if options[:pid_location].to_s.strip.empty?
   raise "You must provide a valid path for the PID file (-p PID_PATH)"
 end
 
-if !File.exists?(File.dirname(options[:pid_location]))
+if !File.directory?(File.dirname(options[:pid_location]))
   raise "The directory specified for the pid file #{options[:pid_location]} does not exist, please create"
 end
 
@@ -90,7 +102,7 @@ if options[:log_location].to_s.strip.empty?
   raise "You must provide a valid path for the log file (-l LOG_PATH)"
 end
 
-if !File.exists?(File.dirname(options[:log_location]))
+if !File.directory?(File.dirname(options[:log_location]))
   raise "The directory specified for the log file #{options[:log_location]} does not exist, please create"
 end
 
@@ -98,11 +110,27 @@ if options[:report_interval].to_i < 1
   raise "You must specify a reporting interval greater than 0"
 end
 
-if [:start, :restart].include?(command)
+if options[:enable_scripts]
+
+  if options[:script_location].to_s.strip.empty?
+    raise "You must specify a valid directory to execute custom scripts in."
+  end
+
+  if options[:script_location] == default_script_directory
+    FileUtils.mkdir_p(default_script_directory)
+  end
+
+  if !File.directory?(options[:script_location])
+    raise "The directory #{options[:script_location]} does not exist."
+  end
+
+end
+
+if [:start, :restart, :foreground].include?(command)
   require_api_key(options, option_parser)
 end
 
-running_as_daemon = options[:daemon]
+running_as_daemon = [:start, :restart].include?(command)
 
 controller = ServerController.spawn(
                :name        => File.basename(__FILE__),
@@ -122,6 +150,7 @@ end
 
 
 if running_as_daemon
+  puts "Running as daemon"
   begin
     Timeout.timeout(5) do
       Process.waitpid(controller.pid)
