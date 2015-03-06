@@ -59,7 +59,7 @@ class MetricScriptExecutor
           [full_path, [status, Time.now, output]]
         else
           puts "[INFO] Skipping #{full_path}, not executable"
-          [full_path, [nil, nil]]
+          [full_path, []]
         end
       end
       process_to_output = Hash[current]
