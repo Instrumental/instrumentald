@@ -39,8 +39,8 @@ class ServerController < Pidly::Control
       inspector.gauges.each do |stat, value|
         agent.gauge("#{options[:hostname]}.#{stat}", value)
       end
-      custom_metrics.run.each do |(stat, value)|
-        agent.gauge("#{options[:hostname]}.#{stat}", value)
+      custom_metrics.run.each do |(stat, value, time)|
+        agent.gauge("#{options[:hostname]}.#{stat}", value, time)
       end
     end
   end

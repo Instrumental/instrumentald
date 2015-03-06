@@ -67,11 +67,11 @@ class MetricScriptExecutor
     else
       puts "Directory #{directory} has gone away, not scanning for metric scripts."
     end
-    process_to_output.flat_map do |_, (_, _, output)|
-      output.split(/[\r\n]+/)                          # each line
-        .map    { |line| line.split(/\s+/) }           # split by whitespace
-        .select { |data| data.size == 2 }              # and only valid name value pairs
-        .map    { |(name, value)| [name, value.to_f] } # with value coerced to a float
+    process_to_output.flat_map do |_, (_, time, output)|
+      output.split(/[\r\n]+/)                                                                # each line
+        .map    { |line| line.split(/\s+/) }                                                 # split by whitespace
+        .select { |data| (2..3).include?(data.size)  }                                       # and only valid name value time? pairs
+        .map    { |(name, value, specific_time)| [name, value.to_f, specific_time || time] } # with value coerced to a float
     end
   end
 
