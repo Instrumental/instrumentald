@@ -25,7 +25,7 @@ class MetricScriptExecutor
           stdin_w.close
 
 
-          cmd = [full_path, (previous_time || 0).to_i, previous_status].compact.join(" ")
+          cmd = [full_path, (previous_time || 0).to_i, (previous_status && previous_status.to_i)].compact.join(" ")
 
           pid = Process.spawn(cmd,
                               :chdir => File.dirname(full_path),
@@ -42,13 +42,10 @@ class MetricScriptExecutor
             puts "[SLOW SCRIPT] Time to execute process #{full_path} took #{exec_time} seconds"
           end
 
-          status, output = exit_status.to_i, nil
-
           [stdin_r, stdout_w, stderr_w].each(&:close)
 
-          if exit_status.success?
-            output = stdout_r.read
-          end
+          output = stdout_r.read
+
           stderr = stderr_r.read.to_s.chomp.strip
           unless stderr.empty?
             puts "[STDERR] #{full_path} (PID:#{pid}) [#{Time.now.to_s}]:: #{stderr}"
@@ -56,7 +53,7 @@ class MetricScriptExecutor
 
           [stdout_r, stderr_r].each(&:close)
 
-          [full_path, [status, Time.now, output]]
+          [full_path, [exit_status, Time.now, output]]
         else
           if !File.directory?(full_path)
             puts "[INFO] Skipping #{full_path}, not executable"
@@ -69,11 +66,13 @@ class MetricScriptExecutor
     else
       puts "Directory #{directory} has gone away, not scanning for metric scripts."
     end
-    process_to_output.flat_map do |_, (_, time, output)|
-      output.split(/[\r\n]+/)                                                                # each line
-        .map    { |line| line.split(/\s+/) }                                                 # split by whitespace
-        .select { |data| (2..3).include?(data.size)  }                                       # and only valid name value time? pairs
-        .map    { |(name, value, specific_time)| [name, value.to_f, specific_time || time] } # with value coerced to a float
+    process_to_output.flat_map do |_, (status, time, output)|
+      if status.success?
+        output.split(/[\r\n]+/)                                                                # each line
+          .map    { |line| line.split(/\s+/) }                                                 # split by whitespace
+          .select { |data| (2..3).include?(data.size)  }                                       # and only valid name value time? pairs
+          .map    { |(name, value, specific_time)| [name, value.to_f, specific_time || time] } # with value coerced to a float
+      end
     end
   end
 
