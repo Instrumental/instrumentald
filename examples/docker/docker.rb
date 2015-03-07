@@ -44,17 +44,18 @@ all_stats = docker_containers.map do |container|
 
     cpu_stats = Hash[File.read(file).split(/[\r\n]+/).map { |line| line.split(/\s+/) }]
 
-    %w{system_total user_total}.each do |stat|
-      output_stat        = [container_name, stat + "_total"].join(".")
+    %w{system user}.each do |stat|
+      output_stat = [container_name, stat + "_total"].join(".")
       stats[output_stat] = cpu_stats[stat]
       if previously_ran && max_freq
-        estimate_per_second_freq                = (cpu_stats[stat] - previous_values[output_stat]) / run_interval
-        stats[[container_name, stat].join(".")] = (estimate_per_second_freq / max_freq) * 100.0
+        estimate_per_second_freq = (cpu_stats[stat].to_f - previous_values[output_stat]) / run_interval
+        stats[stat]              = (estimate_per_second_freq / max_freq) * 100.0
       end
     end
   end
   Dir[File.join(mem_info, "**", container["CONTAINER ID"] + "*", "memory.stat")].each do |file|
     mem_stats = Hash[File.read(file).split(/[\r\n]+/).map { |line| line.split(/\s+/) }]
+
     %w{cache rss mapped_file swap}.each do |stat|
       stats[[container_name, stat + "_mb"].join(".")] = mem_stats[stat].to_i / 1024.0 / 1024.0
     end
