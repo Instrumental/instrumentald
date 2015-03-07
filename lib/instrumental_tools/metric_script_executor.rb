@@ -44,9 +44,9 @@ class MetricScriptExecutor
 
           [stdin_r, stdout_w, stderr_w].each(&:close)
 
-          output = stdout_r.read
+          output = stdout_r.read.to_s.chomp
 
-          stderr = stderr_r.read.to_s.chomp.strip
+          stderr = stderr_r.read.to_s.chomp
           unless stderr.empty?
             puts "[STDERR] #{full_path} (PID:#{pid}) [#{Time.now.to_s}]:: #{stderr}"
           end
@@ -66,12 +66,13 @@ class MetricScriptExecutor
     else
       puts "Directory #{directory} has gone away, not scanning for metric scripts."
     end
-    process_to_output.flat_map do |_, (status, time, output)|
+    process_to_output.flat_map do |path, (status, time, output)|
       if status.success?
+        prefix = File.basename(path).split(".")[0..-2].join(".").gsub(/[^a-z0-9\-\_\.]/i, "_")
         output.split(/[\r\n]+/)                                                                # each line
           .map    { |line| line.split(/\s+/) }                                                 # split by whitespace
           .select { |data| (2..3).include?(data.size)  }                                       # and only valid name value time? pairs
-          .map    { |(name, value, specific_time)| [name, value.to_f, specific_time || time] } # with value coerced to a float
+          .map    { |(name, value, specific_time)| [[prefix, name].join("."), value.to_f, specific_time || time] } # with value coerced to a float
       end
     end
   end
