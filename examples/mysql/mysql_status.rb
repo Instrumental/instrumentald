@@ -18,17 +18,18 @@ CANARY_METRIC           = "Queries"
 
 require 'shellwords'
 
-env          = {}
+env = {}
+cmd = "mysql -N -B -e 'SHOW GLOBAL STATUS' --user %s --host %s --port %s" % [USER, HOST, PORT].map { |arg| Shellwords.escape(arg) }
+
 if OPTS_FILE.to_s.size > 0
-  cmd = "mysql -N -B -e 'SHOW GLOBAL STATUS' --user %s --host %s --port %s --defaults-file %s" % [USER, HOST, PORT, OPTS_FILE].map { |arg| Shellwords.escape(arg) }
+  cmd += " --defaults-file %s" % Shellwords.escape(OPTS_FILE)
 else
-  cmd = "mysql -N -B -e 'SHOW GLOBAL STATUS' --user %s --host %s --port %s" % [USER, HOST, PORT].map { |arg| Shellwords.escape(arg) }
   env = { "MYSQL_PWD" => PASSWORD }
 end
 
 stdout_r, stdout_w = IO.pipe
 
-pid = Process.spawn(env, cmd, :out => stdout_w)
+pid = Process.spawn(env, cmd, :out => stdout_w, :err => STDERR)
 
 pid, exit_status = Process.wait2(pid)
 
