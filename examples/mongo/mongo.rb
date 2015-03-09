@@ -59,7 +59,7 @@ if (output = cmd_to_output["mongostat"])
   stats = YAML.load(output)
   stats.each do |host, metrics|
     stat = "mongostat.%s" % host.gsub(/[^a-z0-9\-\_]/i, "_")
-    ["conn", "delete", "faults", "flushes", "getmore", ["idx miss %", "idx_miss_pct"], "insert", "mapped", "netIn", "netOut", "query", "res", "update", "vsize"].each do |metric|
+    ["conn", "delete", "faults", "flushes", "getmore", ["idx miss %", "idx_miss_pct"], "insert", "mapped", "netIn", "netOut", "query", "res", "update"].each do |metric|
       name, value = case metric
                     when Array
                       key, output_key = metric
