@@ -49,7 +49,7 @@ all_stats = docker_containers.map do |container|
       stats[output_stat] = cpu_stats[stat]
       if previously_ran && max_freq
         estimate_per_second_freq = (cpu_stats[stat].to_f - previous_values[output_stat]) / run_interval
-        stats[stat]              = (estimate_per_second_freq / max_freq) * 100.0
+        stats[[container_name, stat].join(".")]              = (estimate_per_second_freq / max_freq) * 100.0
       end
     end
   end
