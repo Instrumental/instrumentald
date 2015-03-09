@@ -67,7 +67,7 @@ class MetricScriptExecutor
       puts "Directory #{directory} has gone away, not scanning for metric scripts."
     end
     process_to_output.flat_map do |path, (status, time, output)|
-      if status.success?
+      if status && status.success?
         prefix = File.basename(path).split(".")[0..-2].join(".").gsub(/[^a-z0-9\-\_\.]/i, "_")
         output.split(/[\r\n]+/)                                                                # each line
           .map    { |line| line.split(/\s+/) }                                                 # split by whitespace
