@@ -35,6 +35,7 @@ outputs = CMDS.map do |cmd|
   _, exit_status     = Process.wait2(pid)
   stdout_w.close
   output             = stdout_r.read.chomp
+  stdout_r.close
   if !exit_status.success?
     STDERR.puts output
     exit 1
