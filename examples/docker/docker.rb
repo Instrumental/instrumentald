@@ -19,7 +19,7 @@ content           = content.map { |line| line.split(/\s{2,}/) }
 docker_containers = content.map { |data| Hash[header.zip(data)] }
 cpu_info          = "/sys/fs/cgroup/cpuacct/"
 mem_info          = "/sys/fs/cgroup/memory/"
-max_freq_line     = File.read("/proc/cpuinfo").split(/[\r\n]+/).grep(/^cpu MHz/i).first
+max_freq_line     = File.read("/proc/cpuinfo").split(/[\r\n]+/).grep(/\Acpu MHz/i).first
 max_freq          = if max_freq_line
                       max_freq_line.split(":").last.strip.to_f
                     end
