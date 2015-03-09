@@ -3,15 +3,15 @@
 # Ensure your instrument_server process runs with these environment variables set,
 # or replace with your own.
 
-HOST      = ENV["MYSQL_HOST"]
-PORT      = ENV["MYSQL_PORT"] || 3306
-USER      = ENV["MYSQL_USER"]
+MYSQL_HOST      = ENV["MYSQL_HOST"]
+MYSQL_PORT      = ENV["MYSQL_PORT"] || 3306
+MYSQL_USER      = ENV["MYSQL_USER"]
 
 # It is preferable to use a .cnf file, see http://dev.mysql.com/doc/refman/5.0/en/password-security-user.html
-OPTS_FILE = ENV["MYSQL_CNF_FILE"]
+MYSQL_DEFAULTS_FILE = ENV["MYSQL_DEFAULTS_FILE"]
 
 # Only specify a password here if you cannot use the .cnf file method
-PASSWORD  = ENV["MYSQL_PASSWORD"]
+MYSQL_PASSWORD  = ENV["MYSQL_PASSWORD"]
 
 RATE_METRICS_TO_INSPECT = %w{Queries Bytes_sent Bytes_received Connections Slow_queries}
 CANARY_METRIC           = "Queries"
@@ -19,12 +19,12 @@ CANARY_METRIC           = "Queries"
 require 'shellwords'
 
 env = {}
-cmd = "mysql -N -B -e 'SHOW GLOBAL STATUS' --user %s --host %s --port %s" % [USER, HOST, PORT].map { |arg| Shellwords.escape(arg) }
+cmd = "mysql -N -B -e 'SHOW GLOBAL STATUS' --user %s --host %s --port %s" % [MYSQL_USER, MYSQL_HOST, MYSQL_PORT].map { |arg| Shellwords.escape(arg) }
 
-if OPTS_FILE.to_s.size > 0
-  cmd += " --defaults-file %s" % Shellwords.escape(OPTS_FILE)
+if MYSQL_DEFAULTS_FILE.to_s.size > 0
+  cmd += " --defaults-file %s" % Shellwords.escape(MYSQL_DEFAULTS_FILE)
 else
-  env = { "MYSQL_PWD" => PASSWORD }
+  env = { "MYSQL_PWD" => MYSQL_PASSWORD }
 end
 
 stdout_r, stdout_w = IO.pipe
