@@ -6,12 +6,16 @@ _, exit_status     = Process.wait2(pid)
 
 stdout_w.close
 
+output = stdout_r.read.chomp
+
+stdout_r.close
+
 if !exit_status.success?
-  STDERR.puts stdout_r.read
+  STDERR.puts output
   exit 1
 end
 
-header, *content = stdout_r.read.chomp.split(/[\r\n]+/)
+header, *content = output.split(/[\r\n]+/)
 stdout_r.close
 
 header            = header.split(/\s{2,}/)
