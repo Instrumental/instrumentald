@@ -19,10 +19,6 @@ content           = content.map { |line| line.split(/\s{2,}/) }
 docker_containers = content.map { |data| Hash[header.zip(data)] }
 cpu_info          = "/sys/fs/cgroup/cpuacct/"
 mem_info          = "/sys/fs/cgroup/memory/"
-max_freq_line     = File.read("/proc/cpuinfo").split(/[\r\n]+/).grep(/\Acpu MHz/i).first
-max_freq          = if max_freq_line
-                      max_freq_line.split(":").last.strip.to_f
-                    end
 
 previous_run_time = ARGV[0].to_i
 current_time      = Time.now.to_i
@@ -48,8 +44,8 @@ all_stats = docker_containers.map do |container|
       output_stat = [container_name, stat + "_total"].join(".")
       stats[output_stat] = cpu_stats[stat]
       if previously_ran && max_freq
-        estimate_per_second_freq = (cpu_stats[stat].to_f - previous_values[output_stat]) / run_interval
-        stats[[container_name, stat].join(".")]              = (estimate_per_second_freq / max_freq) * 100.0
+        time_over_interval                      = (cpu_stats[stat].to_f - previous_values[output_stat]) / run_interval
+        stats[[container_name, stat].join(".")] = time_over_interval
       end
     end
   end
