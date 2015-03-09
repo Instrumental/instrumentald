@@ -43,7 +43,7 @@ all_stats = docker_containers.map do |container|
     %w{system user}.each do |stat|
       output_stat = [container_name, stat + "_total"].join(".")
       stats[output_stat] = cpu_stats[stat]
-      if previously_ran && max_freq
+      if previously_ran
         time_over_interval                      = (cpu_stats[stat].to_f - previous_values[output_stat]) / run_interval
         stats[[container_name, stat].join(".")] = time_over_interval
       end
