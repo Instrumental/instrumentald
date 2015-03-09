@@ -3,6 +3,9 @@
 require 'shellwords'
 require 'yaml'
 
+# Requires Mongo 3.0 command line tools
+# ( uses --json for output, not available prior to 3.0 )
+
 MONGO_HOST           = ENV["MONGO_HOST"] || "127.0.0.1"
 MONGO_PORT           = ENV["MONGO_PORT"] || 27017
 MONGO_USER           = ENV["MONGO_USER"]
