@@ -25,15 +25,22 @@ instrument_server -k <API_KEY> -H <HOSTNAME>
 To start instrument_server as a daemon:
 
 ```
-instrument_server -k <API_KEY> -d
+instrument_server -k <API_KEY> start
 ```
 
-While the -d flag alone is sufficient for starting instrument_server as a daemon, use of additional parameters allows interaction with the running daemon process:
+The `start` command will start and detach the process. You may issue additional commands to the process like:
 
-* start, stop, restart - run, halt, or restart the daemon
-* status - display daemon status (running, stopped)
-* clean - remove any files created by the daemon
-* kill - forcibly halt the daemon and remove its pid file
+* `start` - start and detach the process
+* `stop` - stop the currently running `instrument_server` process
+* `restart` - restart the currently running `instrument_server` process
+* `foreground` - run the process in the foreground instead of detaching
+* `status` - display daemon status (running, stopped)
+* `clean` - remove any files created by the daemon
+* `kill` - forcibly halt the daemon and remove its pid file
+
+### Custom Metrics
+
+You can create custom scripts whose output will be sent to Instrumental every time `instrument_server` checks in. You can read more about how to create these scripts at [CUSTOM_METRICS.md](CUSTOM_METRICS.md).
 
 
 ### Capistrano Integration
