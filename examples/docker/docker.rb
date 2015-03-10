@@ -16,7 +16,6 @@ if !exit_status.success?
 end
 
 header, *content = output.lines.map(&:chomp)
-stdout_r.close
 
 header            = header.split(/\s{2,}/)
 content           = content.map { |line| line.split(/\s{2,}/) }
