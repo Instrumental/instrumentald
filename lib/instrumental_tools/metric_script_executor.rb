@@ -15,7 +15,7 @@ class MetricScriptExecutor
   end
 
   def can_execute_in_directory?(directory)
-    stat = File::Stat.new(path)
+    stat = File::Stat.new(directory)
     stat.directory? && file_is_owner_only?(stat)
   end
 
