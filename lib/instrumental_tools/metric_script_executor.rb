@@ -9,12 +9,17 @@ class MetricScriptExecutor
     @previous    = {}
   end
 
+  def can_execute_file?(path)
+    stat = File::Stat.new(path)
+    stat.executable? && !stat.world_readable? && !stat.world_writable?
+  end
+
   def run
     process_to_output = {}
     if File.directory?(directory)
       current = Dir[File.join(directory, "*")].map do |path|
         full_path = File.expand_path(path)
-        if File.executable?(full_path)
+        if can_execute_file?(path)
           stdin_r,  stdin_w  = IO.pipe
           stdout_r, stdout_w = IO.pipe
           stderr_r, stderr_w = IO.pipe
@@ -56,7 +61,9 @@ class MetricScriptExecutor
           [full_path, [exit_status, Time.now, output]]
         else
           if !File.directory?(full_path)
-            puts "[INFO] Skipping #{full_path}, not executable"
+            uid  = Process.uid
+            user = Etc.getpwuid(uid).name
+            puts "[INFO] Cannot execute #{full_path}, must be executable and only readable/writable by #{user}/#{uid}"
           end
           [full_path, []]
         end
