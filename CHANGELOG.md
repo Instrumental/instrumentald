@@ -1,3 +1,11 @@
+### Unreleased
+* Configurable pid and log file locations
+* Pid and log file default to $HOME
+* Process control commands do not require API key
+* Omit "-d" in favor of "start" and "stop", "foreground" runs process in foreground
+* Configurable reporting interval
+* Custom scripts may be executed and have their output sent to Instrumental (See [CUSTOM_METRICS.md](CUSTOM_METRICS.md))
+
 ### 0.6.0 [August 11th, 2014]
 * Don't report swap usage if it's zero (Patrick Wyatt)
 
