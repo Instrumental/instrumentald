@@ -9,7 +9,7 @@ class SystemInspector
 
     def self.cpu
       categories = [:user, :nice, :system, :idle, :iowait]
-      values     = `cat /proc/stat | grep cpu[^0-9]`.chomp.split(/\s+/).slice(1, 5).map { |v| v.to_f }
+      values     = `cat /proc/stat | grep cpu[^0-9]`.chomp.split.slice(1, 5).map { |v| v.to_f }
       SystemInspector.memory.store(:cpu_values, values.dup)
       if previous_values = SystemInspector.memory.retrieve(:cpu_values)
         index = -1
@@ -29,7 +29,7 @@ class SystemInspector
     end
 
     def self.loadavg
-      min_1, min_5, min_15 = `cat /proc/loadavg`.split(/\s+/)
+      min_1, min_5, min_15 = `cat /proc/loadavg`.split
       {
         'load.1min'  => min_1.to_f,
         'load.5min'  => min_5.to_f,
@@ -49,7 +49,7 @@ class SystemInspector
     end
 
     def self.memory
-      _, total, used, free, shared, buffers, cached = `free -k -o | grep Mem`.chomp.split(/\s+/)
+      _, total, used, free, shared, buffers, cached = `free -k -o | grep Mem`.chomp.split
       {
         'memory.used_mb'      => used.to_f / 1024,
         'memory.free_mb'      => free.to_f / 1024,
@@ -60,7 +60,7 @@ class SystemInspector
     end
 
     def self.swap
-      _, total, used, free = `free -k -o | grep Swap`.chomp.split(/\s+/)
+      _, total, used, free = `free -k -o | grep Swap`.chomp.split
       return {} if total.to_i == 0
       {
         'swap.used_mb'      => used.to_f / 1024,
@@ -82,8 +82,8 @@ class SystemInspector
 
     def self.disk_storage
       output = {}
-      `df -Pka`.split("\n").each do |line|
-        device, total, used, available, capacity, mount = line.split(/\s+/)
+      `df -Pka`.lines.each do |line|
+        device, total, used, available, capacity, mount = line.chomp.split
         if device == "tmpfs"
           names = ["tmpfs_#{mount.gsub(/[^[:alnum:]]/, "_")}".gsub(/_+/, "_")]
         elsif device =~ %r{/dev/}
@@ -104,10 +104,10 @@ class SystemInspector
 
     def self.disk_io
       output          = {}
-      mounted_devices = `mount`.split("\n").grep(/^\/dev\/(\w+)/) { $1 }
-      diskstats_lines = `cat /proc/diskstats`.split("\n").grep(/#{mounted_devices.join('|')}/)
+      mounted_devices = `mount`.lines.grep(/^\/dev\/(\w+)/) { $1 }
+      diskstats_lines = `cat /proc/diskstats`.lines.grep(/#{mounted_devices.join('|')}/)
       entries         = diskstats_lines.map do |line|
-                          values              = line.split
+                          values              = line.chomp.split
                           entry               = {}
                           entry[:time]        = Time.now
                           entry[:device]      = values[2]

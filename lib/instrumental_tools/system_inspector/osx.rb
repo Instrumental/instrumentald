@@ -48,7 +48,7 @@ class SystemInspector
     end
 
     def self.vm_stat
-      header, *rows = `vm_stat`.split("\n")
+      header, *rows = `vm_stat`.lines.map(&:chomp)
       page_size     = header.match(/page size of (\d+) bytes/)[1].to_i
       sections      = ["free", "active", "inactive", "wired", "speculative", "wired down"]
       output        = {}
@@ -78,9 +78,9 @@ class SystemInspector
 
     def self.df
       output = {}
-      `df -k`.split("\n").grep(%r{^/dev/}).each do |line|
+      `df -k`.lines.grep(%r{^/dev/}).each do |line|
 
-        device, total, used, available, capacity, mount = line.split(/\s+/)
+        device, total, used, available, capacity, mount = line.chomp.split
 
         names = [File.basename(device)]
         names << 'root' if mount == '/'
@@ -98,7 +98,7 @@ class SystemInspector
 
     def self.netstat(interface = 'en1')
       # mostly functional network io stats
-      headers, *lines = `netstat -ibI #{interface}`.split("\n").map { |l| l.split(/\s+/) } # FIXME: vulnerability?
+      headers, *lines = `netstat -ibI #{interface}`.lines.map { |l| l.split } # FIXME: vulnerability?
       headers         = headers.map { |h| h.downcase }
       lines.each do |line|
         if !line[3].include?(':')

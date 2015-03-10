@@ -50,8 +50,8 @@ previously_ran    = previous_run_time > 0
 previous_values   = {}
 
 if previously_ran
-  previous_output = STDIN.read.chomp.split(/[\n\r]+/)
-                                    .map { |line| line.split(/\s+/) }
+  previous_output = STDIN.read.chomp.each_line.map
+                                    .map { |line| line.split }
                                     .map { |(name, value, _)| [name, value.to_f] }
   previous_values = Hash[previous_output]
 end
@@ -59,9 +59,9 @@ end
 if !exit_status.success?
   exit exit_status.to_i
 else
-  output = stdout_r.read.split(/[\n\r]+/)                               # each line
-                        .map { |line| line.split(/\s+/) }               # split by space characters
-                        .map { |(name, value, _)| [name, value.to_f] }  # with values coerced to floats
+  output = stdout_r.read.lines                                         # each line
+                        .map { |line| line.chomp.split }              # split by space characters
+                        .map { |(name, value, _)| [name, value.to_f] } # with values coerced to floats
   stats  = Hash[output]
   if (stats[CANARY_METRIC] < previous_values[CANARY_METRIC].to_i) || previous_values[CANARY_METRIC].nil?
     # The server has restarted, don't trust previous values for calculating difference

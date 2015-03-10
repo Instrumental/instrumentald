@@ -15,7 +15,7 @@ if !exit_status.success?
   exit 1
 end
 
-header, *content = output.split(/[\r\n]+/)
+header, *content = output.lines.map(&:chomp)
 stdout_r.close
 
 header            = header.split(/\s{2,}/)
@@ -31,8 +31,8 @@ previously_ran    = previous_run_time > 0
 previous_values   = {}
 
 if previously_ran
-  previous_output = STDIN.read.chomp.split(/[\n\r]+/)
-                                    .map { |line| line.split(/\s+/) }
+  previous_output = STDIN.read.chomp.lines
+                                    .map { |line| line.chomp.split }
                                     .map { |(name, value, _)| [name, value.to_f] }
   previous_values = Hash[previous_output]
 end
@@ -42,7 +42,7 @@ all_stats = docker_containers.map do |container|
   container_name = Array(container["NAMES"].to_s.split(",")).first || container["CONTAINER ID"][0..7]
   Dir[File.join(cpu_info, "**", container["CONTAINER ID"] + "*", "cpuacct.stat")].each do |file|
 
-    cpu_stats = Hash[File.read(file).split(/[\r\n]+/).map { |line| line.split(/\s+/) }]
+    cpu_stats = Hash[File.read(file).lines.map { |line| line.chomp.split }]
 
     %w{system user}.each do |stat|
       output_stat = [container_name, stat + "_total"].join(".")
@@ -54,7 +54,7 @@ all_stats = docker_containers.map do |container|
     end
   end
   Dir[File.join(mem_info, "**", container["CONTAINER ID"] + "*", "memory.stat")].each do |file|
-    mem_stats = Hash[File.read(file).split(/[\r\n]+/).map { |line| line.split(/\s+/) }]
+    mem_stats = Hash[File.read(file).lines.map { |line| line.chomp.split }]
 
     %w{cache rss mapped_file swap}.each do |stat|
       stats[[container_name, stat + "_mb"].join(".")] = mem_stats[stat].to_i / 1024.0 / 1024.0
