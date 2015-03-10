@@ -11,12 +11,21 @@ class MetricScriptExecutor
 
   def can_execute_file?(path)
     stat = File::Stat.new(path)
-    stat.executable? && stat.owned? && ((stat.mode & 0xFFF) ^ 0O700) == 0
+    stat.executable? && file_is_owner_only?(stat)
+  end
+
+  def can_execute_in_directory?(directory)
+    stat = File::Stat.new(path)
+    stat.directory? && file_is_owner_only?(stat)
+  end
+
+  def file_is_owner_only?(file_stat)
+    file_stat.owned? && ((file_stat.mode & 0xFFF) ^ 0O700) == 0
   end
 
   def run
     process_to_output = {}
-    if File.directory?(directory)
+    if can_execute_in_directory?(directory)
       current = Dir[File.join(directory, "*")].map do |path|
         full_path = File.expand_path(path)
         if can_execute_file?(path)
@@ -71,7 +80,7 @@ class MetricScriptExecutor
       process_to_output = Hash[current]
       @previous         = process_to_output
     else
-      puts "Directory #{directory} has gone away, not scanning for metric scripts."
+      puts "Directory #{directory} has gone away or does not have the correct permissions (0700), not scanning for metric scripts."
     end
     process_to_output.flat_map do |path, (status, time, output)|
       if status && status.success?
