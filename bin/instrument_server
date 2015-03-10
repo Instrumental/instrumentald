@@ -8,6 +8,7 @@ rescue Gem::LoadError
   puts '  gem install instrumental_agent'
   exit 1
 end
+require 'etc'
 require 'instrumental_agent'
 require 'fileutils'
 require 'optparse'
@@ -117,11 +118,19 @@ if options[:enable_scripts]
   end
 
   if options[:script_location] == default_script_directory
-    FileUtils.mkdir_p(default_script_directory)
+    FileUtils.mkdir_p(default_script_directory, :mode => 0700)
   end
 
   if !File.directory?(options[:script_location])
     raise "The directory #{options[:script_location]} does not exist."
+  end
+
+  stat = File::Stat.new(File.expand_path(options[:script_location]))
+
+  if stat.world_readable? || stat.world_writable?
+    uid      = Process.uid
+    username = Etc.getpwuid(uid).name
+    raise "The directory #{options[:script_location]} is writable/readable by others. Please ensure it is only writable / readable by user/uid #{username}/#{uid}"
   end
 
 end
