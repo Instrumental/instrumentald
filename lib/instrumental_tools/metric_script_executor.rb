@@ -11,7 +11,7 @@ class MetricScriptExecutor
 
   def can_execute_file?(path)
     stat = File::Stat.new(path)
-    stat.executable? && ((stat.mode & 0xFFF) ^ 0O700) == 0
+    stat.executable? && stat.owned? && ((stat.mode & 0xFFF) ^ 0O700) == 0
   end
 
   def run
