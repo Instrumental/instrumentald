@@ -17,7 +17,7 @@ Additionally, all scripts to be ran by the `instrument_server` process must be r
 
 A custom script may be a binary or shell script that exists in the custom scripts directory (`$HOME/.instrumental_scripts`). Each time the `instrument_server` process collects system metrics, it will also execute your script with the following arguments:
 
-* Argument 1: The Unix timestamp of the last time this script had been executed, in seconds. If the process has not successfully been ran by `instrument_server` before, this value will be 0.
+* Argument 1: The Unix timestamp of the last time this script had been executed, in seconds. If the process has not successfully been run by `instrument_server` before, this value will be 0.
 * Argument 2: The exit status of the process the last time this script had been executed. If the process has not successfully ran by `instrument_server` before, this value will not be present.
 * `STDIN`: The `STDIN` pipe to your process will contain the output of your script the last time it had been executed. You may use this data to compute differences between the last time your script ran and the current execution. (_The [MySQL example](examples/mysql/mysql_status.rb) uses this to compute rate metrics_)
 * Environment: Any environment variables set for the `instrument_server` process will be available to your process.
