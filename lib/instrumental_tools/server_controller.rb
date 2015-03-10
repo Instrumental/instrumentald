@@ -36,12 +36,16 @@ class ServerController < Pidly::Control
       sleep [next_run_at - t, 0].max
       inspector = SystemInspector.new
       inspector.load_all
+      count = 0
       inspector.gauges.each do |stat, value|
         agent.gauge("#{options[:hostname]}.#{stat}", value)
+        count += 1
       end
       custom_metrics.run.each do |(stat, value, time)|
         agent.gauge("#{options[:hostname]}.#{stat}", value, time)
+        count += 1
       end
+      puts "Sent #{count} metrics"
     end
   end
 
