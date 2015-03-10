@@ -15,8 +15,8 @@ class SystemInspector
         index = -1
         values.collect! { |value| (previous_values[index += 1] - value).abs }
       end
-      data = Hash[*categories.zip(values).flatten]
-      total = values.inject { |memo, value| memo + value }
+      data   = Hash[*categories.zip(values).flatten]
+      total  = values.inject { |memo, value| memo + value }
 
       output = {}
       if previous_values
@@ -33,7 +33,7 @@ class SystemInspector
       {
         'load.1min'  => min_1.to_f,
         'load.5min'  => min_5.to_f,
-        'load.15min' => min_15.to_f,
+        'load.15min' => min_15.to_f
       }
     end
 
@@ -139,7 +139,7 @@ class SystemInspector
       {
         'filesystem.open_files'         => open_files,
         'filesystem.max_open_files'     => max,
-        'filesystem.open_files_pct_max' => (open_files.to_f / max.to_f) * 100,
+        'filesystem.open_files_pct_max' => (open_files.to_f / max.to_f) * 100
       }
     end
   end
