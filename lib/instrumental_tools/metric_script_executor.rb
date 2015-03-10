@@ -81,7 +81,7 @@ class MetricScriptExecutor
           .select { |data| (2..3).include?(data.size)  }                                       # and only valid name value time? pairs
           .map    { |(name, value, specific_time)| [[prefix, name].join("."), value.to_f, specific_time || time] } # with value coerced to a float
       end
-    end
+    end.compact
   end
 
 end
