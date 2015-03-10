@@ -26,7 +26,7 @@ class ServerController < Pidly::Control
 
   def self.run(options)
     agent = Instrumental::Agent.new(options[:api_key], :collector => [options[:collector], options[:port]].compact.join(':'))
-    puts "insrument_server version #{Instrumental::Tools::VERSION} started at #{Time.now.utc}"
+    puts "instrument_server version #{Instrumental::Tools::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{options[:hostname]}"
     report_interval = options[:report_interval]
     custom_metrics  = MetricScriptExecutor.new(options[:script_location])
