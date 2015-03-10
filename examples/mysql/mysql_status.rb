@@ -46,7 +46,9 @@ if previously_ran
   previous_values = Hash[previous_output]
 end
 
-if exit_status.success?
+if !exit_status.success?
+  exit exit_status.to_i
+else
   output = stdout_r.read.split(/[\n\r]+/)                               # each line
                         .map { |line| line.split(/\s+/) }               # split by space characters
                         .map { |(name, value, _)| [name, value.to_f] }  # with values coerced to floats
@@ -73,6 +75,4 @@ if exit_status.success?
   else
     exit 1
   end
-else
-  exit exit_status.to_i
 end
