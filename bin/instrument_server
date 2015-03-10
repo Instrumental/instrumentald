@@ -127,7 +127,7 @@ if options[:enable_scripts]
 
   stat = File::Stat.new(File.expand_path(options[:script_location]))
 
-  if stat.world_readable? || stat.world_writable?
+  if ((stat.mode & 0xFFF) ^ 0O700) != 0
     uid      = Process.uid
     username = Etc.getpwuid(uid).name
     raise "The directory #{options[:script_location]} is writable/readable by others. Please ensure it is only writable / readable by user/uid #{username}/#{uid}"

@@ -8,7 +8,10 @@ To install custom scripts, place them in the directory `$HOME/.instrumental_scri
 
 ### Security
 
-It is advisable that the directory you use for custom scripts only be readable / writable (`0700`) by the same user that the `instrument_server` process runs as. The `instrument_server` process will warn you if this is not the case.
+
+The directory you use for custom scripts must be readable/writable only by owner (`0700`), which must be the same user that the `instrument_server` process runs as. The `instrument_server` process will exit with an error message alerting you to the fact that it cannot use the directory otherwise.
+
+Additionally, all scripts to be ran by the `instrument_server` process must be readable/writable only by the user the process is executing as (`0700`).
 
 ## <a name="writing_custom_scripts"></a> Writing Custom Scripts
 
