@@ -38,11 +38,19 @@ class ServerController < Pidly::Control
       inspector.load_all
       count = 0
       inspector.gauges.each do |stat, value|
-        agent.gauge("#{options[:hostname]}.#{stat}", value)
+        metric = "#{options[:hostname]}.#{stat}"
+        agent.gauge(metric, value)
+        if options[:debug]
+          puts [metric, value].join(":")
+        end
         count += 1
       end
       custom_metrics.run.each do |(stat, value, time)|
-        agent.gauge("#{options[:hostname]}.#{stat}", value, time)
+        metric = "#{options[:hostname]}.#{stat}"
+        agent.gauge(metric, value, time)
+        if options[:debug]
+          puts [metric, value].join(":")
+        end
         count += 1
       end
       puts "Sent #{count} metrics"

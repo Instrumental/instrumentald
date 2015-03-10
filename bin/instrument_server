@@ -35,7 +35,8 @@ options = {
   :log_location    => File.join(Dir.home, 'instrument_server.log'),
   :enable_scripts  => false,
   :script_location => default_script_directory,
-  :report_interval => 30
+  :report_interval => 30,
+  :debug           => false
 }
 
 option_parser = OptionParser.new do |opts|
@@ -76,6 +77,10 @@ Default command: #{default_command.to_s}
 
   opts.on('-s', '--script-location PATH_TO_DIRECTORY', "Directory where local scripts for custom metrics are located (default #{options[:script_location]})") do |path|
     options[:script_location] = path
+  end
+
+  opts.on('--debug', "Print all sent metrics to the log") do
+    options[:debug] = true
   end
 
   opts.on('-h', '--help', 'Display this screen') do
