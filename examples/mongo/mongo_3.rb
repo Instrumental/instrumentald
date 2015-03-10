@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'shellwords'
 require 'yaml'
 
 # Requires Mongo 3.0 command line tools
@@ -13,25 +12,24 @@ MONGO_PWD            = ENV["MONGO_PASSWORD"]
 MONGO_AUTH_MECHANISM = ENV["MONGO_AUTH_MECHANISM"]
 MONGO_AUTH_DB        = ENV["MONGO_AUTH_DB"]
 
-
 CMDS                 = %w{mongotop mongostat}
 
 outputs = CMDS.map do |cmd|
-  cmd_with_arguments = "%s --json -n 1 --host %s --port %s" % [cmd, Shellwords.escape(MONGO_HOST), Shellwords.escape(MONGO_PORT)]
+  cmd_with_arguments = [cmd, "--json", "-n", "1", "--host", MONGO_HOST, "--port", MONGO_PORT]
   if MONGO_USER
-    cmd_with_arguments += " --user %s" % Shellwords.escape(MONGO_USER)
+    cmd_with_arguments += ["--user", MONGO_USER]
   end
   if MONGO_PWD
-    cmd_with_arguments += " --password %s" % Shellwords.escape(MONGO_PWD)
+    cmd_with_arguments += ["--password", MONGO_PWD]
   end
   if MONGO_AUTH_DB
-    cmd_with_arguments += " --authenticationDatabase %s" % Shellwords.escape(MONGO_AUTH_DB)
+    cmd_with_arguments += ["--authenticationDatabase", MONGO_AUTH_DB]
   end
   if MONGO_AUTH_MECHANISM
-    cmd_with_arguments += " --authenticationMechanism %s" % Shellwords.escape(MONGO_AUTH_MECHANISM)
+    cmd_with_arguments += ["--authenticationMechanism", MONGO_AUTH_MECHANISM]
   end
   stdout_r, stdout_w = IO.pipe
-  pid                = Process.spawn(cmd_with_arguments, :err => STDERR, :out => stdout_w)
+  pid                = Process.spawn(*cmd_with_arguments.map(&:to_s), :err => STDERR, :out => stdout_w)
   _, exit_status     = Process.wait2(pid)
   stdout_w.close
   output             = stdout_r.read.chomp

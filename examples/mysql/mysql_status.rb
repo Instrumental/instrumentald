@@ -12,22 +12,32 @@ MYSQL_PASSWORD          = ENV["MYSQL_PASSWORD"]
 RATE_METRICS_TO_INSPECT = %w{Queries Bytes_sent Bytes_received Connections Slow_queries}
 CANARY_METRIC           = "Queries"
 
-require 'shellwords'
-
 env  = {}
-args = "-N -B -e 'SHOW GLOBAL STATUS' --user %s --host %s --port %s" % [MYSQL_USER, MYSQL_HOST, MYSQL_PORT].map { |arg| Shellwords.escape(arg) }
-
+args = []
 if MYSQL_DEFAULTS_FILE.to_s.size > 0
-  args = "--defaults-file=%s %s" % [Shellwords.escape(MYSQL_DEFAULTS_FILE), args]
+  args << "--defaults-file=%s" % MYSQL_DEFAULTS_FILE
 else
   env = { "MYSQL_PWD" => MYSQL_PASSWORD }
 end
-
-cmd = ["mysql", args].join(" ")
+args += [
+          "-N",
+          "-B",
+          "-e",
+          "SHOW GLOBAL STATUS"
+        ]
+if MYSQL_USER
+  args += ["--user", MYSQL_USER]
+end
+if MYSQL_HOST
+  args += ["--host", MYSQL_HOST]
+end
+if MYSQL_PORT
+  args += ["--port", MYSQL_PORT]
+end
 
 stdout_r, stdout_w = IO.pipe
 
-pid = Process.spawn(env, cmd, :out => stdout_w, :err => STDERR)
+pid = Process.spawn(env, "mysql", *args.map(&:to_s), :out => stdout_w, :err => STDERR)
 
 pid, exit_status = Process.wait2(pid)
 

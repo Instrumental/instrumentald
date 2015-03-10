@@ -39,9 +39,9 @@ class MetricScriptExecutor
           stdin_w.close
 
 
-          cmd = [full_path, (previous_time || 0).to_i, (previous_status && previous_status.to_i)].compact.join(" ")
+          cmd = [full_path, (previous_time || 0).to_i, (previous_status && previous_status.to_i)].compact.map(&:to_s)
 
-          pid = Process.spawn(cmd,
+          pid = Process.spawn(*cmd,
                               :chdir => File.dirname(full_path),
                               :in    => stdin_r,
                               :out   => stdout_w,

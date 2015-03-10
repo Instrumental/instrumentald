@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 stdout_r, stdout_w = IO.pipe
-pid                = Process.spawn("docker ps", :err => STDERR, :out => stdout_w)
+pid                = Process.spawn("docker", "ps", :err => STDERR, :out => stdout_w)
 _, exit_status     = Process.wait2(pid)
 
 stdout_w.close
