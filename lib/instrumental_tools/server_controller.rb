@@ -45,13 +45,15 @@ class ServerController < Pidly::Control
         end
         count += 1
       end
-      custom_metrics.run.each do |(stat, value, time)|
-        metric = "#{options[:hostname]}.#{stat}"
-        agent.gauge(metric, value, time)
-        if options[:debug]
-          puts [metric, value].join(":")
+      if options[:enable_scripts]
+        custom_metrics.run.each do |(stat, value, time)|
+          metric = "#{options[:hostname]}.#{stat}"
+          agent.gauge(metric, value, time)
+          if options[:debug]
+            puts [metric, value].join(":")
+          end
+          count += 1
         end
-        count += 1
       end
       puts "Sent #{count} metrics"
     end
