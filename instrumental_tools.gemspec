@@ -21,4 +21,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<instrumental_agent>, [">=0.12.6"])
   s.add_runtime_dependency(%q<pidly>, [">=0.1.3"])
   s.add_development_dependency(%q<rake>, [">=0"])
+  s.add_development_dependency(%q<fpm>, [">=1.3.3"])
+  s.add_development_dependency(%q<package_cloud>, [">=0"])
 end
