@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.homepage    = "http://github.com/expectedbehavior/instrumental_tools"
   s.summary     = %q{Command line tools for Instrumental}
   s.description = %q{A collection of scripts useful for monitoring servers and services with Instrumental (instrumentalapp.com)}
+  s.licenses    = ["MIT"]
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
