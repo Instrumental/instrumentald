@@ -1,3 +1,7 @@
 Gemfile.lock
 /pkg
 *.gem
+packaging
+*.deb
+*.rpm
+*.tar.gz
