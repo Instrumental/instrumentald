@@ -19,6 +19,11 @@ MAINTAINER             = Array(GEMSPEC.email).first || [Etc.getlogin, Socket.get
 HOMEPAGE               = GEMSPEC.homepage || ""
 DESCRIPTION            = GEMSPEC.description || ""
 PACKAGE_CATEGORY       = "Utilities"
+PACKAGECLOUD_REPO      = "expectedbehavior/instrumental"
+SUPPORTED_DISTROS      = {
+                           'deb' => ['ubuntu/precise', 'ubuntu/lucid', 'ubuntu/trusty', 'ubuntu/utopic'],
+                           'rpm' => []
+                         }
 
 ARCHITECTURES          = {
   'linux-x86' => {
@@ -76,18 +81,32 @@ ARCHITECTURES.each do |name, config|
     namespace name do
       desc "Create a tarball for %s" % name
       task "tarball" => [:bundle_install, config[:runtime]] do
-        create_package(name)
+        create_tarball(name)
       end
 
       desc "Create packages (%s) for %s" % [config[:packages].join(","), name]
       task "package" => [:bundle_install, config[:runtime]] do
-        tarball         = create_package(name)
-        output_packages = config[:packages].map do |pkg|
-                            output_name = [[PACKAGE_OUTPUT_NAME, config[:platform], config[:arch]].join("-"), pkg].join(".")
-                            sh "fpm -s tar -t %s -f --prefix %s -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" -C %s -p %s %s" % [pkg, DEST_DIR, PACKAGE_NAME, VERSION, config[:arch], LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, File.basename(tarball, ".tar.gz"), output_name, tarball]
-                          end
-        Array(tarball) + output_packages
+        create_packages(create_tarball(name), config[:platform], config[:arch], config[:packages])
       end
+
+      namespace "packagecloud" do
+        desc "Push packages (%s) to package_cloud" % config[:packages].join(",")
+        task "push" do
+          packages     = create_packages(create_tarball(name), config[:platform], config[:arch], config[:packages])
+          by_extension = packages.group_by { |path| File.extname(path)[1..-1] }
+          by_extension.each do |extension, files|
+            distros = SUPPORTED_DISTROS[extension]
+            distros.each do |distro|
+              repo = File.join(PACKAGECLOUD_REPO, distro)
+              files.each do |file|
+                system("package_cloud yank %s %s" % [repo, file])
+                sh "package_cloud push %s %s" % [repo, file]
+              end
+            end
+          end
+        end
+      end
+
     end
   end
 
@@ -127,7 +146,17 @@ namespace "package" do
 
 end
 
-def create_package(target)
+def create_packages(tarball, platform, architecture, package_formats)
+  Array(package_formats).map { |pkg| create_package(tarball, pkg, platform, architecture) }
+end
+
+def create_package(tarball, pkg, platform, architecture)
+  output_name = [[PACKAGE_OUTPUT_NAME, platform, architecture].join("-"), pkg].join(".")
+  sh "fpm -s tar -t %s -f --prefix %s -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" -C %s -p %s %s" % [pkg, DEST_DIR, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, File.basename(tarball, ".tar.gz"), output_name, tarball]
+  output_name
+end
+
+def create_tarball(target)
   package_dir         = [PACKAGE_NAME, VERSION, target].join("-")
   lib_dir             = File.join(package_dir, "lib")
   app_dir             = File.join(lib_dir, "app")
@@ -171,13 +200,9 @@ def create_package(target)
   FileUtils.mkdir_p(bundle_dir)
   File.open(File.join(bundle_dir, "config"), "w") { |f| f.write(BUNDLE_CONFIG) }
 
-  if !ENV['DIR_ONLY']
-    sh "tar -czf %s %s" % [gzip_file, package_dir]
-    sh "rm -rf %s"      % package_dir
-    gzip_file
-  else
-    package_dir
-  end
+  sh "tar -czf %s %s" % [gzip_file, package_dir]
+  sh "rm -rf %s"      % package_dir
+  gzip_file
 end
 
 def download_runtime(target)
