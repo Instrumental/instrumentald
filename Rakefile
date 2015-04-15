@@ -7,12 +7,12 @@ require 'yaml'
 
 GEMSPEC                = Bundler::GemHelper.instance.gemspec
 SPEC_PATH              = Bundler::GemHelper.instance.spec_path
-PACKAGE_NAME           = GEMSPEC.name
+PACKAGE_NAME           = GEMSPEC.name.gsub("_", "-") # Debian packages cannot include _ in name
 VERSION                = GEMSPEC.version
 TRAVELING_RUBY_VERSION = "20150210-2.1.5"
 TRAVELING_RUBY_FILE    = "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-%s.tar.gz"
 DEST_DIR               = File.join("/opt/", PACKAGE_NAME)
-PACKAGE_OUTPUT_NAME    = [PACKAGE_NAME, VERSION].join("-")
+PACKAGE_OUTPUT_NAME    = [PACKAGE_NAME, VERSION].join("_")
 LICENSE                = Array(GEMSPEC.licenses).first || "None"
 VENDOR                 = Array(GEMSPEC.authors).first || Etc.getlogin
 MAINTAINER             = Array(GEMSPEC.email).first || [Etc.getlogin, Socket.gethostname].join("@")
@@ -99,7 +99,9 @@ ARCHITECTURES.each do |name, config|
             distros.each do |distro|
               repo = File.join(PACKAGECLOUD_REPO, distro)
               files.each do |file|
-                system("package_cloud yank %s %s" % [repo, file])
+                yank_cmd = "package_cloud yank %s %s" % [repo, file]
+                puts yank_cmd
+                system(yank_cmd)
                 sh "package_cloud push %s %s" % [repo, file]
               end
             end
@@ -151,13 +153,13 @@ def create_packages(tarball, platform, architecture, package_formats)
 end
 
 def create_package(tarball, pkg, platform, architecture)
-  output_name = [[PACKAGE_OUTPUT_NAME, platform, architecture].join("-"), pkg].join(".")
+  output_name = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), pkg].join(".")
   sh "fpm -s tar -t %s -f --prefix %s -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" -C %s -p %s %s" % [pkg, DEST_DIR, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, File.basename(tarball, ".tar.gz"), output_name, tarball]
   output_name
 end
 
 def create_tarball(target)
-  package_dir         = [PACKAGE_NAME, VERSION, target].join("-")
+  package_dir         = [PACKAGE_NAME, VERSION, target].join("_")
   lib_dir             = File.join(package_dir, "lib")
   app_dir             = File.join(lib_dir, "app")
   ruby_dir            = File.join(lib_dir, "ruby")
