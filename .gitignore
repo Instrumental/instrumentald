@@ -5,3 +5,6 @@ packaging
 *.deb
 *.rpm
 *.tar.gz
+.ruby-version
+\#*
+.#*

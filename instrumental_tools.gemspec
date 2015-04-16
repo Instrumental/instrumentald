@@ -1,5 +1,23 @@
 $: << "./lib"
+require 'find'
 require 'instrumental_tools/version'
+
+gitignore = Array(File.exists?(".gitignore") ? File.read(".gitignore").split("\n") : []) + [".git"]
+all_files = []
+
+Find.find(".") do |path|
+  scrubbed_path = path.gsub(/\A\.\//, "")
+  if gitignore.any? { |glob| File.fnmatch(glob, scrubbed_path) }
+    Find.prune
+  else
+    if !File.directory?(scrubbed_path)
+      all_files << scrubbed_path
+    end
+  end
+end
+
+test_files = all_files.select { |path| path =~ /\A(test|spec|features)\//i }
+bin_files  = all_files.select { |path| path.index("bin") == 0 }.map { |path| File.basename(path) }
 
 Gem::Specification.new do |s|
   s.name        = "instrumental_tools"
@@ -11,9 +29,9 @@ Gem::Specification.new do |s|
   s.description = %q{A collection of scripts useful for monitoring servers and services with Instrumental (instrumentalapp.com)}
   s.licenses    = ["MIT"]
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.files         = all_files
+  s.test_files    = test_files
+  s.executables   = bin_files
   s.require_paths = ["lib"]
 
   s.required_ruby_version = '>= 1.9'
