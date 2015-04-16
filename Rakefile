@@ -35,7 +35,7 @@ ARCHITECTURES          = {
                             },
                            'linux-x86_64' => {
                              runtime:      TRAVELING_RUBY_FILE % "linux-x86_64",
-                             arch:         "x86_64",
+                             arch:         "amd64",
                              packages:     %w{deb rpm},
                              platform:     "linux",
                              packagecloud: true
