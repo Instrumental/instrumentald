@@ -26,25 +26,29 @@ SUPPORTED_DISTROS      = {
                          }
 
 ARCHITECTURES          = {
-  'linux-x86' => {
-    :runtime  => TRAVELING_RUBY_FILE % "linux-x86",
-    :arch     => "i386",
-    :packages => %w{deb rpm},
-    :platform => "linux"
-  },
-  'linux-x86_64' => {
-    :runtime  => TRAVELING_RUBY_FILE % "linux-x86_64",
-    :arch     => "x86_64",
-    :packages => %w{deb rpm},
-    :platform => "linux"
-  },
-  'osx' => {
-    :runtime  => TRAVELING_RUBY_FILE % "osx",
-    :arch     => "x86_64",
-    :packages => %w{pkg},
-    :platform => "darwin"
-  }
-}
+                           'linux-x86' => {
+                             runtime:      TRAVELING_RUBY_FILE % "linux-x86",
+                             arch:         "i386",
+                             packages:     %w{deb rpm},
+                             platform:     "linux",
+                             packagecloud: true
+                            },
+                           'linux-x86_64' => {
+                             runtime:      TRAVELING_RUBY_FILE % "linux-x86_64",
+                             arch:         "x86_64",
+                             packages:     %w{deb rpm},
+                             platform:     "linux",
+                             packagecloud: true
+                           },
+                           'osx' => {
+                             runtime:      TRAVELING_RUBY_FILE % "osx",
+                             arch:         "x86_64",
+                             packages:     %w{pkg},
+                             platform:     "darwin",
+                             packagecloud: false
+                           }
+                         }
+
 
 WRAPPER_SCRIPT = <<-EOSCRIPT
 #!/bin/bash
