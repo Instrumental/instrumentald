@@ -93,20 +93,22 @@ ARCHITECTURES.each do |name, config|
         create_packages(create_tarball(name), config[:platform], config[:arch], config[:packages])
       end
 
-      namespace "packagecloud" do
-        desc "Push packages (%s) to package_cloud" % config[:packages].join(",")
-        task "push" do
-          packages     = create_packages(create_tarball(name), config[:platform], config[:arch], config[:packages])
-          by_extension = packages.group_by { |path| File.extname(path)[1..-1] }
-          by_extension.each do |extension, files|
-            distros = SUPPORTED_DISTROS[extension]
-            distros.each do |distro|
-              repo = File.join(PACKAGECLOUD_REPO, distro)
-              files.each do |file|
-                yank_cmd = "package_cloud yank %s %s" % [repo, file]
-                puts yank_cmd
-                system(yank_cmd)
-                sh "package_cloud push %s %s" % [repo, file]
+      if config[:packagecloud]
+        namespace "packagecloud" do
+          desc "Push packages (%s) to package_cloud" % config[:packages].join(",")
+          task "push" do
+            packages     = create_packages(create_tarball(name), config[:platform], config[:arch], config[:packages])
+            by_extension = packages.group_by { |path| File.extname(path)[1..-1] }
+            by_extension.each do |extension, files|
+              distros = SUPPORTED_DISTROS[extension]
+              distros.each do |distro|
+                repo = File.join(PACKAGECLOUD_REPO, distro)
+                files.each do |file|
+                  yank_cmd = "package_cloud yank %s %s" % [repo, file]
+                  puts yank_cmd
+                  system(yank_cmd)
+                  sh "package_cloud push %s %s" % [repo, file]
+                end
               end
             end
           end
