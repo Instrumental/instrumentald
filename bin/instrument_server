@@ -18,7 +18,7 @@ require 'instrumental_tools/version'
 require 'instrumental_tools/server_controller'
 
 def require_api_key(options, parser)
-  if options[:api_key].to_s.strip.empty?
+  if options[:api_key].to_s.strip.empty? && !File.exists?(options[:config_file])
     print parser.help
     exit 1
   end
@@ -36,7 +36,8 @@ options = {
   :enable_scripts  => false,
   :script_location => default_script_directory,
   :report_interval => 30,
-  :debug           => false
+  :debug           => false,
+  :config_file     => '/etc/instrumental.yml'
 }
 
 option_parser = OptionParser.new do |opts|
@@ -47,6 +48,10 @@ Default command: #{default_command.to_s}
 
   opts.on('-k', '--api_key API_KEY', 'API key of your project') do |api_key|
     options[:api_key] = api_key
+  end
+
+  opts.on('-f', '--config-file PATH', "Config file with location of your API key (default #{options[:config_file]})") do |path|
+    options[:config_file] = path
   end
 
   opts.on('-c', '--collector COLLECTOR[:PORT]', "Collector (default #{options[:collector]}:#{options[:port]})") do |collector|
@@ -79,6 +84,8 @@ Default command: #{default_command.to_s}
     options[:script_location] = path
   end
 
+
+
   opts.on('--debug', "Print all sent metrics to the log") do
     options[:debug] = true
   end
@@ -93,6 +100,7 @@ option_parser.parse!
 
 command = ARGV.first && ARGV.first.to_sym
 command ||= default_command
+
 
 options[:api_key] ||= ENV["INSTRUMENTAL_TOKEN"]
 
