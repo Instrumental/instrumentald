@@ -105,7 +105,7 @@ ARCHITECTURES.each do |name, config|
         namespace "packagecloud" do
           desc "Push packages (%s) to package_cloud" % config[:packages].join(",")
           task "push" do
-            packages     = create_packages(create_tarball(name), config[:platform], config[:arch], config[:packages])
+            packages     = create_packages(create_tarball(create_directory_bundle(name, DEST_DIR)), config[:platform], config[:arch], config[:packages])
             by_extension = packages.group_by { |path| File.extname(path)[1..-1] }
             by_extension.each do |extension, files|
               distros = SUPPORTED_DISTROS[extension]
