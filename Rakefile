@@ -27,6 +27,10 @@ SUPPORTED_DISTROS      = {
                            'deb' => ['ubuntu/precise', 'ubuntu/lucid', 'ubuntu/trusty', 'ubuntu/utopic'],
                            'rpm' => []
                          }
+EXTRA_ARGS             = {
+                           'deb' => '--deb-init debian/instrument_server',
+                           'rpm' => '--rpm-init rpm/instrument_server'
+                         }
 
 
 ARCHITECTURES          = {
@@ -164,7 +168,8 @@ end
 
 def create_package(tarball, pkg, platform, architecture)
   output_name = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), pkg].join(".")
-  sh "fpm -s tar -t %s -f -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" --config-files %s -C %s -p %s %s" % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(tarball, ".tar.gz"), output_name, tarball]
+  extra_args  = EXTRA_ARGS[pkg] || ""
+  sh "fpm -s tar -t %s -f -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" --config-files %s -C %s -p %s %s %s" % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(tarball, ".tar.gz"), output_name, extra_args, tarball]
   output_name
 end
 

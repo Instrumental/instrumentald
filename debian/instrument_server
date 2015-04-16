@@ -1,0 +1,22 @@
+#! /bin/sh
+
+case "$1" in
+  start)
+    /opt/instrumental-tools/instrument_server start
+    ;;
+  stop)
+    /opt/instrumental-tools/instrument_server stop
+    ;;
+  restart)
+    /opt/instrumental-tools/instrument_server restart
+    ;;
+  status)
+    /opt/instrumental-tools/instrument_server status
+    ;;
+  *)
+    echo "Usage: /etc/init.d/instrumental-tools {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
+
+exit 0
