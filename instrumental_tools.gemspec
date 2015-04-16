@@ -2,7 +2,7 @@ $: << "./lib"
 require 'find'
 require 'instrumental_tools/version'
 
-gitignore = Array(File.exists?(".gitignore") ? File.read(".gitignore").split("\n") : []) + [".git"]
+gitignore = Array(File.exists?(".gitignore") ? File.read(".gitignore").split("\n") : []) + [".git", ".gitignore"]
 all_files = []
 
 Find.find(".") do |path|
