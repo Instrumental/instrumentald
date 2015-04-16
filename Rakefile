@@ -5,6 +5,11 @@ require 'fileutils'
 require 'socket'
 require 'yaml'
 
+PACKAGE_CATEGORY       = "Utilities"
+PACKAGECLOUD_REPO      = "expectedbehavior/instrumental"
+CONFIG_DIR             = "conf"
+CONFIG_DEST            = "/etc/"
+
 GEMSPEC                = Bundler::GemHelper.instance.gemspec
 SPEC_PATH              = Bundler::GemHelper.instance.spec_path
 PACKAGE_NAME           = GEMSPEC.name.gsub("_", "-") # Debian packages cannot include _ in name
@@ -18,12 +23,11 @@ VENDOR                 = Array(GEMSPEC.authors).first || Etc.getlogin
 MAINTAINER             = Array(GEMSPEC.email).first || [Etc.getlogin, Socket.gethostname].join("@")
 HOMEPAGE               = GEMSPEC.homepage || ""
 DESCRIPTION            = GEMSPEC.description || ""
-PACKAGE_CATEGORY       = "Utilities"
-PACKAGECLOUD_REPO      = "expectedbehavior/instrumental"
 SUPPORTED_DISTROS      = {
                            'deb' => ['ubuntu/precise', 'ubuntu/lucid', 'ubuntu/trusty', 'ubuntu/utopic'],
                            'rpm' => []
                          }
+
 
 ARCHITECTURES          = {
                            'linux-x86' => {
@@ -85,12 +89,12 @@ ARCHITECTURES.each do |name, config|
     namespace name do
       desc "Create a tarball for %s" % name
       task "tarball" => [:bundle_install, config[:runtime]] do
-        create_tarball(name)
+        create_tarball(create_directory_bundle(name))
       end
 
       desc "Create packages (%s) for %s" % [config[:packages].join(","), name]
       task "package" => [:bundle_install, config[:runtime]] do
-        create_packages(create_tarball(name), config[:platform], config[:arch], config[:packages])
+        create_packages(create_tarball(create_directory_bundle(name, DEST_DIR)), config[:platform], config[:arch], config[:packages])
       end
 
       if config[:packagecloud]
@@ -154,19 +158,25 @@ namespace "package" do
 
 end
 
-def create_packages(tarball, platform, architecture, package_formats)
-  Array(package_formats).map { |pkg| create_package(tarball, pkg, platform, architecture) }
+def create_packages(directory, platform, architecture, package_formats)
+  Array(package_formats).map { |pkg| create_package(directory, pkg, platform, architecture) }
 end
 
 def create_package(tarball, pkg, platform, architecture)
   output_name = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), pkg].join(".")
-  sh "fpm -s tar -t %s -f --prefix %s -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" -C %s -p %s %s" % [pkg, DEST_DIR, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, File.basename(tarball, ".tar.gz"), output_name, tarball]
+  sh "fpm -s tar -t %s -f -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" --config-files %s -C %s -p %s %s" % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(tarball, ".tar.gz"), output_name, tarball]
   output_name
 end
 
-def create_tarball(target)
+def create_directory_bundle(target, prefix = nil)
   package_dir         = [PACKAGE_NAME, VERSION, target].join("_")
-  lib_dir             = File.join(package_dir, "lib")
+  prefixed_dir        = if prefix
+                          File.join(package_dir, prefix)
+                        else
+                          package_dir
+                        end
+  lib_dir             = File.join(prefixed_dir, "lib")
+  config_dest_dir     = File.join(package_dir, CONFIG_DEST)
   app_dir             = File.join(lib_dir, "app")
   ruby_dir            = File.join(lib_dir, "ruby")
   dest_vendor_dir     = File.join(lib_dir, "vendor")
@@ -174,10 +184,12 @@ def create_tarball(target)
   traveling_ruby_file = "packaging/traveling-ruby-%s-%s.tar.gz" % [TRAVELING_RUBY_VERSION, target]
   spec_path           = SPEC_PATH
   bundle_dir          = File.join(dest_vendor_dir, ".bundle")
-  gzip_file           = "%s.tar.gz" % package_dir
+
 
   sh "rm -rf %s"   % package_dir
   sh "mkdir %s"    % package_dir
+  sh "mkdir -p %s" % prefixed_dir
+  sh "mkdir -p %s" % config_dest_dir
   sh "mkdir -p %s" % app_dir
 
   GEMSPEC.files.each do |file|
@@ -187,11 +199,15 @@ def create_tarball(target)
     sh "cp %s %s" % [file, destination_dir]
   end
 
+  Dir[File.join(CONFIG_DIR, "*")].each do |file|
+    sh "cp %s %s" % [file, config_dest_dir]
+  end
+
   sh "mkdir %s"          % ruby_dir
   sh "tar -xzf %s -C %s" % [traveling_ruby_file, ruby_dir]
 
   GEMSPEC.executables.each do |file|
-    destination = File.join(package_dir, file)
+    destination = File.join(prefixed_dir, file)
 
     File.open(destination, "w") { |f| f.write(WRAPPER_SCRIPT % File.join("bin", file)) }
 
@@ -207,9 +223,14 @@ def create_tarball(target)
 
   FileUtils.mkdir_p(bundle_dir)
   File.open(File.join(bundle_dir, "config"), "w") { |f| f.write(BUNDLE_CONFIG) }
+  package_dir
+end
+
+def create_tarball(package_dir)
+  gzip_file   = "%s.tar.gz" % package_dir
 
   sh "tar -czf %s %s" % [gzip_file, package_dir]
-  sh "rm -rf %s"      % package_dir
+
   gzip_file
 end
 
