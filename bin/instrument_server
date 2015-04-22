@@ -9,7 +9,6 @@ rescue Gem::LoadError
   exit 1
 end
 
-require 'benchmark'
 require 'etc'
 require 'instrumental_agent'
 require 'fileutils'
@@ -208,7 +207,7 @@ end
 
 if running_as_daemon
   begin
-    Timeout.timeout(5) do
+    Timeout.timeout(1) do
       Process.waitpid(controller.pid)
     end
   rescue Timeout::Error
