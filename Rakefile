@@ -28,8 +28,8 @@ SUPPORTED_DISTROS      = {
                            'rpm' => ['el/5', 'el/6', 'el/7']
                          }
 EXTRA_ARGS             = {
-                           'deb' => '--deb-init debian/instrument_server',
-                           'rpm' => '--rpm-init rpm/instrument_server'
+                           'deb' => '--deb-init debian/instrument_server --after-install debian/after-install.sh --before-remove debian/before-remove.sh --after-remove debian/after-remove.sh --deb-user nobody --deb-group nogroup',
+                           'rpm' => '--rpm-init rpm/instrument_server --after-install rpm/after-install.sh --before-remove rpm/before-remove.sh --after-remove rpm/after-remove.sh --rpm-user nobody --rpm-group nobody --rpm-os linux --rpm-attr "-,nobody,nobody:/opt/instrumental-tools/" --directories /opt/instrumental-tools/'
                          }
 
 
