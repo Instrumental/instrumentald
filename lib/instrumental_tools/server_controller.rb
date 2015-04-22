@@ -148,7 +148,9 @@ class ServerController < Pidly::Control
             count += 1
           end
         end
-        puts "Sent #{count} metrics"
+        if debug?
+          puts "Sent #{count} metrics"
+        end
       end
     end
   end
