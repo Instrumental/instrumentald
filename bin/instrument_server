@@ -8,11 +8,15 @@ rescue Gem::LoadError
   puts '  gem install instrumental_agent'
   exit 1
 end
+
+require 'benchmark'
 require 'etc'
 require 'instrumental_agent'
 require 'fileutils'
 require 'optparse'
 require 'socket'
+require 'tmpdir'
+
 $: << File.join(File.dirname(__FILE__), "..", "lib")
 require 'instrumental_tools/version'
 require 'instrumental_tools/server_controller'
@@ -24,15 +28,23 @@ def require_api_key(options, parser)
   end
 end
 
-default_script_directory = File.join(Dir.home, '.instrumental_scripts')
+
+cur_directory         = Dir.pwd
+home_directory        = Dir.home rescue nil
+script_location       = File.expand_path(File.dirname(__FILE__))
+tmp_dir               = Dir.tmpdir
+script_data_directory = [cur_directory, home_directory, script_location, tmp_dir].compact.detect { |dir| File.writable?(dir) }
+
+default_script_directory = File.join(script_data_directory, '.instrumental_scripts')
 default_command          = :foreground
 
 options = {
   :collector       => 'collector.instrumentalapp.com',
   :port            => '8000',
   :hostname        => Socket.gethostname,
-  :pid_location    => File.join(Dir.home, 'instrument_server.pid'),
-  :log_location    => File.join(Dir.home, 'instrument_server.log'),
+  :pid_location    => File.join(script_data_directory, 'instrument_server.pid'),
+  :log_location    => File.join(script_data_directory, 'instrument_server.log'),
+  :tmp_location    => Dir.tmpdir,
   :enable_scripts  => false,
   :script_location => default_script_directory,
   :report_interval => 30,
@@ -85,6 +97,9 @@ Default command: #{default_command.to_s}
   end
 
 
+  opts.on('-t', '--temp-dir TEMP_DIRECTORY', "Where to store temporary files (default #{options[:tmp_location]})") do |t|
+    options[:tmp_location] = t
+  end
 
   opts.on('--debug', "Print all sent metrics to the log") do
     options[:debug] = true
@@ -156,7 +171,7 @@ running_as_daemon = [:start, :restart].include?(command)
 
 controller = ServerController.spawn(
                :name        => File.basename(__FILE__),
-               :path        => Dir.pwd,
+               :path        => options[:tmp_location],
                :pid_file    => options[:pid_location],
                :verbose     => true,
                :log_file    => options[:log_location],
