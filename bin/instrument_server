@@ -49,7 +49,8 @@ options = {
   :script_location => default_script_directory,
   :report_interval => 30,
   :debug           => false,
-  :config_file     => '/etc/instrumental.yml'
+  :config_file     => '/etc/instrumental.yml',
+  :user            => nil
 }
 
 option_parser = OptionParser.new do |opts|
@@ -96,6 +97,9 @@ Default command: #{default_command.to_s}
     options[:script_location] = path
   end
 
+  opts.on('-u', '--user USER_TO_RUN_AS', "User to run instrument_server as. You must have permissions to drop privileges to this user.") do |u|
+    options[:user] = u
+  end
 
   opts.on('-t', '--temp-dir TEMP_DIRECTORY', "Where to store temporary files (default #{options[:tmp_location]})") do |t|
     options[:tmp_location] = t
@@ -112,6 +116,22 @@ Default command: #{default_command.to_s}
 end
 
 option_parser.parse!
+
+if options[:user]
+  # Thanks Joe
+  desired_uid = Etc.getpwnam(options[:user]).uid
+  Process::Sys.setuid(desired_uid)
+  if desired_uid && desired_uid != 0
+    begin
+      Process::Sys.setuid(0)
+    rescue Errno::EPERM
+      nil
+    else
+      puts "Cannot drop privileges to #{options[:user]}"
+      exit 1
+    end
+  end
+end
 
 command = ARGV.first && ARGV.first.to_sym
 command ||= default_command
