@@ -117,7 +117,6 @@ end
 option_parser.parse!
 
 if options[:user]
-  # Thanks Joe
   desired_uid = Etc.getpwnam(options[:user]).uid
   Process::Sys.setuid(desired_uid)
   if desired_uid && desired_uid != 0
