@@ -32,23 +32,30 @@ class SystemInspector
     end
 
     def self.cpu
-      categories = [:user, :nice, :system, :idle, :iowait]
-      values     = File.read(cpu_file).lines.grep(/\Acpu[^0-9]/).slice(1, 5).map { |v| v.to_f }
-      SystemInspector.memory.store(:cpu_values, values.dup)
-      if previous_values = SystemInspector.memory.retrieve(:cpu_values)
-        index = -1
-        values.collect! { |value| (previous_values[index += 1] - value).abs }
-      end
-      data   = Hash[*categories.zip(values).flatten]
-      total  = values.inject { |memo, value| memo + value }
+      agg_cpu_stat = File.read(cpu_file).lines.map { |line| line.split }.detect { |values| values.first == "cpu" }
+      output       = {}
 
-      output = {}
-      if previous_values
-        data.each do |category, value|
-          output["cpu.#{category}"] = value / total * 100
+      if agg_cpu_stat
+        categories = [:user, :nice, :system, :idle, :iowait]
+        values     = agg_cpu_stat.slice(1, 5).map { |v| v.to_f }
+        SystemInspector.memory.store(:cpu_values, values.dup)
+        if previous_values = SystemInspector.memory.retrieve(:cpu_values)
+          index = -1
+          values.collect! { |value| (previous_values[index += 1] - value).abs }
         end
+
+        data   = Hash[*categories.zip(values).flatten]
+        total  = values.inject { |memo, value| memo + value }
+
+        if previous_values
+          data.each do |category, value|
+            output["cpu.#{category}"] = value / total * 100
+          end
+        end
+
+        output["cpu.in_use"] = 100 - data[:idle] / total * 100
       end
-      output["cpu.in_use"] = 100 - data[:idle] / total * 100
+
       output
     end
 
@@ -73,12 +80,12 @@ class SystemInspector
       memory_stats = Hash[File.read(memory_file).lines.map { |line| line.chomp.strip.split(/:\s+/) }.reject { |l| l.size != 2 } ]
       total        = memory_stats["MemTotal"].to_f
       free         = memory_stats["MemFree"].to_f
-      used         = free - total
+      used         = total - free
       buffers      = memory_stats["Buffers"].to_f
       cached       = memory_stats["Cached"].to_f
       swaptotal    = memory_stats["SwapTotal"].to_f
       swapfree     = memory_stats["SwapFree"].to_f
-      swapused     = swapfree - swaptotal
+      swapused     = swaptotal - swapfree
 
       stats_to_record = {
         'memory.used_mb'      => used / 1024,
@@ -135,8 +142,9 @@ class SystemInspector
 
     def self.disk_io
       output          = {}
-      mounted_devices = File.read(mount_file).lines.grep(/\A\/dev\/(\w+)/) { File.realpath($1) }
-      diskstats_lines = File.read(disk_file).lines.map(&:split).select { |values| mounted_devices.include?(values.first) }
+      device_root     = "/dev/"
+      mounted_devices = File.read(mount_file).lines.map { |l| l.split.first }.select { |device| device.index(device_root) }.map { |device| File.realpath(device) }
+      diskstats_lines = File.read(disk_file).lines.map(&:split).select { |values| mounted_devices.include?(File.join(device_root, values[2])) }
       entries         = diskstats_lines.map do |values|
                           entry               = {}
                           entry[:time]        = Time.now
