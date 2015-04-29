@@ -84,7 +84,7 @@ class MetricScriptExecutor
     end
     process_to_output.flat_map do |path, (status, time, output)|
       if status && status.success?
-        prefix = File.basename(path).split(".")[0..-2].join(".").gsub(/[^a-z0-9\-\_\.]/i, "_")
+        prefix = File.basename(path).split(".")[0..-2].join(".").gsub(/[^\d\w\-\_\.]/i, "_")
         output.lines                                      # each line
           .map    { |line| line.chomp.split }             # split by whitespace
           .select { |data| (2..3).include?(data.size)  }  # and only valid name value time? pairs
