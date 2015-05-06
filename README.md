@@ -8,7 +8,9 @@ A collection of tools for monitoring servers with Instrumental ([www.instrumenta
 
 ## Installation
 
-Installation instructions for supported platforms is available in [INSTALL.md](INSTALL.md).
+Installation instructions for supported platforms is available in [INSTALL.md](INSTALL.md). The recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
+
+Once you've installed the package, you will want to edit the `/etc/instrumental.yml` file with your Instrumental API key. Example `/etc/instrumental.yml`:
 
 ## Sent Metrics
 
