@@ -31,6 +31,14 @@ sudo tar -zxvf ./instrumental-tools_1.0.0.rc2_linux-x86_64.tar.gz -C /opt/instru
 sudo cp /opt/instrumental-tools/etc/instrumental.yml /etc/
 ```
 
+# RubyGems
+
+```sh
+sudo gem install instrumental_tools
+```
+
+Installing `instrumental_tools` via Rubygems will not create the `/opt/instrumental-tools/` directory on your server or setup the process to run on startup. It is advisable that you install the software via the `deb` or `rpm` packages if your system supports its.
+
 ## Adding to system startup
 
 ### systemd
@@ -60,56 +68,8 @@ sudo service instrument_server start
 
 # Chef
 
-To install the `instrumental-tools` package via Chef, you'll need to add our repository and package to your Chef scripts.
-
-## Repository dependency
-
-If you are using Berkshelf, you can add the `packagecloud` dependency to your `Berksfile`:
-
-```sh
-cookbook "packagecloud"
-```
-
-Alternatively, you can add the `packagecloud` dependency from the [OpsCode community](https://supermarket.chef.io/cookbooks/packagecloud).
-
-Afterwards, add a dependency on our package repository via the following:
-
-```ruby
-packagecloud_repo "expectedbehavior/instrumental" do
-  type "deb" # or "rpm" or "gem"
-end
-```
-
-## Package
-
-Install the `instrumental-tools` package via:
-
-```ruby
-package "instrumental-tools" do
-    action :install
-end
-```
+An example Chef cookbook for installing `instrumental-tools` is available in (`chef/instrumental_tools`)[chef/instrumental_tools].
 
 # Puppet
 
-To install the `instrumental-tools` package via Puppet, you'll need to add our repository and package to your Puppet scripts.
-
-## Repository dependency
-
-Add the [`packagecloud` module](https://forge.puppetlabs.com/computology/packagecloud) dependency to your Puppet scripts, and then add a dependency on our repository via:
-
-```sh
-include packagecloud
-
-packagecloud::repo { "expectedbehavior/instrumental":
- type => 'rpm',  # or "deb"
-}
-```
-
-## Package
-
-```sh
-package { "instrumental-tools":
-    ensure => "installed"
-}
-```
+An example Puppet module for installing `instrumental-tools` is available in (`puppet/instrumental_tools`)[puppet/instrumental_tools].

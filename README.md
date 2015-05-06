@@ -1,10 +1,28 @@
 # Instrumental Tools
 
-A collection of scripts useful for monitoring servers and services with Instrumental ([www.instrumentalapp.com](http://www.instrumentalapp.com/)).
+A collection of tools for monitoring servers with Instrumental ([www.instrumentalapp.com](http://www.instrumentalapp.com/)).
 
-## instrument_server
+## Operating System Support
 
-Monitor server activity by collecting information on CPU and memory usage, disk IO, filesystem usage, etc.
+`instrumental_tools` is currently officially supported on 32-bit and 64-bit Linux, as well as Mac OS X. There are prebuilt packages available for Debian and RHEL-based systems.
+
+## Installation
+
+Installation instructions for supported platforms is available in [INSTALL.md](INSTALL.md).
+
+## Sent Metrics
+
+The default `instrument_server` behavior will collect metrics on the following data:
+
+* CPU (`user`, `nice`, `system`, `idle`, `iowait` and `total in use`)
+* Load (at 1 minute, 5 minute and 15 minute intervals)
+* Memory (`used`, `free`, `buffers`, `cached`, `free_percent` )
+* Swap (`used`, `free`, `free_percent`)
+* Disk Capacity (`total`, `used`, `available`, `available percent` for all mounted disks)
+* Disk Usage (`percent_utilization` for all mounted disks)
+* Filesystem stats (`open_files`, `max_open_files`)
+
+## Command Line Usage
 
 Basic usage:
 
