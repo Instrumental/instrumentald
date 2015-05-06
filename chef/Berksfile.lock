@@ -1,0 +1,9 @@
+DEPENDENCIES
+  instrumental_tools
+    path: instrumental_tools
+  packagecloud
+
+GRAPH
+  instrumental_tools (0.0.0)
+    packagecloud (>= 0.0.0)
+  packagecloud (0.0.17)

@@ -247,3 +247,10 @@ def download_runtime(target)
 
   sh "cd packaging && curl -L -O --fail %s" % traveling_ruby_url
 end
+
+begin
+  require "kitchen/rake_tasks"
+  Kitchen::RakeTasks.new
+rescue LoadError
+  puts ">>>>> Kitchen gem not loaded, omitting tasks" unless ENV["CI"]
+end

@@ -1,0 +1,17 @@
+FORGE
+  remote: https://forgeapi.puppetlabs.com
+  specs:
+    computology-packagecloud (0.2.10)
+      puppetlabs-stdlib (>= 0)
+    puppetlabs-stdlib (4.6.0)
+
+PATH
+  remote: instrumental_tools
+  specs:
+    instrumental_tools (0.0.1)
+      computology-packagecloud (>= 0)
+
+DEPENDENCIES
+  computology-packagecloud (>= 0)
+  instrumental_tools (>= 0)
+

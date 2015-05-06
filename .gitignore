@@ -10,3 +10,7 @@ packaging
 .#*
 instrumental-tools_*-*
 .vagrant
+.kitchen/
+.kitchen.local.yml
+.tmp
+.librarian

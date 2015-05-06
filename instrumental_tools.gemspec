@@ -41,4 +41,11 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<rake>, [">=0"])
   s.add_development_dependency(%q<fpm>, [">=1.3.3"])
   s.add_development_dependency(%q<package_cloud>, [">=0"])
+  s.add_development_dependency(%q<test-kitchen>, [">=0"])
+  s.add_development_dependency(%q<kitchen-vagrant>, [">=0"])
+  s.add_development_dependency(%q<kitchen-puppet>, [">=0"])
+  s.add_development_dependency(%q<berkshelf>, [">=0"])
+  s.add_development_dependency(%q<librarian-puppet>, [">=0"])
+  s.add_development_dependency(%q<puppet>, [">=0"])
+  s.add_development_dependency(%q<serverspec>, [">=0"])
 end

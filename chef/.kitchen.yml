@@ -1,0 +1,16 @@
+---
+driver:
+  name: vagrant
+  provider: vmware_fusion
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-12.04
+  - name: centos-6.6
+
+suites:
+  - name: default
+    run_list: ["instrumental_tools"]
+    attributes:
