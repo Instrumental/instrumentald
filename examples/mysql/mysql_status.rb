@@ -9,8 +9,8 @@ MYSQL_USER              = ENV["MYSQL_USER"]
 MYSQL_DEFAULTS_FILE     = ENV["MYSQL_DEFAULTS_FILE"]
 MYSQL_PASSWORD          = ENV["MYSQL_PASSWORD"]
 
-RATE_METRICS_TO_INSPECT = %w{Queries Bytes_sent Bytes_received Connections Slow_queries}
-CANARY_METRIC           = "Queries"
+RATE_METRICS_TO_INSPECT = %w{queries bytes_sent bytes_received connections slow_queries}
+CANARY_METRIC           = "queries"
 
 env  = {}
 args = []
@@ -61,7 +61,7 @@ if !exit_status.success?
 else
   output = stdout_r.read.lines                                         # each line
                         .map { |line| line.chomp.split }              # split by space characters
-                        .map { |(name, value, _)| [name, value.to_f] } # with values coerced to floats
+                        .map { |(name, value, _)| [name.downcase, value.to_f] } # with values coerced to floats
   stats  = Hash[output]
   if (stats[CANARY_METRIC] < previous_values[CANARY_METRIC].to_i) || previous_values[CANARY_METRIC].nil?
     # The server has restarted, don't trust previous values for calculating difference
