@@ -23,51 +23,55 @@ class MetricScriptExecutor
     file_stat.owned? && ((file_stat.mode & 0xFFF) ^ 0O700) == 0
   end
 
+  def execute_custom_script(full_path)
+    stdin_r,  stdin_w  = IO.pipe
+    stdout_r, stdout_w = IO.pipe
+    stderr_r, stderr_w = IO.pipe
+
+    previous_status, previous_time, previous_output = previous[full_path]
+
+    stdin_w.write(previous_output || "")
+    stdin_w.close
+
+
+    cmd = [full_path, (previous_time || 0).to_i, (previous_status && previous_status.to_i)].compact.map(&:to_s)
+
+    pid = Process.spawn(*cmd,
+                        :chdir => File.dirname(full_path),
+                        :in    => stdin_r,
+                        :out   => stdout_w,
+                        :err   => stderr_w)
+
+    exit_status = nil
+    exec_time   = Benchmark.realtime do
+      pid, exit_status = Process.wait2(pid)
+    end
+
+    if exec_time > 1.0
+      puts "[SLOW SCRIPT] Time to execute process #{full_path} took #{exec_time} seconds"
+    end
+
+    [stdin_r, stdout_w, stderr_w].each(&:close)
+
+    output = stdout_r.read.to_s.chomp
+
+    stderr = stderr_r.read.to_s.chomp
+    unless stderr.empty?
+      puts "[STDERR] #{full_path} (PID:#{pid}) [#{Time.now.to_s}]:: #{stderr}"
+    end
+
+    [stdout_r, stderr_r].each(&:close)
+
+    [full_path, [exit_status, Time.now, output]]
+  end
+
   def run
     process_to_output = {}
     if can_execute_in_directory?(directory)
       current = Dir[File.join(directory, "*")].map do |path|
         full_path = File.expand_path(path)
         if can_execute_file?(path)
-          stdin_r,  stdin_w  = IO.pipe
-          stdout_r, stdout_w = IO.pipe
-          stderr_r, stderr_w = IO.pipe
-
-          previous_status, previous_time, previous_output = previous[full_path]
-
-          stdin_w.write(previous_output || "")
-          stdin_w.close
-
-
-          cmd = [full_path, (previous_time || 0).to_i, (previous_status && previous_status.to_i)].compact.map(&:to_s)
-
-          pid = Process.spawn(*cmd,
-                              :chdir => File.dirname(full_path),
-                              :in    => stdin_r,
-                              :out   => stdout_w,
-                              :err   => stderr_w)
-
-          exit_status = nil
-          exec_time   = Benchmark.realtime do
-                          pid, exit_status = Process.wait2(pid)
-                        end
-
-          if exec_time > 1.0
-            puts "[SLOW SCRIPT] Time to execute process #{full_path} took #{exec_time} seconds"
-          end
-
-          [stdin_r, stdout_w, stderr_w].each(&:close)
-
-          output = stdout_r.read.to_s.chomp
-
-          stderr = stderr_r.read.to_s.chomp
-          unless stderr.empty?
-            puts "[STDERR] #{full_path} (PID:#{pid}) [#{Time.now.to_s}]:: #{stderr}"
-          end
-
-          [stdout_r, stderr_r].each(&:close)
-
-          [full_path, [exit_status, Time.now, output]]
+          execute_custom_script(full_path)
         else
           if !File.directory?(full_path)
             uid  = Process.uid
