@@ -28,6 +28,12 @@ Your script is expected to output data in the following format on `STDOUT` in or
 METRIC_NAME METRIC_VALUE
 ```
 
+or
+
+```
+METRIC_NAME METRIC_VALUE UNIX_TIME_IN_SECONDS
+```
+
 For example, if a script named `application_load` were to report two metrics, `memory` and `load`, to the `instrument_server` process, its output should be:
 
 ```
@@ -42,6 +48,8 @@ HOST_NAME.SCRIPT_NAME.METRIC_NAME
 ```
 
 Using the previous example, if the `application_load` script ran on a host named `app-0001`, its `memory` and `load` metrics would be submitted to Instrumental as `app-0001.application_load.memory` and `app-0001.application_load.load`.
+
+The optional third parameter of the above formats, `UNIX_TIME_IN_SECONDS`, represents the time under which the submitted metric should be measured. Generally you do not need to provide this value, as `instrument_server` will default to recording the time when it receives the metric from your script as the time under which the measurement should be recorded.
 
 ### Exit Codes
 
