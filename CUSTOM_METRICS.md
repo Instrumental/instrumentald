@@ -1,6 +1,6 @@
 # Custom Metric Scripts
 
-You may have specific pieces of architecture that you would like `instrument_server` to monitor. As of version 0.7.0 of the `instrument_server` gem, you may pass the `-e` flag to `instrument_server` on startup to enable this functionality. There are several [examples](examples/) of scripts that you may use for your infrastructure, or you can [write your own](#writing_custom_scripts).
+You may have specific pieces of architecture that you would like `instrument_server` to monitor. As of version 1.0.0 of the `instrument_server` gem, you may pass the `-e` flag to `instrument_server` on startup to enable this functionality. There are several [examples](examples/) of scripts that you may use for your infrastructure, or you can [write your own](#writing_custom_scripts).
 
 ## Installing Custom Scripts
 

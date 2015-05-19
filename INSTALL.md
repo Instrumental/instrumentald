@@ -27,7 +27,7 @@ sudo yum install instrumental-tools
 
 ```sh
 sudo mkdir -p /opt/instrumental-tools/
-sudo tar -zxvf ./instrumental-tools_1.0.0.rc2_linux-x86_64.tar.gz -C /opt/instrumental-tools/ --strip 1
+sudo tar -zxvf ./instrumental-tools_1.0.0_linux-x86_64.tar.gz -C /opt/instrumental-tools/ --strip 1
 sudo cp /opt/instrumental-tools/etc/instrumental.yml /etc/
 ```
 
