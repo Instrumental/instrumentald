@@ -1,4 +1,4 @@
-### 1.0.0 [?]
+### 1.0.0 [May 21st, 2015]
 * Configurable pid and log file locations
 * Pid and log file default to $HOME
 * Process control commands do not require API key
