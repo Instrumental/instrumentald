@@ -8,7 +8,7 @@ packagecloud_repo "expectedbehavior/instrumental" do
 end
 
 package "instrumental-tools" do
-  action :install
+  action :upgrade
 end
 
 template "/etc/instrumental.yml" do
