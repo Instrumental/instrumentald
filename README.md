@@ -1,10 +1,30 @@
 # Instrumental Tools
 
-A collection of scripts useful for monitoring servers and services with Instrumental ([www.instrumentalapp.com](http://www.instrumentalapp.com/)).
+A collection of tools for monitoring servers with Instrumental ([www.instrumentalapp.com](http://www.instrumentalapp.com/)).
 
-## instrument_server
+## Operating System Support
 
-Monitor server activity by collecting information on CPU and memory usage, disk IO, filesystem usage, etc.
+`instrumental_tools` is currently officially supported on 32-bit and 64-bit Linux, as well as Mac OS X. There are prebuilt packages available for Debian and RHEL-based systems.
+
+## Installation
+
+Installation instructions for supported platforms is available in [INSTALL.md](INSTALL.md). The recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
+
+Once you've installed the package, you will want to edit the `/etc/instrumental.yml` file with your Instrumental API key. Example `/etc/instrumental.yml`:
+
+## Sent Metrics
+
+The default `instrument_server` behavior will collect metrics on the following data:
+
+* CPU (`user`, `nice`, `system`, `idle`, `iowait` and `total in use`)
+* Load (at 1 minute, 5 minute and 15 minute intervals)
+* Memory (`used`, `free`, `buffers`, `cached`, `free_percent` )
+* Swap (`used`, `free`, `free_percent`)
+* Disk Capacity (`total`, `used`, `available`, `available percent` for all mounted disks)
+* Disk Usage (`percent_utilization` for all mounted disks)
+* Filesystem stats (`open_files`, `max_open_files`)
+
+## Command Line Usage
 
 Basic usage:
 
@@ -25,15 +45,22 @@ instrument_server -k <API_KEY> -H <HOSTNAME>
 To start instrument_server as a daemon:
 
 ```
-instrument_server -k <API_KEY> -d
+instrument_server -k <API_KEY> start
 ```
 
-While the -d flag alone is sufficient for starting instrument_server as a daemon, use of additional parameters allows interaction with the running daemon process:
+The `start` command will start and detach the process. You may issue additional commands to the process like:
 
-* start, stop, restart - run, halt, or restart the daemon
-* status - display daemon status (running, stopped)
-* clean - remove any files created by the daemon
-* kill - forcibly halt the daemon and remove its pid file
+* `start` - start and detach the process
+* `stop` - stop the currently running `instrument_server` process
+* `restart` - restart the currently running `instrument_server` process
+* `foreground` - run the process in the foreground instead of detaching
+* `status` - display daemon status (running, stopped)
+* `clean` - remove any files created by the daemon
+* `kill` - forcibly halt the daemon and remove its pid file
+
+### Custom Metrics
+
+You can create custom scripts whose output will be sent to Instrumental every time `instrument_server` checks in. You can read more about how to create these scripts at [CUSTOM_METRICS.md](CUSTOM_METRICS.md).
 
 
 ### Capistrano Integration

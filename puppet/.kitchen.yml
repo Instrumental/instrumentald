@@ -1,0 +1,26 @@
+---
+driver:
+  name: vagrant
+  provider: vmware_fusion
+
+provisioner:
+  name: puppet_apply
+  manifests_path: manifests
+  modules_path: modules
+  hiera_data_path: hieradata
+
+platforms:
+  - name: nocm_ubuntu-12.04
+    driver_plugin: vagrant
+    driver_config:
+      box: nocm_ubuntu-12.04
+      box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-12.04-64-nocm/versions/1.0.1/providers/vmware_fusion.box
+  - name: nocm_centos-6.6
+    driver_plugin: vagrant
+    driver_config:
+      box: nocm_centos-6.6
+      box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.6-64-nocm/versions/1.0.1/providers/vmware_fusion.box
+
+suites:
+  - name: default
+    manifest: site.pp
