@@ -51,7 +51,7 @@ ARCHITECTURES          = {
                            'osx' => {
                              runtime:      TRAVELING_RUBY_FILE % "osx",
                              arch:         "x86_64",
-                             packages:     %w{pkg},
+                             packages:     [],
                              platform:     "darwin",
                              packagecloud: false
                            }
@@ -87,8 +87,15 @@ task :package => ARCHITECTURES.map { |name, _| "package:%s" % name }
 ARCHITECTURES.each do |name, config|
   namespace "package" do
 
-    desc "Package your app for %s" % name
-    task name => ["%s:package" % name]
+    has_packaging = Array(config[:packages]).size > 0
+
+    if has_packaging
+      desc "Package your app for %s" % name
+      task name => ["%s:package" % name]
+    else
+      desc "Package your app for %s" % name
+      task name => ["%s:tarball" % name]
+    end
 
     namespace name do
       desc "Create a tarball for %s" % name
@@ -96,9 +103,11 @@ ARCHITECTURES.each do |name, config|
         create_tarball(create_directory_bundle(name))
       end
 
-      desc "Create packages (%s) for %s" % [config[:packages].join(","), name]
-      task "package" => [:bundle_install, config[:runtime]] do
-        create_packages(create_tarball(create_directory_bundle(name, DEST_DIR)), config[:platform], config[:arch], config[:packages])
+      if has_packaging
+        desc "Create packages (%s) for %s" % [config[:packages].join(","), name]
+        task "package" => [:bundle_install, config[:runtime]] do
+          create_packages(create_tarball(create_directory_bundle(name, DEST_DIR)), config[:platform], config[:arch], config[:packages])
+        end
       end
 
       if config[:packagecloud]
@@ -247,4 +256,3 @@ def download_runtime(target)
 
   sh "cd packaging && curl -L -O --fail %s" % traveling_ruby_url
 end
-
