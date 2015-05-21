@@ -9,7 +9,9 @@ packaging
 .ruby-version
 \#*
 .#*
+*#*
 instrumental-tools_*-*
+instrumental-tools_*_*
 .vagrant
 .kitchen/*
 chef/.kitchen
@@ -19,3 +21,4 @@ puppet/.tmp
 .kitchen.local.yml
 .tmp
 .librarian
+.instrumental_scripts
