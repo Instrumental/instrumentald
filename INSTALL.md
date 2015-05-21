@@ -82,8 +82,8 @@ sudo service instrument_server start
 
 # Chef
 
-An example Chef cookbook for installing `instrumental-tools` is available in (`chef/instrumental_tools`)[chef/instrumental_tools].
+An example Chef cookbook for installing `instrumental-tools` is available in [`chef/instrumental_tools`](chef/instrumental_tools).
 
 # Puppet
 
-An example Puppet module for installing `instrumental-tools` is available in (`puppet/instrumental_tools`)[puppet/instrumental_tools].
+An example Puppet module for installing `instrumental-tools` is available in [`puppet/instrumental_tools`](puppet/instrumental_tools).
