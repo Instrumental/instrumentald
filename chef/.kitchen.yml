@@ -1,14 +1,15 @@
 ---
 driver:
   name: vagrant
-  provider: vmware_fusion
 
 provisioner:
   name: chef_solo
+  chef_omnibus_url: "https://gist.githubusercontent.com/netshade/28800461038c924b74a1/raw/a453b4758ccb9b3d20f95d5465f0754c0fa6ffc3/install.sh"
 
 platforms:
   - name: ubuntu-12.04
   - name: centos-6.6
+  - name: "d11wtq/gentoo"
 
 suites:
   - name: default
