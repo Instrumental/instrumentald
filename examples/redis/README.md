@@ -1,6 +1,6 @@
 # Redis Metrics
 
-The [`redis.sh`](redis.sh) script generates metrics from the `redis-cli info` command for a redis instance. The following metrics will be output for every collection in your system:
+The [`redis_info.sh`](redis_info.sh) script generates metrics from the `redis-cli info` command for a redis instance. The following metrics will be output for every collection in your system:
 
 * `connected_clients` - Total currently connected clients
 * `instantaneous_ops_per_sec` - Current operations per second
