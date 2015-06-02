@@ -3,8 +3,9 @@ require 'serverspec'
 set :backend, :exec
 
 
-describe package('instrumental-tools') do
-  it { should be_installed }
+describe file('/opt/instrumental-tools/instrument_server') do
+  it { should be_file }
+  it { should be_executable }
 end
 
 describe service('instrument_server') do
