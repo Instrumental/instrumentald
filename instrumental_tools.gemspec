@@ -33,8 +33,9 @@ Gem::Specification.new do |s|
   s.test_files    = test_files
   s.executables   = bin_files
   s.require_paths = ["lib"]
+  s.extensions    = "ext/mkrf_conf.rb"
 
-  s.required_ruby_version = '>= 1.9'
+  s.required_ruby_version = ">= 1.9"
 
   s.add_runtime_dependency(%q<instrumental_agent>, [">=0.12.6"])
   s.add_runtime_dependency(%q<pidly>, [">=0.1.3"])
