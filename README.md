@@ -90,7 +90,7 @@ something like this in your capistrano configuration:
 namespaces[:instrumental].tasks[:restart_instrument_server].options[:roles] = [:web, :worker]
 ```
 
-### NOTEs
+### NOTES
 
 Mac OS users: Due to a bug in Ruby, instrument_server can occasionally deadlock ([bug report](http://bugs.ruby-lang.org/issues/5811)).
 
