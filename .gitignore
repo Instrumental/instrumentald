@@ -22,3 +22,5 @@ puppet/.tmp
 .tmp
 .librarian
 .instrumental_scripts
+tmp
+*.exe

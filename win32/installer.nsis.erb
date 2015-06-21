@@ -1,0 +1,30 @@
+!include x64.nsh
+
+OutFile "Install-Instrumental-Tools.exe"
+
+InstallDir "$PROGRAMFILES\Instrumental Tools"
+
+Section "Installing Files"
+SetOutPath $INSTDIR
+<% directories.each do |directory| %>
+File /r <%= directory %>/*.*
+<% end %>
+WriteUninstaller $INSTDIR\uninstaller.exe
+${If} ${RunningX64}
+Exec '"$INSTDIR\nssm64.exe" install "instrumental_tools" "$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" foreground'
+Exec '"$INSTDIR\nssm64.exe" start "instrumental_tools"'
+${Else}
+Exec '"$INSTDIR\nssm32.exe" install "instrumental_tools" "$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" foreground'
+Exec '"$INSTDIR\nssm32.exe" start "instrumental_tools"'
+${EndIf}
+SectionEnd
+
+Section "Uninstall"
+${If} ${RunningX64}
+Exec '"$INSTDIR\nssm64.exe" stop "instrumental_tools"'
+Exec '"$INSTDIR\nssm64.exe" remove  "instrumental_tools" confirm'
+${Else}
+Exec '"$INSTDIR\nssm32.exe" stop "instrumental_tools"'
+Exec '"$INSTDIR\nssm32.exe" remove  "instrumental_tools" confirm'
+${EndIf}
+SectionEnd

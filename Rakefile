@@ -2,7 +2,9 @@
 require 'bundler/gem_tasks'
 require 'etc'
 require 'fileutils'
+require 'find'
 require 'socket'
+require 'tempfile'
 require 'yaml'
 
 PACKAGE_CATEGORY       = "Utilities"
@@ -14,7 +16,7 @@ GEMSPEC                = Bundler::GemHelper.instance.gemspec
 SPEC_PATH              = Bundler::GemHelper.instance.spec_path
 PACKAGE_NAME           = GEMSPEC.name.gsub("_", "-") # Debian packages cannot include _ in name
 VERSION                = GEMSPEC.version
-TRAVELING_RUBY_VERSION = "20150210-2.1.5"
+TRAVELING_RUBY_VERSION = "20150517-2.1.6"
 TRAVELING_RUBY_FILE    = "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-%s.tar.gz"
 DEST_DIR               = File.join("/opt/", PACKAGE_NAME)
 PACKAGE_OUTPUT_NAME    = [PACKAGE_NAME, VERSION].join("_")
@@ -68,7 +70,9 @@ ARCHITECTURES          = {
                              platform:     "linux",
                              packagecloud: true,
                              wrapper:      WRAPPER_SCRIPT_SHELL,
-                             separator:    '/'
+                             separator:    '/',
+                             package_from_compressed: true,
+                             dest_dir:     DEST_DIR
                             },
                            'linux-x86_64' => {
                              runtime:      TRAVELING_RUBY_FILE % "linux-x86_64",
@@ -77,7 +81,9 @@ ARCHITECTURES          = {
                              platform:     "linux",
                              packagecloud: true,
                              wrapper:      WRAPPER_SCRIPT_SHELL,
-                             separator:    '/'
+                             separator:    '/',
+                             package_from_compressed: true,
+                             dest_dir:     DEST_DIR
                            },
                            'osx' => {
                              runtime:      TRAVELING_RUBY_FILE % "osx",
@@ -86,16 +92,19 @@ ARCHITECTURES          = {
                              platform:     "darwin",
                              packagecloud: false,
                              wrapper:      WRAPPER_SCRIPT_SHELL,
-                             separator:    '/'
+                             separator:    '/',
+                             dest_dir:     DEST_DIR
                            },
                            'win32' => {
                              runtime:         TRAVELING_RUBY_FILE % "win32",
-                             packages:        [],
+                             packages:        %w{exe},
                              packagecloud:    false,
                              compress_format: 'zip',
                              wrapper:         WRAPPER_SCRIPT_BAT,
                              separator:       '\\',
-                             extension:       '.bat'
+                             extension:       '.bat',
+                             package_from_compressed: false,
+                             dest_dir:        ''
                            }
                          }
 
@@ -138,7 +147,11 @@ ARCHITECTURES.each do |name, config|
         task "package" do
           task("package:bundle_install").invoke(name.to_sym)
           task(config[:runtime]).invoke
-          create_packages(create_compressed_package(create_directory_bundle(name, config[:wrapper], config[:separator], config[:extension], DEST_DIR), config[:compress_format]), config[:platform], config[:arch], config[:packages])
+          destination = create_directory_bundle(name, config[:wrapper], config[:separator], config[:extension], config[:dest_dir])
+          if config[:package_from_compressed]
+            destination = create_compressed_package(destination, config[:compress_format])
+          end
+          create_packages(destination, config[:platform], config[:arch], config[:packages])
         end
       end
 
@@ -146,7 +159,11 @@ ARCHITECTURES.each do |name, config|
         namespace "packagecloud" do
           desc "Push packages (%s) to package_cloud" % config[:packages].join(",")
           task "push" do
-            packages     = create_packages(create_compressed_package(create_directory_bundle(name, config[:wrapper], config[:separator], config[:extension], DEST_DIR), config[:compress_format]), config[:platform], config[:arch], config[:packages])
+            destination = create_directory_bundle(name, config[:wrapper], config[:separator], config[:extension], config[:dest_dir])
+            if config[:package_from_compressed]
+              destination = create_compressed_package(destination, config[:compress_format])
+            end
+            packages     = create_packages(destination, config[:platform], config[:arch], config[:packages])
             by_extension = packages.group_by { |path| File.extname(path)[1..-1] }
             by_extension.each do |extension, files|
               distros = SUPPORTED_DISTROS[extension]
@@ -214,11 +231,30 @@ def create_packages(directory, platform, architecture, package_formats)
   Array(package_formats).map { |pkg| create_package(directory, pkg, platform, architecture) }
 end
 
-def create_package(tarball, pkg, platform, architecture)
-  output_name = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), pkg].join(".")
-  extra_args  = EXTRA_ARGS[pkg] || ""
-  sh "fpm -s tar -t %s -f -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" --config-files %s -C %s -p %s %s %s" % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(tarball, ".tar.gz"), output_name, extra_args, tarball]
-  output_name
+def create_package(source, pkg, platform, architecture)
+  supported_by_fpm  = %w{deb rpm}
+  supported_by_nsis = %w{exe}
+  if supported_by_fpm.include?(pkg)
+    output_name = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), pkg].join(".")
+    extra_args  = EXTRA_ARGS[pkg] || ""
+    sh "fpm -s tar -t %s -f -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" --config-files %s -C %s -p %s %s %s" % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(source, ".tar.gz"), output_name, extra_args, source]
+    output_name
+  elsif supported_by_nsis.include?(pkg)
+    nsis_script  = File.join("win32", "installer.nsis.erb")
+    vendor_files = File.join("win32", "vendor")
+    template     = NSISERBContext.new([source, vendor_files], nsis_script)
+
+    temp         = Tempfile.new("nsis", ".")
+    temp.write(template.result)
+    temp.close(false)
+
+    sh "makensis #{temp.path}"
+
+    temp.unlink
+
+  else
+    raise StandardError.new("Format %s is not supported" % pkg)
+  end
 end
 
 def create_directory_bundle(target, wrapper_script, separator, extension = nil, prefix = nil)
@@ -308,4 +344,23 @@ def download_runtime(target)
   traveling_ruby_url      = File.join(traveling_ruby_releases, traveling_ruby_file)
 
   sh "cd packaging && curl -L -O --fail %s" % traveling_ruby_url
+end
+
+
+class NSISERBContext
+  attr_accessor :template_path, :directories
+
+  def initialize(directories, template_path)
+    @files         = []
+    @directories   = directories
+    @template_path = template_path
+  end
+
+  def template_source
+    File.read(template_path)
+  end
+
+  def result
+    ERB.new(template_source).result(binding)
+  end
 end

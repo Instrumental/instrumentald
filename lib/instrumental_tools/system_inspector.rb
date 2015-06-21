@@ -17,6 +17,9 @@ class SystemInspector
       when /darwin/
         require "instrumental_tools/system_inspector/osx"
         SystemInspector::OSX
+      when /(windows|win32|mingw)/
+        require "instrumental_tools/system_inspector/win32"
+        SystemInspector::Win32
       else
         raise "unsupported OS"
       end
