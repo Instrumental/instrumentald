@@ -148,6 +148,8 @@ class ServerController < Pidly::Control
             count += 1
           end
         end
+        agent.flush
+        agent.stop
         if debug?
           puts "Sent #{count} metrics"
         end
