@@ -170,10 +170,10 @@ ARCHITECTURES.each do |name, config|
               distros.each do |distro|
                 repo = File.join(PACKAGECLOUD_REPO, distro)
                 files.each do |file|
-                  yank_cmd = "package_cloud yank %s %s" % [repo, file]
+                  yank_cmd = %Q{package_cloud yank "%s" "%s"} % [repo, file]
                   puts yank_cmd
                   system(yank_cmd)
-                  sh "package_cloud push %s %s" % [repo, file]
+                  sh %Q{package_cloud push "%s" "%s"} % [repo, file]
                 end
               end
             end
@@ -202,12 +202,12 @@ namespace "package" do
     spec_path       = SPEC_PATH
     cache_dir       = File.join("packaging", "vendor", "*", "*", "cache", "*")
 
-    sh "rm -rf %s"                     % tmp_package_dir
-    sh "mkdir -p %s"                   % tmp_package_dir
-    sh "cp %s Gemfile Gemfile.lock %s" % [spec_path, tmp_package_dir]
+    sh %Q{rm -rf "%s"}                       % tmp_package_dir
+    sh %Q{mkdir -p "%s"}                     % tmp_package_dir
+    sh %Q{cp "%s" Gemfile Gemfile.lock "%s"} % [spec_path, tmp_package_dir]
 
     GEMSPEC.require_paths.each do |path|
-      sh "ln -sf %s %s" % [File.expand_path(path), tmp_package_dir]
+      sh %Q{ln -sf "%s" "%s"} % [File.expand_path(path), tmp_package_dir]
     end
 
 
@@ -218,11 +218,11 @@ namespace "package" do
             ""
           end
     Bundler.with_clean_env do
-      sh "cd %s && env BUNDLE_IGNORE_CONFIG=1 #{env} bundle install --path ../vendor --without development" % tmp_package_dir
+      sh %Q{cd "%s" && env BUNDLE_IGNORE_CONFIG=1 #{env} bundle install --path ../vendor --without development} % tmp_package_dir
     end
 
-    sh "rm -rf %s" % tmp_package_dir
-    sh "rm -f %s"  % cache_dir
+    sh %Q{rm -rf "%s"} % tmp_package_dir
+    sh %Q{rm -f "%s"}  % cache_dir
   end
 
 end
@@ -237,7 +237,7 @@ def create_package(source, pkg, platform, architecture)
   if supported_by_fpm.include?(pkg)
     output_name = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), pkg].join(".")
     extra_args  = EXTRA_ARGS[pkg] || ""
-    sh "fpm -s tar -t %s -f -n %s -v %s -a %s --license \"%s\" --vendor \"%s\" --maintainer \"%s\" --url \"%s\" --description \"%s\" --category \"%s\" --config-files %s -C %s -p %s %s %s" % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(source, ".tar.gz"), output_name, extra_args, source]
+    sh %Q{fpm -s tar -t "%s" -f -n "%s" -v "%s" -a "%s" --license "%s" --vendor "%s" --maintainer "%s" --url "%s" --description "%s" --category "%s" --config-files "%s" -C "%s" -p "%s" %s "%s"} % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(source, ".tar.gz"), output_name, extra_args, source]
     output_name
   elsif supported_by_nsis.include?(pkg)
     nsis_script  = File.join("win32", "installer.nsis.erb")
@@ -248,7 +248,7 @@ def create_package(source, pkg, platform, architecture)
     temp.write(template.result)
     temp.close(false)
 
-    sh "makensis #{temp.path}"
+    sh %Q{makensis "%s"} % temp.path
 
     temp.unlink
 
@@ -275,25 +275,25 @@ def create_directory_bundle(target, wrapper_script, separator, extension = nil, 
   bundle_dir          = File.join(dest_vendor_dir, ".bundle")
 
 
-  sh "rm -rf %s"   % package_dir
-  sh "mkdir %s"    % package_dir
-  sh "mkdir -p %s" % prefixed_dir
-  sh "mkdir -p %s" % config_dest_dir
-  sh "mkdir -p %s" % app_dir
+  sh %Q{rm -rf "%s"}   % package_dir
+  sh %Q{mkdir "%s"}    % package_dir
+  sh %Q{mkdir -p "%s"} % prefixed_dir
+  sh %Q{mkdir -p "%s"} % config_dest_dir
+  sh %Q{mkdir -p "%s"} % app_dir
 
   GEMSPEC.files.each do |file|
     destination_dir = File.join(app_dir, File.dirname(file))
     FileUtils.mkdir_p(destination_dir)
 
-    sh "cp %s %s" % [file, destination_dir]
+    sh %Q{cp "%s" "%s"} % [file, destination_dir]
   end
 
   Dir[File.join(CONFIG_DIR, "*")].each do |file|
-    sh "cp %s %s" % [file, config_dest_dir]
+    sh %Q{cp "%s" "%s"} % [file, config_dest_dir]
   end
 
-  sh "mkdir %s"          % ruby_dir
-  sh "tar -xzf %s -C %s" % [traveling_ruby_file, ruby_dir]
+  sh %Q{mkdir "%s"}            % ruby_dir
+  sh %Q{tar -xzf "%s" -C "%s"} % [traveling_ruby_file, ruby_dir]
 
   GEMSPEC.executables.each do |file|
     destination = File.join(prefixed_dir, file + extension.to_s)
@@ -301,15 +301,15 @@ def create_directory_bundle(target, wrapper_script, separator, extension = nil, 
     bin_path = "bin" + separator + file
     File.open(destination, "w") { |f| f.write(wrapper_script % bin_path) }
 
-    sh "chmod +x %s" % destination
+    sh %Q{chmod +x "%s"} % destination
   end
 
-  sh "cp -pR %s %s"                  % [vendor_dir, lib_dir]
-  sh "cp %s Gemfile Gemfile.lock %s" % [spec_path, dest_vendor_dir]
+  sh %Q{cp -pR "%s" "%s"}                  % [vendor_dir, lib_dir]
+  sh %Q{cp "%s" Gemfile Gemfile.lock "%s"} % [spec_path, dest_vendor_dir]
 
 
   GEMSPEC.require_paths.select { |path| path !~ /.rbenv/ }.each do |path|
-    sh "ln -sf ../app/%s %s" % [path, File.join(dest_vendor_dir, path)]
+    sh %Q{ln -sf "../app/%s" "%s"} % [path, File.join(dest_vendor_dir, path)]
   end
 
   FileUtils.mkdir_p(bundle_dir)
@@ -323,13 +323,13 @@ def create_compressed_package(package_dir, format = 'tar.gz')
   when 'tar.gz'
     gzip_file   = "%s.tar.gz" % package_dir
 
-    sh "tar -czf %s %s" % [gzip_file, package_dir]
+    sh %Q{tar -czf "%s" "%s"} % [gzip_file, package_dir]
 
     gzip_file
   when 'zip'
     zip_file    = "%s.zip" % package_dir
 
-    sh "zip -r %s %s" % [zip_file, package_dir]
+    sh %Q{zip -r "%s" "%s"} % [zip_file, package_dir]
 
     zip_file
   else
