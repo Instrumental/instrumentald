@@ -1,0 +1,46 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          instrument_server
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start instrument_server at boot to provide system metrics
+# Description:       Report system level metrics to the Instrumental service (https://instrumentalapp.com/)
+### END INIT INFO
+
+set -e
+
+DIRECTORY="<%= @dest_dir %>"
+CONFIG_FILE="<%= @config_file %>"
+TMPDIR=$DIRECTORY
+PID="<%= @pid_file %>"
+LOG="<%= @log_file %>"
+SCRIPT_LOCATION="<%= @script_dir %>"
+USER_TO_RUN_AS="<%= @user %>"
+ARGS="-f ${CONFIG_FILE} -p ${PID} -l ${LOG} -s ${SCRIPT_LOCATION} -u ${USER_TO_RUN_AS} -t ${TMPDIR} <%= '-e' if @enable_scripts %>"
+PROCESS="${DIRECTORY}instrument_server ${ARGS}"
+
+case "$1" in
+  start)
+    $PROCESS start
+    ;;
+  stop)
+    $PROCESS stop
+    ;;
+  restart)
+    $PROCESS restart
+    ;;
+  status)
+    $PROCESS status
+    ;;
+  force-reload)
+    $PROCESS stop && $PROCESS clean && $PROCESS start
+    ;;
+  *)
+    echo "Usage: /etc/init.d/instrumental-tools {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
+
+exit 0

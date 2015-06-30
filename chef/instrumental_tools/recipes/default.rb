@@ -25,12 +25,16 @@ file_name = case node["platform_family"]
               "instrumental-tools_%s_linux-%s.tar.gz" % [version, arch]
             end
 local_path = ::File.join(node[:instrumental][:local_path], file_name)
+dest_dir   = node[:instrumental][:destination_dir]
+conf_file  = node[:instrumental][:config_file]
 
 case node["platform_family"]
 when "debian", "rhel", "fedora"
   if node[:instrumental][:use_local]
-    package local_path_path do
-      action[:upgrade]
+    package "instrumental-tools" do
+      action :install
+      source local_path
+      provider node["platform_family"] == "debian" ? Chef::Provider::Package::Dpkg : Chef::Provider::Package::Yum
     end
   else
     packagecloud_repo "expectedbehavior/instrumental" do
@@ -48,7 +52,7 @@ when "debian", "rhel", "fedora"
     end
   end
 
-  template "/etc/instrumental.yml" do
+  template conf_file do
     source "instrumental.yml.erb"
     mode   "0440"
     owner  "nobody"
@@ -56,11 +60,31 @@ when "debian", "rhel", "fedora"
       :api_key => node[:instrumental][:api_key]
     )
   end
+
+  template node["instrumental"]["dest_init_file"] do
+    source "instrument_server.erb"
+    mode "0755"
+    owner "nobody"
+    variables(
+      :dest_dir       => dest_dir,
+      :config_file    => conf_file,
+      :enable_scripts => !!node[:instrumental][:enable_scripts],
+      :script_dir     => node[:instrumental][:script_dir],
+      :log_file       => node[:instrumental][:log_file],
+      :pid_file       => node[:instrumental][:pid_file],
+      :user           => node[:instrumental][:user]
+    )
+  end
+
+  service "instrument_server" do
+    action :restart
+  end
+
 when "arch", "gentoo", "slackware", "suse", "osx"
 
-  local_path = "/opt/instrumental-tools/%s" % file_name
+  local_path = "%s/%s" % [dest_dir, file_name]
 
-  directory "/opt/instrumental-tools" do
+  directory dest_dir do
     owner "nobody"
     action :create
     recursive true
@@ -69,7 +93,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
   if node[:instrumental][:use_local]
     execute "copy_instrumental_tools_package" do
       command "cp %s %s" % [local_path, ::File.basename(local_path)]
-      cwd "/opt/instrumental-tools"
+      cwd dest_dir
       user "nobody"
     end
   else
@@ -77,14 +101,14 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     if ::File.exists?(node["instrumental"]["curl_path"])
       execute "curl_download_instrumental_tools_package" do
         command "%s -O %s" % [node["instrumental"]["curl_path"], remote_name]
-        cwd "/opt/instrumental-tools"
+        cwd dest_dir
         not_if { ::File.exists?(local_path) }
         user "nobody"
       end
     elsif ::File.exists?(node["instrumental"]["wget_path"])
       execute "wget_download_instrumental_tools_package" do
         command "%s %s" % [node["instrumental"]["wget_path"], remote_name]
-        cwd "/opt/instrumental-tools"
+        cwd dest_dir
         not_if { ::File.exists?(local_path) }
         user "nobody"
       end
@@ -97,21 +121,26 @@ when "arch", "gentoo", "slackware", "suse", "osx"
   execute "untar_instrumental_tools_package" do
     command "tar --strip-components=3 -zxvf %s" % file_name
     user "nobody"
-    cwd "/opt/instrumental-tools"
+    cwd dest_dir
     only_if { ::File.exists?(local_path) }
   end
 
-  execute "copy_service_into_place" do
-    distributed_file = node["instrumental"]["dist_init_file"]
-    destination_file = node["instrumental"]["dest_init_file"]
-    command <<-EOSCRIPT % [distributed_file, destination_file, destination_file]
-cp %s %s
-chmod +x %s
-    EOSCRIPT
-    not_if { ::File.exists?(node["instrumental"]["dest_init_file"]) }
+  template node["instrumental"]["dest_init_file"] do
+    source "instrument_server.erb"
+    mode "0755"
+    owner "nobody"
+    variables(
+      :dest_dir       => dest_dir,
+      :config_file    => conf_file,
+      :enable_scripts => !!node[:instrumental][:enable_scripts],
+      :script_dir     => node[:instrumental][:script_dir],
+      :log_file       => node[:instrumental][:log_file],
+      :pid_file       => node[:instrumental][:pid_file],
+      :user           => node[:instrumental][:user]
+    )
   end
 
-  template "/etc/instrumental.yml" do
+  template conf_file do
     source "instrumental.yml.erb"
     mode   "0440"
     owner  "nobody"
@@ -128,9 +157,17 @@ chmod +x %s
 when "windows"
   if node[:instrumental][:use_local]
     execute "install-tools" do
-      command "call %s /S" % local_path
+      command "call %s %s /S" % [local_path, dest_dir]
     end
   end
+
+  template conf_file do
+    source "instrumental.yml.erb"
+    variables(
+      :api_key => node[:instrumental][:api_key]
+    )
+  end
+
   service "instrument_server" do
     action [:enable, :start]
   end
