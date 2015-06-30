@@ -240,9 +240,10 @@ def create_package(source, pkg, platform, architecture)
     sh %Q{fpm -s tar -t "%s" -f -n "%s" -v "%s" -a "%s" --license "%s" --vendor "%s" --maintainer "%s" --url "%s" --description "%s" --category "%s" --config-files "%s" -C "%s" -p "%s" %s "%s"} % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(source, ".tar.gz"), output_name, extra_args, source]
     output_name
   elsif supported_by_nsis.include?(pkg)
-    nsis_script  = File.join("win32", "installer.nsis.erb")
-    vendor_files = File.join("win32", "vendor")
-    template     = NSISERBContext.new([source, vendor_files], nsis_script)
+    nsis_script    = File.join("win32", "installer.nsis.erb")
+    vendor_files   = File.join("win32", "vendor")
+    installer_name = File.basename(source) + ".exe"
+    template       = NSISERBContext.new(installer_name, [source, vendor_files], nsis_script)
 
     temp         = Tempfile.new("nsis", ".")
     temp.write(template.result)
@@ -348,16 +349,21 @@ end
 
 
 class NSISERBContext
-  attr_accessor :template_path, :directories
+  attr_reader :template_path, :directories, :installer_file_name
 
-  def initialize(directories, template_path)
-    @files         = []
-    @directories   = directories
-    @template_path = template_path
+  def initialize(installer_name, directories, template_path)
+    @files               = []
+    @directories         = directories
+    @template_path       = template_path
+    @installer_file_name = installer_name
   end
 
   def template_source
     File.read(template_path)
+  end
+
+  def service_name
+    "instrument_server"
   end
 
   def result

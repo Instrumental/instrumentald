@@ -1,6 +1,6 @@
 !include x64.nsh
 
-OutFile "Install-Instrumental-Tools.exe"
+OutFile "<%= installer_file_name %>"
 
 InstallDir "$PROGRAMFILES\Instrumental Tools"
 
@@ -11,20 +11,20 @@ File /r <%= directory %>/*.*
 <% end %>
 WriteUninstaller $INSTDIR\uninstaller.exe
 ${If} ${RunningX64}
-Exec '"$INSTDIR\nssm64.exe" install "instrumental_tools" "$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" foreground'
-Exec '"$INSTDIR\nssm64.exe" start "instrumental_tools"'
+Exec '"$INSTDIR\nssm64.exe" install "<%= service_name %>" "$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" foreground'
+Exec '"$INSTDIR\nssm64.exe" start "<%= service_name %>"'
 ${Else}
-Exec '"$INSTDIR\nssm32.exe" install "instrumental_tools" "$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" foreground'
-Exec '"$INSTDIR\nssm32.exe" start "instrumental_tools"'
+Exec '"$INSTDIR\nssm32.exe" install "<%= service_name %>" "$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" foreground'
+Exec '"$INSTDIR\nssm32.exe" start "<%= service_name %>"'
 ${EndIf}
 SectionEnd
 
 Section "Uninstall"
 ${If} ${RunningX64}
-Exec '"$INSTDIR\nssm64.exe" stop "instrumental_tools"'
-Exec '"$INSTDIR\nssm64.exe" remove  "instrumental_tools" confirm'
+Exec '"$INSTDIR\nssm64.exe" stop "<%= service_name %>"'
+Exec '"$INSTDIR\nssm64.exe" remove  "<%= service_name %>" confirm'
 ${Else}
-Exec '"$INSTDIR\nssm32.exe" stop "instrumental_tools"'
-Exec '"$INSTDIR\nssm32.exe" remove  "instrumental_tools" confirm'
+Exec '"$INSTDIR\nssm32.exe" stop "<%= service_name %>"'
+Exec '"$INSTDIR\nssm32.exe" remove  "<%= service_name %>" confirm'
 ${EndIf}
 SectionEnd
