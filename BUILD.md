@@ -48,3 +48,11 @@ rake package:osx:tarball
 ```
 
 On release, the tarball should be uploaded to the Github releases page and linked to from the main README.md.
+
+## `exe` packages
+
+For Windows:
+
+```
+rake package:win32:package
+```
