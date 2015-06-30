@@ -19,8 +19,35 @@ class MetricScriptExecutor
     stat.directory? && file_is_owner_only?(stat)
   end
 
+  def windows?
+    RUBY_PLATFORM =~ /(win32|mswin|mingw)/
+  end
+
   def file_is_owner_only?(file_stat)
-    file_stat.owned? && ((file_stat.mode & 0xFFF) ^ 0O700) == 0
+    owned_by_executor = file_stat.owned?
+    unless windows?
+      owned_by_executor && ((file_stat.mode & 0xFFF) ^ 0O700) == 0
+    else
+      owned_by_executor
+    end
+  end
+
+  def print_executable_warning(path)
+    if windows?
+      puts "[INFO] Cannot execute #{path}, must exist and be executable"
+    else
+      uid  = Process.uid
+      user = Etc.getpwuid(uid).name
+      puts "[INFO] Cannot execute #{path}, must exist, be executable and only readable/writable by #{user}/#{uid}"
+    end
+  end
+
+  def print_executable_in_directory_warning(directory)
+    if windows?
+      puts "Directory #{directory} has gone away, not scanning for metric scripts."
+    else
+      puts "Directory #{directory} has gone away or does not have the correct permissions (0700), not scanning for metric scripts."
+    end
   end
 
   def execute_custom_script(full_path)
@@ -74,9 +101,7 @@ class MetricScriptExecutor
           execute_custom_script(full_path)
         else
           if !File.directory?(full_path)
-            uid  = Process.uid
-            user = Etc.getpwuid(uid).name
-            puts "[INFO] Cannot execute #{full_path}, must be executable and only readable/writable by #{user}/#{uid}"
+            print_executable_warning(full_path)
           end
           [full_path, []]
         end
@@ -84,7 +109,7 @@ class MetricScriptExecutor
       process_to_output = Hash[current]
       @previous         = process_to_output
     else
-      puts "Directory #{directory} has gone away or does not have the correct permissions (0700), not scanning for metric scripts."
+      print_executable_in_directory_warning(directory)
     end
     process_to_output.flat_map do |path, (status, time, output)|
       if status && status.success?
