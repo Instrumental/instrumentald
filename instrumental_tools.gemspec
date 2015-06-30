@@ -53,4 +53,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<librarian-puppet>, [">=0"])
   s.add_development_dependency(%q<puppet>, [">=0"])
   s.add_development_dependency(%q<serverspec>, [">=0"])
+  s.add_development_dependency(%q<winrm-transport>, ["~>1.0"])
 end
