@@ -1,6 +1,8 @@
 ---
 driver:
   name: vagrant
+  synced_folders:
+    - ["../", "/tools-root"]
 
 provisioner:
   name: chef_solo
@@ -10,8 +12,12 @@ platforms:
   - name: ubuntu-12.04
   - name: centos-6.6
   - name: "d11wtq/gentoo"
+  - name: "windows-2012r2"
 
 suites:
   - name: default
     run_list: ["instrumental_tools"]
     attributes:
+      instrumental:
+        use_local: true
+        local_path: "/tools-root/"

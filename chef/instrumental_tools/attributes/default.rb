@@ -6,3 +6,5 @@ default[:instrumental][:curl_path]      = "/usr/bin/curl"
 default[:instrumental][:wget_path]      = "/usr/bin/wget"
 default[:instrumental][:dist_init_file] = "/opt/instrumental-tools/lib/app/debian/instrument_server"
 default[:instrumental][:dest_init_file] = "/etc/init.d/instrument_server"
+default[:instrumental][:use_local]      = false
+default[:instrumental][:local_path]     = nil
