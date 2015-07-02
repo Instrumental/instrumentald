@@ -157,7 +157,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
 when "windows"
   if node[:instrumental][:use_local]
     execute "install-tools" do
-      command "call %s %s /S" % [local_path, dest_dir]
+      command "call %s /S /D=%s" % [local_path, dest_dir]
     end
   end
 
