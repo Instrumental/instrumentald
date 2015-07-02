@@ -1,25 +1,181 @@
+!include FileFunc.nsh
+!include LogicLib.nsh
+!include MUI.nsh
+!include nsDialogs.nsh
 !include x64.nsh
+
+!insertmacro MUI_PAGE_DIRECTORY
 
 OutFile "<%= installer_file_name %>"
 
 InstallDir "$PROGRAMFILES\Instrumental Tools"
+
+Var Dialog
+Var WelcomeLabel
+Var KeyLabel
+Var HostnameLabel
+Var EnableScriptsLabel
+Var ScriptDirectoryLabel
+Var KeyText
+Var HostnameText
+Var EnableScriptsCheckbox
+Var ScriptDirectoryRequest
+Var ScriptDirectoryBrowser
+Var ScriptDirectoryTemp
+
+Var ApiKey
+Var ScriptDirectoryDestination
+Var EnableScripts
+Var Hostname
+Var ServiceCommand
+
+Function .onInit
+
+${GetOptions} $CMDLINE "/K" $ApiKey
+IfErrors 0 +2
+StrCpy $ApiKey "Your API Key"
+
+${GetOptions} $CMDLINE "/H" $Hostname
+IfErrors 0 +2
+StrCpy $Hostname "HostName"
+
+${GetOptions} $CMDLINE "/E" $0
+IfErrors 0 +2
+StrCpy $EnableScripts 0 1
+StrCpy $EnableScripts 1 1
+
+${GetOptions} $CMDLINE "/SD" $ScriptDirectoryDestination
+IfErrors 0 +2
+StrCpy $ScriptDirectoryDestination "$INSTDIR\Scripts"
+
+FunctionEnd
+
+Function WriteConfigFile
+FileOpen $4 "$INSTDIR\etc\instrumental.yml" "w"
+FileWrite $4 "---$\r$\n"
+FileWrite $4 "# Replace YOUR_API_KEY with the API key for your Instrumental project and$\r$\n"
+FileWrite $4 "# remove the # from the beginning of the following line to have instrument_server$\r$\n"
+FileWrite $4 "# start sending metrics to your account.$\r$\n"
+FileWrite $4 "$\r$\n"
+FileWrite $4 "api_key: $ApiKey$\r$\n"
+FileWrite $4 "$\r$\n"
+FileClose $4
+FunctionEnd
+
+Page custom nsDialogsPage
+Page instfiles
+
+Function BrowseDest
+  nsDialogs::SelectFolderDialog "Select Folder" $ScriptDirectoryDestination
+  Pop $0
+  ${If} $0 != error
+    StrCpy $ScriptDirectoryDestination $0
+    ${NSD_SetText} $ScriptDirectoryRequest $ScriptDirectoryDestination
+  ${EndIf}
+FunctionEnd
+
+Function EnDisableButton
+	${NSD_GetState} $EnableScriptsCheckbox $0
+	${If} $0 == 1
+    StrCpy $EnableScripts 1 1
+		EnableWindow $ScriptDirectoryBrowser 1
+    EnableWindow $ScriptDirectoryRequest 1
+	${Else}
+    StrCpy $EnableScripts 0 1
+		EnableWindow $ScriptDirectoryBrowser 0
+    EnableWindow $ScriptDirectoryRequest 0
+	${EndIf}
+FunctionEnd
+
+
+Function nsDialogsPage
+	nsDialogs::Create 1018
+	Pop $Dialog
+
+	${If} $Dialog == error
+		Abort
+	${EndIf}
+
+	${NSD_CreateLabel} 0 0 100% 12u "Enter configuration details below"
+	Pop $WelcomeLabel
+
+	${NSD_CreateLabel} 0 13u 30% 12u "API Key"
+	Pop $KeyLabel
+
+  ${NSD_CreateText} 35% 13u 60% 12u $ApiKey
+  Pop $KeyText
+
+	${NSD_CreateLabel} 0 26u 30% 12u "Hostname"
+	Pop $HostnameLabel
+
+  ${NSD_CreateText} 35% 26u 60% 12u $Hostname
+  Pop $HostnameText
+
+	${NSD_CreateLabel} 0 39u 30% 12u "Enable Custom Scripts?"
+	Pop $EnableScriptsLabel
+
+  ${NSD_CreateCheckbox} 35% 39u 60% 12u ""
+  Pop $EnableScriptsCheckbox
+
+	${NSD_CreateLabel} 0 52u 30% 12u "Script Directory"
+	Pop $ScriptDirectoryLabel
+
+  ${NSD_CreateDirRequest} 35% 52u 40% 12u $ScriptDirectoryDestination
+  Pop $ScriptDirectoryRequest
+
+  ${NSD_CreateBrowseButton} 77% 52u 10% 12u ".."
+  Pop $ScriptDirectoryBrowser
+
+  StrCmp $EnableScripts 1 0 nomatch
+  ${NSD_Check} $EnableScriptsCheckbox
+  Call EnDisableButton
+  nomatch:
+  Call EnDisableButton
+
+  ${NSD_OnClick} $EnableScriptsCheckbox EnDisableButton
+  ${NSD_OnClick} $ScriptDirectoryRequest BrowseDest
+	${NSD_OnClick} $ScriptDirectoryBrowser BrowseDest
+
+	nsDialogs::Show
+
+FunctionEnd
+
 
 Section "Installing Files"
 SetOutPath $INSTDIR
 <% directories.each do |directory| %>
 File /r <%= directory %>/*.*
 <% end %>
-WriteUninstaller $INSTDIR\uninstaller.exe
+WriteUninstaller $INSTDIR\<%= uninstaller_name %>
+Call WriteConfigFile
+
+StrCmp $EnableScripts 1 0 WithoutScripts
+CreateDirectory "$ScriptDirectoryDestination"
+StrCpy $ServiceCommand '"$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" -e -s "\"$ScriptDirectoryDestination\"" -H "$Hostname" foreground'
+goto InstallService
+WithoutScripts:
+StrCpy $ServiceCommand '"$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" -H "$Hostname" foreground'
+
+InstallService:
 ${If} ${RunningX64}
-Exec '"$INSTDIR\nssm64.exe" install "<%= service_name %>" "$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" foreground'
+Exec '"$INSTDIR\nssm64.exe" install "<%= service_name %>" $ServiceCommand'
 Exec '"$INSTDIR\nssm64.exe" start "<%= service_name %>"'
 ${Else}
-Exec '"$INSTDIR\nssm32.exe" install "<%= service_name %>" "$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" foreground'
+Exec '"$INSTDIR\nssm32.exe" install "<%= service_name %>" $ServiceCommand'
 Exec '"$INSTDIR\nssm32.exe" start "<%= service_name %>"'
 ${EndIf}
+
 SectionEnd
 
 Section "Uninstall"
+<% files, directories = removable_artifacts %>
+<% files.each do |file| %>
+delete "$INSTDIR\\<%= file %>"
+<% end %>
+delete "$INSTDIR\\<%= uninstaller_name %>"
+<% directories.each do |directory| %>
+rmdir /R "$INSTDIR\\<%= directory %>"
+<% end %>
 ${If} ${RunningX64}
 Exec '"$INSTDIR\nssm64.exe" stop "<%= service_name %>"'
 Exec '"$INSTDIR\nssm64.exe" remove  "<%= service_name %>" confirm'

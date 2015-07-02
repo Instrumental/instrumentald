@@ -352,7 +352,6 @@ class NSISERBContext
   attr_reader :template_path, :directories, :installer_file_name
 
   def initialize(installer_name, directories, template_path)
-    @files               = []
     @directories         = directories
     @template_path       = template_path
     @installer_file_name = installer_name
@@ -362,8 +361,31 @@ class NSISERBContext
     File.read(template_path)
   end
 
+  def removable_artifacts
+    removable_files       = Set.new
+    removable_directories = Set.new
+    directories.each do |dir|
+      Find.find(dir) do |path|
+        if File.file?(path)
+          without_base           = path.split(File::SEPARATOR)[1..-1]
+          without_file           = without_base[0..-2]
+          removable_files       << without_base.join("\\")
+          removable_directories << without_file.join("\\")
+        end
+      end
+    end
+    removable_files << "nssm32.exe"
+    removable_files << "nssm64.exe"
+    dirs = removable_directories.to_a.sort_by { |path| path.split("\\").size }.reverse
+    [removable_files.to_a, dirs]
+  end
+
   def service_name
     "instrument_server"
+  end
+
+  def uninstaller_name
+    "uninstaller.exe"
   end
 
   def result
