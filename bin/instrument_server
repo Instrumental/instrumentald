@@ -27,12 +27,21 @@ def require_api_key(options, parser)
   end
 end
 
+def coerce_path(path)
+  if File::ALT_SEPARATOR
+    File.join(*path.split(File::ALT_SEPARATOR))
+  else
+    path
+  end
+end
+
 
 cur_directory         = Dir.pwd
 home_directory        = Dir.home rescue nil
 script_location       = File.expand_path(File.dirname(__FILE__))
 tmp_dir               = Dir.tmpdir
 script_data_directory = [cur_directory, home_directory, script_location, tmp_dir].compact.detect { |dir| File.writable?(dir) }
+windows               = RUBY_PLATFORM =~ /(mswin|win32|mingw)/i
 
 default_script_directory = File.join(script_data_directory, '.instrumental_scripts')
 default_command          = :foreground
@@ -77,11 +86,11 @@ Default command: #{default_command.to_s}
   end
 
   opts.on('-p', '--pid LOCATION', "Where daemon PID file is located (default #{options[:pid_location]})") do |pid_location|
-    options[:pid_location] = pid_location
+    options[:pid_location] = coerce_path(pid_location)
   end
 
   opts.on('-l', '--log LOCATION', "Where to put the instrument_server log file (default #{options[:log_location]})") do |log_location|
-    options[:log_location] = log_location
+    options[:log_location] = coerce_path(log_location)
   end
 
   opts.on('-r', '--report-interval INTERVAL_IN_SECONDS', "How often to report metrics to Instrumental (default #{options[:report_interval]})") do |interval|
@@ -93,15 +102,17 @@ Default command: #{default_command.to_s}
   end
 
   opts.on('-s', '--script-location PATH_TO_DIRECTORY', "Directory where local scripts for custom metrics are located (default #{options[:script_location]})") do |path|
-    options[:script_location] = path
+    options[:script_location] = coerce_path(path)
   end
 
-  opts.on('-u', '--user USER_TO_RUN_AS', "User to run instrument_server as. You must have permissions to drop privileges to this user.") do |u|
-    options[:user] = u
+  if !windows
+    opts.on('-u', '--user USER_TO_RUN_AS', "User to run instrument_server as. You must have permissions to drop privileges to this user.") do |u|
+      options[:user] = u
+    end
   end
 
   opts.on('-t', '--temp-dir TEMP_DIRECTORY', "Where to store temporary files (default #{options[:tmp_location]})") do |t|
-    options[:tmp_location] = t
+    options[:tmp_location] = coerce_path(t)
   end
 
   opts.on('--debug', "Print all sent metrics to the log") do
@@ -116,7 +127,7 @@ end
 
 option_parser.parse!
 
-if options[:user]
+if options[:user] && !windows
   desired_uid = Etc.getpwnam(options[:user]).uid
   Process::Sys.setuid(desired_uid)
   if desired_uid && desired_uid != 0
@@ -171,11 +182,11 @@ if options[:enable_scripts]
     raise "The directory #{options[:script_location]} does not exist."
   end
 
-  stat = File::Stat.new(File.expand_path(options[:script_location]))
-
-  if !stat.owned? || ((stat.mode & 0xFFF) ^ 0O700) != 0
+  stat         = File::Stat.new(File.expand_path(options[:script_location]))
+  correct_mode = windows || ((stat.mode & 0xFFF) ^ 0O700) === 0
+  unless stat.owned? && correct_mode
     uid      = Process.uid
-    username = Etc.getpwuid(uid).name
+    username = Etc.getpwuid(uid).try(:name)
     raise "The directory #{options[:script_location]} is writable/readable by others. Please ensure it is only writable / readable by user/uid #{username}/#{uid}"
   end
 
