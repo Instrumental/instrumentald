@@ -62,7 +62,7 @@ FileWrite $4 "$\r$\n"
 FileClose $4
 FunctionEnd
 
-Page custom nsDialogsPage
+Page custom nsDialogsPage nsDialogsPageLeave
 Page instfiles
 
 Function BrowseDest
@@ -137,6 +137,16 @@ Function nsDialogsPage
 	${NSD_OnClick} $ScriptDirectoryBrowser BrowseDest
 
 	nsDialogs::Show
+
+FunctionEnd
+
+Function nsDialogsPageLeave
+
+${NSD_GetText} $HostnameText $Hostname
+${NSD_GetText} $KeyText $ApiKey
+${NSD_GetState} $EnableScriptsCheckbox $EnableScripts
+${NSD_GetText} $ScriptDirectoryRequest $ScriptDirectoryDestination
+
 
 FunctionEnd
 
