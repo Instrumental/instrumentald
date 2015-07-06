@@ -11,12 +11,16 @@ class MetricScriptExecutor
 
   def can_execute_file?(path)
     stat = File::Stat.new(path)
-    stat.executable? && file_is_owner_only?(stat)
+    powershell_script?(path) || (stat.executable? && file_is_owner_only?(stat))
   end
 
   def can_execute_in_directory?(directory)
     stat = File::Stat.new(directory)
     stat.directory? && file_is_owner_only?(stat)
+  end
+
+  def powershell_script?(path)
+    windows? && File.extname(path).to_s.downcase == ".ps1"
   end
 
   def windows?
@@ -62,6 +66,18 @@ class MetricScriptExecutor
 
 
     cmd = [full_path, (previous_time || 0).to_i, (previous_status && previous_status.to_i)].compact.map(&:to_s)
+    if powershell_script?(full_path) && !File.executable?(full_path)
+      native_path = if File::ALT_SEPARATOR
+                      full_path.split(File::SEPARATOR).join(File::ALT_SEPARATOR)
+                    else
+                      full_path
+                    end
+      cmd[0] = native_path
+      cmd.unshift "-File"
+      cmd.unshift "powershell"
+    end
+
+    puts "Trying to execute #{cmd.join(" ")}"
 
     pid = Process.spawn(*cmd,
                         :chdir => File.dirname(full_path),
