@@ -76,9 +76,9 @@ Default command: #{default_command.to_s}
   end
 
   opts.on('-c', '--collector COLLECTOR[:PORT]', "Collector (default #{options[:collector]}:#{options[:port]})") do |collector|
-    address, port = collector.split(':')
+    address, port       = collector.split(':')
     options[:collector] = address
-    options[:port] = port if port
+    options[:port]      = port if port
   end
 
   opts.on('-H', '--hostname HOSTNAME', "Hostname to report as (default #{options[:hostname]})") do |hostname|
