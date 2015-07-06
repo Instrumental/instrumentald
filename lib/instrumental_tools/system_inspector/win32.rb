@@ -68,7 +68,7 @@ class SystemInspector
         formatted_name = sanitize(result["Name"])
         used = result["PercentUsage"].to_f
         memory_stats["swap.#{formatted_name}.free_percent"] = 100 - used
-        memory_stats["swap.#{formatted_name}.used_percent"] = 100 - used
+        memory_stats["swap.#{formatted_name}.used_percent"] = used
       end
       { :gauges => memory_stats }
     end
