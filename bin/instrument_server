@@ -72,7 +72,7 @@ Default command: #{default_command.to_s}
   end
 
   opts.on('-f', '--config-file PATH', "Config file with location of your API key (default #{options[:config_file]})") do |path|
-    options[:config_file] = path
+    options[:config_file] = coerce_path(path)
   end
 
   opts.on('-c', '--collector COLLECTOR[:PORT]', "Collector (default #{options[:collector]}:#{options[:port]})") do |collector|
