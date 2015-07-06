@@ -77,8 +77,6 @@ class MetricScriptExecutor
       cmd.unshift "powershell"
     end
 
-    puts "Trying to execute #{cmd.join(" ")}"
-
     pid = Process.spawn(*cmd,
                         :chdir => File.dirname(full_path),
                         :in    => stdin_r,
