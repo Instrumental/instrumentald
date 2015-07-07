@@ -44,9 +44,6 @@ namespace Instrumental
                                                                            ScriptsDirectory() ?? DefaultScriptsDirectory());
     }
 
-    /// <summary>
-    /// The Main Thread: This is where your Service is Run.
-    /// </summary>
     static void Main()
     {
       ServiceBase.Run(new InstrumentServerService());
@@ -119,31 +116,17 @@ namespace Instrumental
       return DefaultBasePath() + "\\Scripts";
     }
 
-    /// <summary>
-    /// Dispose of objects that need it here.
-    /// </summary>
-    /// <param name="disposing">Whether
-    ///    or not disposing is going on.</param>
     protected override void Dispose(bool disposing)
     {
       base.Dispose(disposing);
     }
 
-    /// <summary>
-    /// OnStart(): Put startup code here
-    ///  - Start threads, get inital data, etc.
-    /// </summary>
-    /// <param name="args"></param>
     protected override void OnStart(string[] args)
     {
       base.OnStart(args);
       ProcessWorker.Start();
     }
 
-    /// <summary>
-    /// OnStop(): Put your stop code here
-    /// - Stop threads, set final data, etc.
-    /// </summary>
     protected override void OnStop()
     {
       base.OnStop();
