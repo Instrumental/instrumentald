@@ -63,6 +63,9 @@ namespace Instrumental
         });
       if(!process.Start()){
         destination.WriteEntry("Failed to start process", EventLogEntryType.Error);
+      } else {
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
       }
     }
 
