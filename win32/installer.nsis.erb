@@ -29,7 +29,19 @@ Var EnableScripts
 Var Hostname
 Var ServiceCommand
 
+Var DotNetVersion
+Var InstallUtilPath
+Var DotNetFriendlyVersion
+Var DotNetInstall
+
 Function .onInit
+
+StrCpy $DotNetFriendlyVersion "4.0"
+StrCpy $DotNetInstall "http://www.microsoft.com/downloads/en/details.aspx?FamilyID=9cfb2d51-5ff4-4491-b0e5-b386f32c0992&displaylang=en"
+StrCpy $DotNetVersion "v4.0.30319"
+StrCpy $InstallUtilPath "$WINDIR\Microsoft.NET\Framework\$DotNetVersion\installUtil.exe"
+
+Call AssertDotNet
 
 ${GetOptions} $CMDLINE "/K" $ApiKey
 IfErrors 0 +2
@@ -64,6 +76,14 @@ FunctionEnd
 
 Page custom nsDialogsPage nsDialogsPageLeave
 Page instfiles
+
+Function AssertDotNet
+  IfFileExists $InstallUtilPath NextStep
+  MessageBox MB_OK|MB_ICONEXCLAMATION "You must have the Microsoft .NET Framework $DotNetFriendlyVersion Installed to use this application. $\n$\n The installer will now open the Microsft .NET Framework $DotNetFriendlyVersion webpage"
+  ExecShell Open "$DotNetInstall" SW_SHOWNORMAL
+  Quit
+NextStep:
+FunctionEnd
 
 Function BrowseDest
   nsDialogs::SelectFolderDialog "Select Folder" $ScriptDirectoryDestination
@@ -159,25 +179,13 @@ File /r <%= directory %>/*.*
 WriteUninstaller $INSTDIR\<%= uninstaller_name %>
 Call WriteConfigFile
 
-StrCmp $EnableScripts 1 0 WithoutScripts
-CreateDirectory "$ScriptDirectoryDestination"
-StrCpy $ServiceCommand '"$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" -e -s "\"$ScriptDirectoryDestination\"" -H "$Hostname" foreground'
-goto InstallService
-WithoutScripts:
-StrCpy $ServiceCommand '"$INSTDIR\instrument_server.bat" -f "\"$INSTDIR\etc\instrumental.yml\"" -H "$Hostname" foreground'
-
-InstallService:
-${If} ${RunningX64}
-Exec '"$INSTDIR\nssm64.exe" install "<%= service_name %>" $ServiceCommand'
-Exec '"$INSTDIR\nssm64.exe" start "<%= service_name %>"'
-${Else}
-Exec '"$INSTDIR\nssm32.exe" install "<%= service_name %>" $ServiceCommand'
-Exec '"$INSTDIR\nssm32.exe" start "<%= service_name %>"'
-${EndIf}
-
+Exec '"$InstallUtilPath" InstrumentServer.exe /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname" /ScriptsEnabled="$EnableScripts" /ScriptsDirectory="$ScriptDirectoryDestination"'
+Exec '"sc" start "Instrument Server"'
 SectionEnd
 
 Section "Uninstall"
+Exec '"sc" stop "Instrument Server"'
+Exec '"$InstallUtilPath" /uninstall "$NSTDIR\InstrumentServer.exe"'
 <% files, directories = removable_artifacts %>
 <% files.each do |file| %>
 delete "$INSTDIR\\<%= file %>"
@@ -186,11 +194,4 @@ delete "$INSTDIR\\<%= uninstaller_name %>"
 <% directories.each do |directory| %>
 rmdir /R "$INSTDIR\\<%= directory %>"
 <% end %>
-${If} ${RunningX64}
-Exec '"$INSTDIR\nssm64.exe" stop "<%= service_name %>"'
-Exec '"$INSTDIR\nssm64.exe" remove  "<%= service_name %>" confirm'
-${Else}
-Exec '"$INSTDIR\nssm32.exe" stop "<%= service_name %>"'
-Exec '"$INSTDIR\nssm32.exe" remove  "<%= service_name %>" confirm'
-${EndIf}
 SectionEnd
