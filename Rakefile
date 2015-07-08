@@ -315,6 +315,13 @@ def create_directory_bundle(target, wrapper_script, separator, extension = nil, 
 
   FileUtils.mkdir_p(bundle_dir)
   File.open(File.join(bundle_dir, "config"), "w") { |f| f.write(BUNDLE_CONFIG) }
+
+  post_build_dir      = File.join(target)
+  post_build_makefile = File.join(post_build_dir, "Makefile")
+  if File.exists?(post_build_makefile)
+    sh %Q{cd "%s" && make clean || /usr/bin/true} % post_build_dir
+    sh %Q{cd "%s" && make install prefix="%s"} % [post_build_dir, File.expand_path(package_dir)]
+  end
   package_dir
 end
 
