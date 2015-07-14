@@ -62,6 +62,13 @@ StrCpy $ScriptDirectoryDestination "$INSTDIR\Scripts"
 
 FunctionEnd
 
+Function un.onInit
+StrCpy $DotNetFriendlyVersion "4.0"
+StrCpy $DotNetInstall "http://www.microsoft.com/downloads/en/details.aspx?FamilyID=9cfb2d51-5ff4-4491-b0e5-b386f32c0992&displaylang=en"
+StrCpy $DotNetVersion "v4.0.30319"
+StrCpy $InstallUtilPath "$WINDIR\Microsoft.NET\Framework\$DotNetVersion\installUtil.exe"
+FunctionEnd
+
 Function WriteConfigFile
 FileOpen $4 "$INSTDIR\etc\instrumental.yml" "w"
 FileWrite $4 "---$\r$\n"
@@ -188,9 +195,9 @@ Call WriteConfigFile
 
 
 ${If} $EnableScripts == 1
-Exec '"$InstallUtilPath" InstrumentServer.exe /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname" /ScriptsEnabled="True" /ScriptsDirectory="$ScriptDirectoryDestination"'
+Exec '"$InstallUtilPath" /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname" /ScriptsEnabled="True" /ScriptsDirectory="$ScriptDirectoryDestination" InstrumentServer.exe'
 ${Else}
-Exec '"$InstallUtilPath" InstrumentServer.exe /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname"'
+Exec '"$InstallUtilPath" /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname" InstrumentServer.exe'
 ${EndIf}
 
 Exec '"sc" start "Instrument Server"'
@@ -198,7 +205,7 @@ SectionEnd
 
 Section "Uninstall"
 Exec '"sc" stop "Instrument Server"'
-Exec '"$InstallUtilPath" /uninstall "$INSTDIR\InstrumentServer.exe"'
+Exec '"$InstallUtilPath" /u "$INSTDIR\InstrumentServer.exe"'
 <% files, directories = removable_artifacts %>
 <% files.each do |file| %>
 delete "$INSTDIR\\<%= file %>"
