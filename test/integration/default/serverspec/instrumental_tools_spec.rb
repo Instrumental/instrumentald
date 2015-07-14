@@ -10,7 +10,8 @@ if RUBY_PLATFORM =~ /(win|mswin|mingw)/i
     check_owner:      false,
     config:           "c:\\Program Files (x86)\\Instrumental Tools\\etc\\instrumental.yml",
     executable:       "c:\\Program Files (x86)\\Instrumental Tools\\instrument_server.bat",
-    has_pid:          false
+    has_pid:          false,
+    service_name:     "Instrument Server"
   }
 else
   set :backend, :exec
@@ -21,7 +22,8 @@ else
     executable:       "/opt/instrumental-tools/instrument_server",
     has_pid:          true,
     pid_path:         "/opt/instrumental-tools/instrument_server.pid",
-    owner:            "nobody"
+    owner:            "nobody",
+    service_name:     "instrument_server"
   }
 end
 
@@ -33,7 +35,7 @@ describe file(details[:executable]) do
   end
 end
 
-describe service('instrument_server') do
+describe service(details[:service_name]) do
   it { should be_enabled }
   it { should be_running }
 end
