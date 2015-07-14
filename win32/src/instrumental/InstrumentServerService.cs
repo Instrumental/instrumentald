@@ -57,9 +57,9 @@ namespace Instrumental
         localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
       }
       if(withWriteAccess){
-        return localKey.OpenSubKey("Software", true).CreateSubKey(InstrumentalKey);
+        return localKey.OpenSubKey("SOFTWARE", true).CreateSubKey(InstrumentalKey);
       } else {
-        return localKey.OpenSubKey("Software").OpenSubKey(InstrumentalKey);
+        return localKey.OpenSubKey("SOFTWARE").OpenSubKey(InstrumentalKey);
       }
     }
 
