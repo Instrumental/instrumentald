@@ -3,6 +3,8 @@ driver:
   name: vagrant
   synced_folders:
     - ["../", "/tools-root"]
+  customize:
+    memory: 2048
 
 provisioner:
   name: chef_solo
