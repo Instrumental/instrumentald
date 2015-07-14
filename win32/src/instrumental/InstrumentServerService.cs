@@ -37,7 +37,7 @@ namespace Instrumental
       EventLog.WriteEntry($"Starting with path {BasePath()} (Default: {DefaultBasePath()}), config {Config()} (Default: {DefaultConfig()}), hostname {Hostname()} (Default: {DefaultHostname()}), scripts enabled {ScriptsEnabled()}, scripts directory {ScriptsDirectory()} (Default: {DefaultScriptsDirectory()}), values taken from {InstrumentalRegistryKey()}", EventLogEntryType.Information);
 
       this.ProcessWorker               = new InstrumentServerProcessWorker(EventLog,
-                                                                           path + "\\instrument_server.bat",
+                                                                           path,
                                                                            Config() ?? DefaultConfig(),
                                                                            Hostname() ?? DefaultHostname(),
                                                                            ScriptsEnabled(),
@@ -71,8 +71,17 @@ namespace Instrumental
       return Path.GetDirectoryName(assemblyPath);
     }
 
+    public static string StringFromRegistryKey(string keyName){
+      RegistryKey regkey = InstrumentalRegistryKey();
+      if(regkey != null){
+        return Convert.ToString(regkey.GetValue(keyName));
+      } else {
+        return null;
+      }
+    }
+
     public static string BasePath() {
-      return Convert.ToString(InstrumentalRegistryKey().GetValue(PathKey));
+      return StringFromRegistryKey(PathKey);
     }
 
     public static string DefaultBasePath() {
@@ -80,7 +89,7 @@ namespace Instrumental
     }
 
     public static string Config() {
-      return Convert.ToString(InstrumentalRegistryKey().GetValue(ConfigKey));
+      return StringFromRegistryKey(ConfigKey);
     }
 
     public static string DefaultConfig() {
@@ -88,7 +97,7 @@ namespace Instrumental
     }
 
     public static string Hostname(){
-      return Convert.ToString(InstrumentalRegistryKey().GetValue(HostnameKey));
+      return StringFromRegistryKey(HostnameKey);
     }
 
     public static string DefaultHostname(){
@@ -96,7 +105,7 @@ namespace Instrumental
     }
 
     public static bool ScriptsEnabled() {
-      object value = InstrumentalRegistryKey().GetValue(EnableScriptsKey);
+      object value = InstrumentalRegistryKey()?.GetValue(EnableScriptsKey);
       if(value != null){
         return Convert.ToBoolean(value);
       } else {
@@ -109,7 +118,7 @@ namespace Instrumental
     }
 
     public static string ScriptsDirectory() {
-      return Convert.ToString(InstrumentalRegistryKey().GetValue(ScriptsDirectoryKey));
+      return StringFromRegistryKey(ScriptsDirectoryKey);
     }
 
     public static string DefaultScriptsDirectory(){
