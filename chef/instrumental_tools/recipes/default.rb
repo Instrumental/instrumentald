@@ -168,7 +168,7 @@ when "windows"
     )
   end
 
-  service "instrument_server" do
+  service "Instrument Server" do
     action [:enable, :start]
   end
 else
