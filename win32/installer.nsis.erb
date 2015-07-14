@@ -176,22 +176,39 @@ SetOutPath $INSTDIR
 <% directories.each do |directory| %>
 File /r <%= directory %>/*.*
 <% end %>
+<% files, _ = removable_artifacts %>
+<% files.each do |file| %>
+SetFileAttributes "$INSTDIR\\<%= file %>" NORMAL
+<% if file.index("Gemfile.lock") %>
+Exec 'icacls "$INSTDIR\\<%= file %>" /grant BUILTIN\Users:f'
+<% end %>
+<% end %>
 WriteUninstaller $INSTDIR\<%= uninstaller_name %>
 Call WriteConfigFile
 
-Exec '"$InstallUtilPath" InstrumentServer.exe /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname" /ScriptsEnabled="$EnableScripts" /ScriptsDirectory="$ScriptDirectoryDestination"'
+
+${If} $EnableScripts == 1
+Exec '"$InstallUtilPath" InstrumentServer.exe /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname" /ScriptsEnabled="True" /ScriptsDirectory="$ScriptDirectoryDestination"'
+${Else}
+Exec '"$InstallUtilPath" InstrumentServer.exe /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname"'
+${EndIf}
+
 Exec '"sc" start "Instrument Server"'
 SectionEnd
 
 Section "Uninstall"
 Exec '"sc" stop "Instrument Server"'
-Exec '"$InstallUtilPath" /uninstall "$NSTDIR\InstrumentServer.exe"'
+Exec '"$InstallUtilPath" /uninstall "$INSTDIR\InstrumentServer.exe"'
 <% files, directories = removable_artifacts %>
 <% files.each do |file| %>
 delete "$INSTDIR\\<%= file %>"
 <% end %>
 delete "$INSTDIR\\<%= uninstaller_name %>"
 <% directories.each do |directory| %>
+<% if directory.strip.empty? %>
+rmdir "$INSTDIR"
+<% else %>
 rmdir /R "$INSTDIR\\<%= directory %>"
+<% end %>
 <% end %>
 SectionEnd
