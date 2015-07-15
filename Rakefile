@@ -304,9 +304,7 @@ def create_directory_bundle(target, wrapper_script, separator, extension = nil, 
   sh %Q{cp "%s" Gemfile Gemfile.lock "%s"} % [spec_path, dest_vendor_dir]
 
 
-  GEMSPEC.require_paths.select { |path| path !~ /.rbenv/ }.each do |path|
-    sh %Q{ln -sf "../app/%s" "%s"} % [path, File.join(dest_vendor_dir, path)]
-  end
+  sh %Q{ln -sf "../app/%s" "%s"} % ["lib", File.join(dest_vendor_dir, "lib")]
 
   FileUtils.mkdir_p(bundle_dir)
   File.open(File.join(bundle_dir, "config"), "w") { |f| f.write(BUNDLE_CONFIG) }
