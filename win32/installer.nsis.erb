@@ -58,8 +58,9 @@ StrCpy $Hostname "HostName"
 
 ${GetOptions} $CMDLINE "/E" $0
 IfErrors 0 +2
-StrCpy $EnableScripts 0 1
-StrCpy $EnableScripts 1 1
+StrCpy $EnableScripts 1
+StrCpy $EnableScripts 0
+
 
 ${GetOptions} $CMDLINE "/SD" $ScriptDirectoryDestination
 IfErrors 0 +2
