@@ -4,8 +4,13 @@
 !include nsDialogs.nsh
 !include x64.nsh
 
+
+!define MUI_ICON "win32/logo.ico"
+
 !insertmacro MUI_PAGE_DIRECTORY
 
+Name "Instrumental Tools"
+Icon "win32/logo.ico"
 OutFile "<%= installer_file_name %>"
 
 InstallDir "$PROGRAMFILES\Instrumental Tools"
@@ -116,6 +121,7 @@ FunctionEnd
 
 
 Function nsDialogsPage
+  !insertmacro MUI_HEADER_TEXT "Monitoring Options" "Enter your configuration details below. API key information is available on your account on https://instrumentalapp.com/."
 	nsDialogs::Create 1018
 	Pop $Dialog
 
