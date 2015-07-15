@@ -24,10 +24,11 @@ file_name = case node["platform_family"]
             else
               "instrumental-tools_%s_linux-%s.tar.gz" % [version, arch]
             end
-local_path = ::File.join(node[:instrumental][:local_path], file_name)
-dest_dir   = node[:instrumental][:destination_dir]
-conf_file  = node[:instrumental][:config_file]
-remote_name = "%s/%s/%s" % [node[:instrumental][:repo], version, file_name]
+
+local_path          = ::File.join(node[:instrumental][:local_path], file_name)
+dest_dir            = node[:instrumental][:destination_dir]
+conf_file           = node[:instrumental][:config_file]
+remote_name         = "%s/%s/%s" % [node[:instrumental][:repo], version, file_name]
 package_destination = ::File.join(dest_dir, file_name)
 
 case node["platform_family"]
