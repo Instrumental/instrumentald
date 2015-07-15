@@ -1,21 +1,5 @@
 require "wmi-lite"
 
-module Instrumental
-  class Agent
-    def test_connection
-      begin
-        @socket.read_nonblock(1)
-      rescue Errno::EAGAIN, IO::EAGAINWaitReadable, IO::EWOULDBLOCKWaitReadable
-        # noop
-      end
-    end
-    def report_exception(e)
-      logger.error "Exception occurred (#{e.inspect}): #{e.message}\n#{e.backtrace.join("\n")}"
-    end
-  end
-
-end
-
 class SystemInspector
   module Win32
 
