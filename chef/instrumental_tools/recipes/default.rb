@@ -150,6 +150,13 @@ when "windows"
     recursive true
   end
 
+  if node[:instrumental][:enable_scripts]
+    directory node[:instrumental][:script_dir] do
+      action :create
+      recursive true
+    end
+  end
+
   extra_args = if node[:instrumental][:enable_scripts]
                  '/SD "%s" /E' % node[:instrumental][:script_dir]
                else
