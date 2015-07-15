@@ -27,6 +27,8 @@ file_name = case node["platform_family"]
 local_path = ::File.join(node[:instrumental][:local_path], file_name)
 dest_dir   = node[:instrumental][:destination_dir]
 conf_file  = node[:instrumental][:config_file]
+remote_name = "%s/%s/%s" % [node[:instrumental][:repo], version, file_name]
+package_destination = ::File.join(dest_dir, file_name)
 
 case node["platform_family"]
 when "debian", "rhel", "fedora"
@@ -90,31 +92,17 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     recursive true
   end
 
+
   if node[:instrumental][:use_local]
     execute "copy_instrumental_tools_package" do
-      command "cp %s %s" % [local_path, ::File.basename(local_path)]
+      command "cp %s %s" % [local_path, package_destination]
       cwd dest_dir
       user "nobody"
     end
   else
-    remote_name = "%s/%s/%s" % [node["instrumental"]["repo"], version, file_name]
-    if ::File.exists?(node["instrumental"]["curl_path"])
-      execute "curl_download_instrumental_tools_package" do
-        command "%s -O %s" % [node["instrumental"]["curl_path"], remote_name]
-        cwd dest_dir
-        not_if { ::File.exists?(local_path) }
-        user "nobody"
-      end
-    elsif ::File.exists?(node["instrumental"]["wget_path"])
-      execute "wget_download_instrumental_tools_package" do
-        command "%s %s" % [node["instrumental"]["wget_path"], remote_name]
-        cwd dest_dir
-        not_if { ::File.exists?(local_path) }
-        user "nobody"
-      end
-    else
-      Chef::Log.fatal("Could not find curl or wget, unable to download package")
-      raise
+    remote_file package_destination do
+      source remote_name
+      user "nobody"
     end
   end
 
@@ -155,9 +143,29 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     supports :restart => true, :reload => true, :status => false
   end
 when "windows"
+
+  directory dest_dir do
+    action :create
+    recursive true
+  end
+
+  extra_args = if node[:instrumental][:enable_scripts]
+                 '/SD "%s" /E' % node[:instrumental][:script_dir]
+               else
+                 ""
+               end
+
   if node[:instrumental][:use_local]
     execute "install-tools" do
-      command "call %s /S /D=%s" % [local_path, dest_dir]
+      command 'call "%s" %s /S /D=%s' % [local_path, extra_args, dest_dir]
+    end
+  else
+    remote_file package_destination do
+      source remote_name
+      action :create
+    end
+    execute "install-tools" do
+      command 'call "%s" %s /S /D=%s' % [package_destination, extra_args, dest_dir]
     end
   end
 
