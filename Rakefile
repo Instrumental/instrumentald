@@ -206,11 +206,7 @@ namespace "package" do
     sh %Q{mkdir -p "%s"}                     % tmp_package_dir
     sh %Q{cp "%s" Gemfile Gemfile.lock "%s"} % [spec_path, tmp_package_dir]
 
-    GEMSPEC.require_paths.each do |path|
-      sh %Q{ln -sf "%s" "%s"} % [File.expand_path(path), tmp_package_dir]
-    end
-
-
+    sh %Q{ln -sf "%s" "%s"} % [File.expand_path("lib"), tmp_package_dir]
 
     env = if args[:platform] == :win32
             "INSTALL_WINDOWS=1"
