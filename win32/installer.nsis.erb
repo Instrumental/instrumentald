@@ -39,6 +39,7 @@ Var InstallUtilPath
 Var DotNetFriendlyVersion
 Var DotNetInstall
 
+
 Function .onInit
 
 StrCpy $DotNetFriendlyVersion "4.0"
@@ -214,7 +215,8 @@ Call WriteConfigFile
 
 
 ${If} $EnableScripts == 1
-Exec '"$InstallUtilPath" /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname" /ScriptsEnabled="True" /ScriptsDirectory="$ScriptDirectoryDestination" InstrumentServer.exe'
+CreateDirectory "$ScriptDirectoryDestination"
+Exec '"$InstallUtilPath" /Hostname="$Hostname" /ScriptsDirectory="$ScriptDirectoryDestination" /ScriptsEnabled="True" /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" InstrumentServer.exe'
 ${Else}
 Exec '"$InstallUtilPath" /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname" InstrumentServer.exe'
 ${EndIf}
