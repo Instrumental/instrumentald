@@ -54,7 +54,7 @@ StrCpy $ApiKey "Your API Key"
 
 ${GetOptions} $CMDLINE "/H" $Hostname
 IfErrors 0 +2
-StrCpy $Hostname "HostName"
+Call GetComputerName
 
 ${GetOptions} $CMDLINE "/E" $0
 IfErrors 0 +2
@@ -73,6 +73,18 @@ StrCpy $DotNetFriendlyVersion "4.0"
 StrCpy $DotNetInstall "http://www.microsoft.com/downloads/en/details.aspx?FamilyID=9cfb2d51-5ff4-4491-b0e5-b386f32c0992&displaylang=en"
 StrCpy $DotNetVersion "v4.0.30319"
 StrCpy $InstallUtilPath "$WINDIR\Microsoft.NET\Framework\$DotNetVersion\installUtil.exe"
+FunctionEnd
+
+Function GetComputerName
+ReadRegStr $0 HKLM "System\CurrentControlSet\Control\ComputerName\ActiveComputerName" "ComputerName"
+StrCmp $0 "" win9x
+StrCpy $1 $0 4 3
+Goto done
+win9x:
+ReadRegStr $0 HKLM "System\CurrentControlSet\Control\ComputerName\ComputerName" "ComputerName"
+StrCpy $1 $0 4 3
+done:
+StrCpy $Hostname $0
 FunctionEnd
 
 Function WriteConfigFile
