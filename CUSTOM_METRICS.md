@@ -62,3 +62,7 @@ You may output error information on `STDERR` of your process, and it will be out
 ### Timeouts
 
 Your script is responsible for managing timeouts. The `instrument_server` process will not attempt to terminate your process for you.
+
+### Powershell Integration
+
+Windows administrators may create Powershell scripts following the above guidelines. You should write your output to the STDOUT stream using `Write-Output`. The file extension of the Powershell script must be `.ps1` in order for it to be executd by the Instrument Server process.
