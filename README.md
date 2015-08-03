@@ -4,7 +4,7 @@ A collection of tools for monitoring servers with Instrumental ([www.instrumenta
 
 ## Operating System Support
 
-`instrumental_tools` is currently officially supported on 32-bit and 64-bit Linux, as well as Mac OS X. There are prebuilt packages available for Debian and RHEL-based systems.
+`instrumental_tools` is currently officially supported on 32-bit and 64-bit Linux, Windows systems and Mac OS X. There are prebuilt packages available for Debian, RHEL and Win32 systems.
 
 ## Installation
 
