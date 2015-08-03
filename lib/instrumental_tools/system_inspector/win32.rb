@@ -1,43 +1,5 @@
 require "wmi-lite"
 
-# TODO: Remove before merge
-class Instrumental::Agent
-  def wait_exceptions
-    classes = [Errno::EAGAIN]
-    if defined?(IO::EAGAINWaitReadable)
-      classes << IO::EAGAINWaitReadable
-    end
-    if defined?(IO::EWOULDBLOCKWaitReadable)
-      classes << IO::EWOULDBLOCKWaitReadable
-    end
-    if defined?(IO::WaitReadable)
-      classes << IO::WaitReadable
-    end
-    classes
-  end
-
-
-  def test_connection
-    begin
-      # In the case where the socket is an OpenSSL::SSL::SSLSocket,
-      # on Ruby 1.8.6, 1.8.7 or 1.9.1, read_nonblock does not exist,
-      # and so the case of testing socket liveliness via a nonblocking
-      # read that catches a wait condition won't work.
-      #
-      # We grab the SSL socket's underlying IO object and perform the
-      # non blocking read there in order to ensure the socket is still
-      # valid
-      if @socket.respond_to?(:read_nonblock)
-        @socket.read_nonblock(1)
-      elsif @socket.respond_to?(:io)
-        @socket.io.read_nonblock(1)
-      end
-    rescue *wait_exceptions
-      # noop
-    end
-  end
-end
-
 class SystemInspector
   module Win32
 
