@@ -1,3 +1,12 @@
+### 1.1.0 [August 3rd, 2015]
+* Windows support
+* Windows installer
+* Updated Chef scripts to use remote_file
+* Updated Chef script to support Windows
+* Use latest `instrumental_agent` gem
+* Add Powershell integration for custom metrics
+* Process now disconnects from Instrumental when idling between reports
+
 ### 1.0.0 [May 21st, 2015]
 * Configurable pid and log file locations
 * Pid and log file default to $HOME
