@@ -4,14 +4,14 @@
 
 Prebuilt `deb` and `rpm` packages are available via the [packagecloud.io](https://packagecloud.io/) service. These files are also available to download directly:
 
-* 64-bit Debian package (Ubuntu, Debian) [https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_amd64.deb](https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_amd64.deb)
-* 32-bit Debian package (Ubuntu, Debian) [https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_i386.deb](https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_i386.deb)
-* 64-bit RPM package (RHEL, Amazon AMI) [https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_amd64.rpm](https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_amd64.rpm)
-* 32-bit RPM package (RHEL, Amazon AMI) [https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_i386.rpm](https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_i386.rpm)
-* 64-bit Linux tarball (CoreOS, etc.) [https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_linux-x86_64.tar.gz](https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_linux-x86_64.tar.gz)
-* 32-bit Linux tarball (CoreOS, etc.) [https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_linux-x86.tar.gz](https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_linux-x86.tar.gz)
-* Windows installer [https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_win32.exe](https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_win32.exe)
-* 64-bit Mac OS X tarball [https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_osx.tar.gz](https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_osx.tar.gz)
+* 64-bit Debian package (Ubuntu, Debian) [https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_amd64.deb](https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_amd64.deb)
+* 32-bit Debian package (Ubuntu, Debian) [https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_i386.deb](https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_i386.deb)
+* 64-bit RPM package (RHEL, Amazon AMI) [https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_amd64.rpm](https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_amd64.rpm)
+* 32-bit RPM package (RHEL, Amazon AMI) [https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_i386.rpm](https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_i386.rpm)
+* 64-bit Linux tarball (CoreOS, etc.) [https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_linux-x86_64.tar.gz](https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_linux-x86_64.tar.gz)
+* 32-bit Linux tarball (CoreOS, etc.) [https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_linux-x86.tar.gz](https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_linux-x86.tar.gz)
+* Windows installer [https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_win32.exe](https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_win32.exe)
+* 64-bit Mac OS X tarball [https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_osx.tar.gz](https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_osx.tar.gz)
 
 # Ubuntu
 
@@ -48,7 +48,7 @@ sudo cp /opt/instrumental-tools/etc/instrumental.yml /etc/
 
 # Windows
 
-Download the [installer](https://s3.amazonaws.com/instrumental-tools/1.1.0/instrumental-tools_1.1.0_win32.exe) and run it, adding in your API key when prompted.
+Download the [installer](https://s3.amazonaws.com/instrumental-tools/1.1.1/instrumental-tools_1.1.1_win32.exe) and run it, adding in your API key when prompted.
 
 # RubyGems
 
