@@ -60,7 +60,8 @@ class ServerController < Pidly::Control
   end
 
   def build_agent(key, address, enabled)
-    Instrumental::Agent.new(key, collector: address, enabled: enabled)
+    secure_protocol = address.split(':').last != '8000'
+    Instrumental::Agent.new(key, collector: address, enabled: enabled, secure: secure_protocol)
   end
 
   def set_new_agent(key, address)

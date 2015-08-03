@@ -48,7 +48,7 @@ default_command          = :foreground
 
 options = {
   :collector       => 'collector.instrumentalapp.com',
-  :port            => '8000',
+  :port            => '8001',
   :hostname        => Socket.gethostname,
   :pid_location    => File.join(script_data_directory, 'instrument_server.pid'),
   :log_location    => File.join(script_data_directory, 'instrument_server.log'),
