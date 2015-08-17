@@ -1,4 +1,8 @@
+### 1.1.2 [August 3rd, 2015]
+* Use latest Instrumental Agent
+
 ### 1.1.1 [August 3rd, 2015]
+* Defaults to secure protocol when connecting
 * Defaults to secure protocol when connecting
 
 ### 1.1.0 [August 3rd, 2015]
