@@ -1,8 +1,8 @@
-### 1.1.2 [August 3rd, 2015]
+### 1.1.3 [August 17, 2015]
+* Fix gem installation of tools
 * Use latest Instrumental Agent
 
 ### 1.1.1 [August 3rd, 2015]
-* Defaults to secure protocol when connecting
 * Defaults to secure protocol when connecting
 
 ### 1.1.0 [August 3rd, 2015]
