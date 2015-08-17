@@ -7,6 +7,8 @@ require 'socket'
 require 'tempfile'
 require 'yaml'
 
+task :default => 'build'
+
 PACKAGE_CATEGORY       = "Utilities"
 PACKAGECLOUD_REPO      = "expectedbehavior/instrumental"
 CONFIG_DIR             = "conf"

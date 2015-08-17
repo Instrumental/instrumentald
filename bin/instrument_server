@@ -123,6 +123,11 @@ Default command: #{default_command.to_s}
     puts opts
     exit
   end
+
+  opts.on('-v', '--version', 'Display version') do
+    puts "instrument_server: #{Instrumental::Tools::VERSION}"
+    exit 0
+  end
 end
 
 option_parser.parse!
