@@ -143,7 +143,7 @@ class SystemInspector
     def self.disk_io
       output          = {}
       device_root     = "/dev/"
-      mounted_devices = File.read(mount_file).lines.map { |l| l.split.first }.select { |device| device.index(device_root) }.map { |device| File.realpath(device) }
+      mounted_devices = File.read(mount_file).lines.map { |l| l.split.first }.select { |device| device.index(device_root) }.map { |device| File.exists?(device) ? File.realpath(device) : nil }.compact
       diskstats_lines = File.read(disk_file).lines.map(&:split).select { |values| mounted_devices.include?(File.join(device_root, values[2])) }
       entries         = diskstats_lines.map do |values|
                           entry               = {}
