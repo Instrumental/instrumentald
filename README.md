@@ -101,4 +101,4 @@ Mac OS users: Due to a bug in Ruby, instrument_server can occasionally deadlock 
 
 ## Troubleshooting & Help
 
-We are here to help. Email us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com), or visit the [Instrumental Support](https://fastestforward.campfirenow.com/6b934) Campfire room.
+We are here to help. Email us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com).
