@@ -18,6 +18,12 @@ to push a new copy of the gem directly to RubyGems. This presumes you have the c
 
 ## `deb`, `rpm` and `tgz` packages
 
+To build everything, use the following command:
+
+```
+rake package
+```
+
 Building new `deb`, `rpm` and `tgz` packages can be done via the following rake commands:
 
 For 32 bit Linux:
@@ -34,7 +40,6 @@ rake package:linux-x86_64:package
 rake package:linux-x86_64:tarball
 ```
 
-
 For Mac OS X:
 
 ```
@@ -45,6 +50,19 @@ rake package:osx:tarball
 
 ```
 {"url":"https://packagecloud.io","token":"YOUR PACKAGECLOUD API TOKEN"}
+```
+
+You will need to install some things:
+
+```
+brew install gnu-tar --with-default-names
+brew install rpm
+```
+
+And then use the package_cloud gem to push our packages.  For example:
+
+```
+package_cloud push expectedbehavior/instrumental/ubuntu/precise instrumental-tools_YOUR_VERSION_HERE_amd64.deb
 ```
 
 On release, the tarball should be uploaded to the Github releases page and linked to from the main README.md.

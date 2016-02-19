@@ -17,7 +17,7 @@ Prebuilt `deb` and `rpm` packages are available via the [packagecloud.io](https:
 
 ```sh
 sudo apt-get install curl
-curl https://packagecloud.io/install/repositories/expectedbehavior/instrumental/script.deb | sudo bash
+curl https://packagecloud.io/install/repositories/expectedbehavior/instrumental/script.deb.sh | sudo bash
 sudo apt-get install instrumental-tools
 ```
 
@@ -25,14 +25,14 @@ sudo apt-get install instrumental-tools
 
 ```sh
 su -c "apt-get install curl"
-su -c "curl https://packagecloud.io/install/repositories/expectedbehavior/instrumental/script.deb | bash"
+su -c "curl https://packagecloud.io/install/repositories/expectedbehavior/instrumental/script.deb.sh | bash"
 su -c "apt-get install instrumental-tools"
 ```
 
 # Enterprise Linux (CentOS, AWS Linux, RedHat)
 
 ```sh
-curl https://packagecloud.io/install/repositories/expectedbehavior/instrumental/script.rpm | sudo bash
+curl https://packagecloud.io/install/repositories/expectedbehavior/instrumental/script.rpm.sh | sudo bash
 sudo yum install instrumental-tools
 ```
 

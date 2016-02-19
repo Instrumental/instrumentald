@@ -10,7 +10,12 @@ A collection of tools for monitoring servers with Instrumental ([www.instrumenta
 
 Installation instructions for supported platforms is available in [INSTALL.md](INSTALL.md). The recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
 
-Once you've installed the package, you will want to edit the `/etc/instrumental.yml` file with your Instrumental API key. Example `/etc/instrumental.yml`:
+Once you've installed the package, you will want to edit the `/etc/instrumental.yml` file with your Instrumental API key. Example `/etc/instrumental.yml` (replace `YOUR_API_KEY` with the API key for your Instrumental project):
+
+```yaml
+---
+api_key: YOUR_API_KEY
+```
 
 ## Sent Metrics
 
@@ -96,4 +101,4 @@ Mac OS users: Due to a bug in Ruby, instrument_server can occasionally deadlock 
 
 ## Troubleshooting & Help
 
-We are here to help. Email us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com), or visit the [Instrumental Support](https://fastestforward.campfirenow.com/6b934) Campfire room.
+We are here to help. Email us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com).
