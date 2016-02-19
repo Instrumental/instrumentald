@@ -86,6 +86,7 @@ class SystemInspector
       swaptotal    = memory_stats["SwapTotal"].to_f
       swapfree     = memory_stats["SwapFree"].to_f
       swapused     = swaptotal - swapfree
+      available    = memory_stats["MemAvailable"].to_f if memory_stats["MemAvailable"]
 
       stats_to_record = {
         'memory.used_mb'      => used / 1024,
@@ -95,6 +96,11 @@ class SystemInspector
         'memory.free_percent' => (free / total) * 100,
 
       }
+
+      if available
+        stats_to_record['memory.available_mb']      = available / 1024
+        stats_to_record['memory.available_percent'] = (available / total) * 100
+      end
 
       if swaptotal > 0
         stats_to_record.merge!({
