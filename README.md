@@ -95,4 +95,4 @@ namespaces[:instrumental].tasks[:restart_instrument_server].options[:roles] = [:
 
 ## Troubleshooting & Help
 
-We are here to help! Email us at [Support@InstrumentalApp.com](mailto:support@instrumentalapp.com).
+We are here to help! Email us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com).
