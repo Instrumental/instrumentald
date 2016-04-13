@@ -7,10 +7,10 @@ Provides [server monitoring](https://instrumentalapp.com/docs/server-monitoring)
 
 Installation instructions for supported platforms is available in [INSTALL.md](INSTALL.md). The recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
 
-Once you've installed the package, you will want to edit the `/etc/instrumental.yml` file with your Instrumental API key. Example `/etc/instrumental.yml` (replace `YOUR_API_KEY` with the API key for your Instrumental project):
+Once you've installed the package, you will want to edit the `/etc/instrumental.yml` file with your [Instrumental project token](https://instrumentalapp.com/docs/tokens). Example `/etc/instrumental.yml`:
 
 ```yaml
-api_key: YOUR_PROJECT_API_KEY
+api_key: YOUR_PROJECT_API_TOKEN
 ```
 
 ## Metrics
