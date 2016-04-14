@@ -1,6 +1,6 @@
 # Plugin Scripts
 
-You may have specific pieces of architecture that you would like `instrument_server` to monitor. Pass the `-e` flag to `instrument_server` on startup to enable this script plugins. There are many [existing plugins](examples/) that you may use for your infrastructure, or you can [write your own](#writing-plugin-scripts). We also work with customers to develop plugins on an as-needed basis. Please contact us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com) if we can assist with plugin development.
+You may have specific pieces of architecture that you would like `instrument_server` to monitor. Pass the `-e` flag to `instrument_server` on startup to enable these script plugins. There are many [existing plugins](examples/) that you may use for your infrastructure, or you can [write your own](#writing-plugin-scripts). We also work with customers to develop plugins on an as-needed basis. Please contact us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com) if we can assist with plugin development.
 
 ## Installing Plugin Scripts
 
