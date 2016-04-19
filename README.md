@@ -1,6 +1,8 @@
-# Instrumental Tools
+# Instrumental Server Monitoring Tools
 
-Provides [server monitoring](https://instrumentalapp.com/docs/server-monitoring) for [Instrumental](https://instrumentalapp.com/) through the `instrumental_server` daemon.
+Instrumental is a [applicationg platform](https://instrumentalapp.com) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
+
+This tool suite supports [server monitoring](https://instrumentalapp.com/docs/server-monitoring) through the `instrumental_server` daemon. It provides high-data reliability at high scale. 
 
 ## Installation
 `instrumental_tools` is currently officially supported on 32-bit and 64-bit Linux, Windows systems and Mac OS X. There are prebuilt packages available for Debian, Ubuntu, RHEL and Win32 systems.
