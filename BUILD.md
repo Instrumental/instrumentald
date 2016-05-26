@@ -30,20 +30,20 @@ For 32 bit Linux:
 
 ```
 rake package:linux-x86:package # builds `rpm` and `deb`
-rake package:linux-x86:tarball # buidls tgz
+rake package:linux-x86:compress # builds tgz
 ```
 
 For 64 bit Linux:
 
 ```
 rake package:linux-x86_64:package
-rake package:linux-x86_64:tarball
+rake package:linux-x86_64:compress
 ```
 
 For Mac OS X:
 
 ```
-rake package:osx:tarball
+rake package:osx:compress
 ```
 
 `deb` and `rpm` packages should be pushed to PackageCloud. You will need to ensure you have the `package_cloud` gem installed (`bundle install` should install it for you - see the [PackageCloud instructions](https://packagecloud.io/docs#cli_install) otherwise). You will also need write credentials to PackageCloud available in `~/.packagecloud`; they will follow the format:
