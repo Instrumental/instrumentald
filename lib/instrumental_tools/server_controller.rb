@@ -122,23 +122,58 @@ class ServerController < Pidly::Control
     current_api_key != configured_api_key
   end
 
+  def telegraf_binary_path
+    telegraf_path = "#{File.expand_path(File.dirname(__FILE__))}/../telegraf"
+    arch, platform = RUBY_PLATFORM.split("-")
+    case RUBY_PLATFORM
+    when /linux/
+      # Support 32-bit?
+      "#{telegraf_path}/linux/telegraf"
+    when /darwin/
+      "#{telegraf_path}/darwin/telegraf"
+    when /(windows|win32|mingw)/
+      "#{telegraf_path}/win32/telegraf.exe"
+    else
+      raise "unsupported OS"
+    end
+  end
+
+  def telegraf_config_path
+    telegraf_path = "#{File.expand_path(File.dirname(__FILE__))}/../telegraf"
+    arch, platform = RUBY_PLATFORM.split("-")
+    case RUBY_PLATFORM
+    when /linux/
+      # Support 32-bit?
+      "#{telegraf_path}/telegraf.conf"
+    when /darwin/
+      "#{telegraf_path}/telegraf.conf"
+    when /(windows|win32|mingw)/
+      # TODO: get a windows config in place
+      "#{telegraf_path}/win32/telegraf.conf"
+    else
+      raise "unsupported OS"
+    end
+  end
+  
   def run
     puts "instrument_server version #{Instrumental::Tools::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{hostname}"
+
+    Thread.new {
+      if debug?
+        puts "starting metrics collector"
+        puts "telegraf binary #{telegraf_binary_path}"
+        puts "telegraf config #{telegraf_config_path}"
+      end
+      `#{telegraf_binary_path} -config #{telegraf_config_path}`
+    }
+
     loop do
       sleep time_to_sleep
       if enabled?
         inspector = SystemInspector.new
         inspector.load_all
         count = 0
-        inspector.gauges.each do |stat, value|
-          metric = [hostname, stat].join(".")
-          agent.gauge(metric, value)
-          if debug?
-            puts [metric, value].join(":")
-          end
-          count += 1
-        end
         if enable_scripts?
           script_executor.run.each do |(stat, value, time)|
             metric = [hostname, stat].join(".")

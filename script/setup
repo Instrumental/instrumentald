@@ -4,5 +4,6 @@ cd "`dirname \"$0\"`/.."
 
 brew list gnu-tar > /dev/null || brew install gnu-tar
 brew list rpm > /dev/null || brew install rpm
+brew install go --with-cc-all
 bundle install
 
