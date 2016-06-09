@@ -128,7 +128,7 @@ class ServerController < Pidly::Control
     case RUBY_PLATFORM
     when /linux/
       # Support 32-bit?
-      "#{telegraf_path}/linux/telegraf"
+      "#{telegraf_path}/amd64/telegraf"
     when /darwin/
       "#{telegraf_path}/darwin/telegraf"
     when /(windows|win32|mingw)/
