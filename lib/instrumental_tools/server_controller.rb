@@ -2,6 +2,7 @@ require 'instrumental_tools/metric_script_executor'
 require 'instrumental_tools/system_inspector'
 require 'pidly'
 require 'yaml'
+require 'erb'
 
 class ServerController < Pidly::Control
   COMMANDS = [:start, :stop, :status, :restart, :clean, :kill, :foreground]
@@ -154,11 +155,37 @@ class ServerController < Pidly::Control
       raise "unsupported OS"
     end
   end
+
+  def telegraf_template_config_path
+    telegraf_path = "#{File.expand_path(File.dirname(__FILE__))}/../telegraf"
+    arch, platform = RUBY_PLATFORM.split("-")
+    case RUBY_PLATFORM
+    when /linux/
+      # Support 32-bit?
+      "#{telegraf_path}/telegraf.conf.erb"
+    when /darwin/
+      "#{telegraf_path}/telegraf.conf.erb"
+    when /(windows|win32|mingw)/
+      # TODO: get a windows config in place
+      "#{telegraf_path}/win32/telegraf.conf.erb"
+    else
+      raise "unsupported OS"
+    end
+  end
+  
+  def process_telegraf_config
+    instrumental_api_key = configured_api_key
+    File.open(telegraf_config_path, "w+") do |config|
+      result = ERB.new(File.read(telegraf_template_config_path)).result(binding)
+      config.write(result)
+    end
+  end
   
   def run
     puts "instrument_server version #{Instrumental::Tools::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{hostname}"
 
+    process_telegraf_config
     Thread.new {
       if debug?
         puts "starting metrics collector"
