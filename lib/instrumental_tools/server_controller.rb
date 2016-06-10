@@ -44,6 +44,16 @@ class ServerController < Pidly::Control
     run_options[:api_key]
   end
 
+  def config_file
+    return @config_file if @config_file
+    config_contents = YAML.load(File.read(run_options[:config_file]))
+    if config_contents.is_a?(Hash)
+      @config_file = config_contents
+    else
+      @config_file = {}
+    end
+  end
+  
   def config_file_api_key
     if config_file_available?
       config_contents = YAML.load(File.read(run_options[:config_file]))
@@ -175,6 +185,7 @@ class ServerController < Pidly::Control
   
   def process_telegraf_config
     instrumental_api_key = configured_api_key
+    redis_servers = config_file['redis']
     File.open(telegraf_config_path, "w+") do |config|
       result = ERB.new(File.read(telegraf_template_config_path)).result(binding)
       config.write(result)
@@ -189,8 +200,8 @@ class ServerController < Pidly::Control
     Thread.new {
       if debug?
         puts "starting metrics collector"
-        puts "telegraf binary #{telegraf_binary_path}"
-        puts "telegraf config #{telegraf_config_path}"
+        puts "telegraf binary: #{telegraf_binary_path}"
+        puts "telegraf config: #{telegraf_config_path}"
       end
       `#{telegraf_binary_path} -config #{telegraf_config_path}`
     }

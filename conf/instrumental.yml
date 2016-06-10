@@ -4,3 +4,4 @@
 # start sending metrics to your account.
 
 #api_key: YOUR_API_KEY
+#redis: ["tcp://localhost:6379"]
