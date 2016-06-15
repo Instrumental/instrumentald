@@ -864,7 +864,9 @@
   ##
   ## If no servers are specified, then localhost is used as the host.
   ## If no port is specified, 6379 is used
+<% if redis_servers != nil %>
   servers = <%= redis_servers %>
+<% end %>
 
 
 # # Read metrics from one or many RethinkDB servers
