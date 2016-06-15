@@ -119,7 +119,7 @@ BUNDLE_DISABLE_SHARED_GEMS: '1'
 EOBUNDLECONFIG
 
 
-desc "Package your app"
+desc "Package"
 task :package => ARCHITECTURES.map { |name, _| "package:%s" % name }
 
 ARCHITECTURES.each do |name, config|
@@ -128,10 +128,10 @@ ARCHITECTURES.each do |name, config|
     has_packaging = Array(config[:packages]).size > 0
 
     if has_packaging
-      desc "Package your app for %s" % name
+      desc "Package for %s" % name
       task name => ["%s:package" % name]
     else
-      desc "Package your app for %s" % name
+      desc "Package for %s" % name
       task name => ["%s:compress" % name]
     end
 
