@@ -197,14 +197,14 @@ class ServerController < Pidly::Control
     puts "Collecting stats under the hostname: #{hostname}"
 
     process_telegraf_config
-    Thread.new {
+    Thread.new do
       if debug?
         puts "starting metrics collector"
         puts "telegraf binary: #{telegraf_binary_path}"
         puts "telegraf config: #{telegraf_config_path}"
       end
       `#{telegraf_binary_path} -config #{telegraf_config_path}`
-    }
+    end
 
     loop do
       sleep time_to_sleep
