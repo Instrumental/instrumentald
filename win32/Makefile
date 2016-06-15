@@ -15,4 +15,3 @@ clean:
 
 install: all
 	install -m 0755 $(TARGET)/InstrumentServer.exe $(prefix)/.
-

@@ -53,7 +53,7 @@ class ServerController < Pidly::Control
       @config_file = {}
     end
   end
-  
+
   def config_file_api_key
     if config_file_available?
       config_contents = YAML.load(File.read(run_options[:config_file]))
@@ -182,7 +182,7 @@ class ServerController < Pidly::Control
       raise "unsupported OS"
     end
   end
-  
+
   def process_telegraf_config
     instrumental_api_key = configured_api_key
     redis_servers = config_file['redis']
@@ -191,7 +191,7 @@ class ServerController < Pidly::Control
       config.write(result)
     end
   end
-  
+
   def run
     puts "instrument_server version #{Instrumental::Tools::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{hostname}"

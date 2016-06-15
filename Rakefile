@@ -1,4 +1,3 @@
-
 require 'bundler/gem_tasks'
 require 'etc'
 require 'fileutils'
