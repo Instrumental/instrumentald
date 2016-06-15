@@ -205,7 +205,7 @@ class ServerController < Pidly::Control
         puts "telegraf binary: #{telegraf_binary_path}"
         puts "telegraf config: #{telegraf_config_path}"
       end
-      `#{telegraf_binary_path} -config #{telegraf_config_path}`
+      system(telegraf_binary_path, "-config", telegraf_config_path)
     end
 
     loop do
