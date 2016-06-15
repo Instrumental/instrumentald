@@ -133,8 +133,11 @@ class ServerController < Pidly::Control
     current_api_key != configured_api_key
   end
 
+  def telegraf_path
+    File.expand_path(File.dirname(__FILE__) + "/../telegraf")
+  end
+
   def telegraf_binary_path
-    telegraf_path = "#{File.expand_path(File.dirname(__FILE__))}/../telegraf"
     arch, platform = RUBY_PLATFORM.split("-")
     case RUBY_PLATFORM
     when /linux/
@@ -150,7 +153,6 @@ class ServerController < Pidly::Control
   end
 
   def telegraf_config_path
-    telegraf_path = "#{File.expand_path(File.dirname(__FILE__))}/../telegraf"
     arch, platform = RUBY_PLATFORM.split("-")
     case RUBY_PLATFORM
     when /linux/

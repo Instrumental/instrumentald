@@ -29,9 +29,9 @@ end
 
 def coerce_path(path)
   if File::ALT_SEPARATOR
-    File.join(*path.split(File::ALT_SEPARATOR))
+    File.expand_path(File.join(*path.split(File::ALT_SEPARATOR)))
   else
-    path
+    File.expand_path(path)
   end
 end
 
