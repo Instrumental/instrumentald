@@ -3,6 +3,7 @@ require 'instrumental_tools/system_inspector'
 require 'pidly'
 require 'yaml'
 require 'erb'
+require 'tempfile'
 
 class ServerController < Pidly::Control
   COMMANDS = [:start, :stop, :status, :restart, :clean, :kill, :foreground]
@@ -29,6 +30,7 @@ class ServerController < Pidly::Control
 
   def initialize(options={})
     @run_options = options.delete(:run_options) || {}
+    @telegraf_config_tempfile = Tempfile.new("instrumental_tools_telegraph")
     super(options)
   end
 
@@ -153,19 +155,7 @@ class ServerController < Pidly::Control
   end
 
   def telegraf_config_path
-    arch, platform = RUBY_PLATFORM.split("-")
-    case RUBY_PLATFORM
-    when /linux/
-      # Support 32-bit?
-      "#{telegraf_path}/telegraf.conf"
-    when /darwin/
-      "#{telegraf_path}/telegraf.conf"
-    when /(windows|win32|mingw)/
-      # TODO: get a windows config in place
-      "#{telegraf_path}/win32/telegraf.conf"
-    else
-      raise "unsupported OS"
-    end
+    @telegraf_config_tempfile.path
   end
 
   def telegraf_template_config_path
