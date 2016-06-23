@@ -221,7 +221,27 @@ namespace "package" do
     sh %Q{rm -f "%s"}  % cache_dir
   end
 
+  desc "Build telegraf binaries and move them into this repo"
+  task :build_telegraf do
+    telegraf_path = "#{ENV['GOPATH']}/src/github.com/influxdata/telegraf"
+    current_directory = File.dirname(__FILE__)
+    FileUtils.cd(telegraf_path) # required or it complains about building outside your GOPATH
+
+    # Build all binaries
+    version = system("git describe --always --tags")
+    `#{telegraf_path}/scripts/build.py --package --version="$(version)" --platform=linux --arch=all`
+    `#{telegraf_path}/scripts/build.py --package --version="$(version)" --platform=darwin --arch=amd64`
+    `#{telegraf_path}/scripts/build.py --package --version="$(version)" --platform=windows --arch=amd64`
+
+    # Copy them into place
+    `cp #{telegraf_path}/build/telegraf #{current_directory}/lib/telegraf/darwin/`
+    `cp #{telegraf_path}/build/linux/amd64/telegraf #{current_directory}/lib/telegraf/amd64/`
+    `cp #{telegraf_path}/build/linux/i386/telegraf #{current_directory}/lib/telegraf/i386/`
+    `cp #{telegraf_path}/build/telegraf.exe #{current_directory}/lib/telegraf/win32/`
+  end
+
 end
+
 
 def create_packages(directory, platform, architecture, package_formats)
   Array(package_formats).map { |pkg| create_package(directory, pkg, platform, architecture) }
