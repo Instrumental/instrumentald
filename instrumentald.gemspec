@@ -21,7 +21,7 @@ bin_files  = all_files.select { |path| path.index("bin") == 0 }.map { |path| Fil
 
 Gem::Specification.new do |s|
   s.name        = "instrumentald"
-  s.version     = Instrumental::Tools::VERSION
+  s.version     = Instrumentald::VERSION
   s.authors     = ["Expected Behavior"]
   s.email       = ["support@instrumentalapp.com"]
   s.homepage    = "http://github.com/expectedbehavior/instrumentald"
