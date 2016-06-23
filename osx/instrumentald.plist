@@ -4,8 +4,11 @@
   <dict>
     <key>Label</key>
     <string>com.instrumentalapp.instrumentald</string>
-    <key>Program</key>
-    <string>/opt/instrumentald/instrumentald start</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/opt/instrumentald/instrumentald</string>
+      <string>start</string>
+    </array>
     <key>RunAtLoad</key>
     <true/>
   </dict>
