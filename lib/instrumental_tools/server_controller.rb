@@ -1,7 +1,7 @@
 require 'instrumental_tools/metric_script_executor'
 require 'instrumental_tools/system_inspector'
 require 'pidly'
-require 'yaml'
+require 'toml'
 require 'erb'
 require 'tempfile'
 
@@ -48,7 +48,7 @@ class ServerController < Pidly::Control
 
   def config_file
     return @config_file if @config_file
-    config_contents = YAML.load(File.read(run_options[:config_file]))
+    config_contents = TOML::Parser.new(File.read(run_options[:config_file])).parsed
     if config_contents.is_a?(Hash)
       @config_file = config_contents
     else
@@ -58,7 +58,7 @@ class ServerController < Pidly::Control
 
   def config_file_api_key
     if config_file_available?
-      config_contents = YAML.load(File.read(run_options[:config_file]))
+      config_contents = TOML::Parser.new(File.read(run_options[:config_file])).parsed
       if config_contents.is_a?(Hash)
         config_contents['api_key']
       end

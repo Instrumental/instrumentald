@@ -2,7 +2,7 @@
 
 Instrumental is a [applicationg platform](https://instrumentalapp.com) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
 
-This tool suite supports [server monitoring](https://instrumentalapp.com/docs/server-monitoring) through the `instrumental_server` daemon. It provides high-data reliability at high scale. 
+This tool suite supports [server monitoring](https://instrumentalapp.com/docs/server-monitoring) through the `instrumental_server` daemon. It provides high-data reliability at high scale.
 
 ## Installation
 `instrumental_tools` is currently officially supported on 32-bit and 64-bit Linux, Windows systems and Mac OS X. There are prebuilt packages available for Debian, Ubuntu, RHEL and Win32 systems.
@@ -11,8 +11,8 @@ Installation instructions for supported platforms is available in [INSTALL.md](I
 
 Once you've installed the package, you will want to edit the `/etc/instrumental.yml` file with your [Instrumental project token](https://instrumentalapp.com/docs/tokens). Example `/etc/instrumental.yml`:
 
-```yaml
-api_key: YOUR_PROJECT_API_TOKEN
+```toml
+api_key = "YOUR_PROJECT_API_TOKEN"
 ```
 
 ## Metrics

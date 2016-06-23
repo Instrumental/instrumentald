@@ -57,7 +57,7 @@ options = {
   :script_location => default_script_directory,
   :report_interval => 30,
   :debug           => false,
-  :config_file     => '/etc/instrumental.yml',
+  :config_file     => '/etc/instrumental.toml',
   :user            => nil
 }
 
