@@ -194,7 +194,7 @@ if options[:enable_scripts]
   correct_mode = windows || ((stat.mode & 0xFFF) ^ 0O700) === 0
   unless stat.owned? && correct_mode
     uid      = Process.uid
-    user = Etc.getpwuid(uid).try(:name)
+    user = Etc.getpwuid(uid)
     username = if user.respond_to?(:name)
       user.name
     else
