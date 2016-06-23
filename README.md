@@ -98,3 +98,24 @@ namespaces[:instrumental].tasks[:restart_instrumentald].options[:roles] = [:web,
 ## Troubleshooting & Help
 
 We are here to help! Email us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com).
+
+
+## Telegraf Feature Development
+
+```
+# set GOPATH
+>
+> go get github.com/influxdata/telegraf
+> cd $GOPATH/influxdata/telegraf
+> git remote add isd git@github.com:Instrumental/telegraf.git
+> git checkout -b my-feature
+>
+# work hard for a while
+>
+> make test-short # should pass
+>
+> git push isd my-feature
+>
+# PR that feature
+# upstream to telegraf somehow ???
+```
