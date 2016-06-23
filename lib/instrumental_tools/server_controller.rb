@@ -7,6 +7,8 @@ require 'tempfile'
 
 class ServerController < Pidly::Control
   COMMANDS = [:start, :stop, :status, :restart, :clean, :kill, :foreground]
+  TELEGRAF_FAILURE_LOGGING_THROTTLE = 100
+  TELEGRAF_FAILURE_SLEEP = 1
 
   attr_accessor :run_options, :pid
   attr_reader :current_api_key
@@ -198,7 +200,21 @@ class ServerController < Pidly::Control
         puts "telegraf binary: #{telegraf_binary_path}"
         puts "telegraf config: #{telegraf_config_path}"
       end
-      system(telegraf_binary_path, "-config", telegraf_config_path)
+      failures = 0
+      loop do
+        begin
+          success = system(telegraf_binary_path, "-config", telegraf_config_path)
+          if !success
+            failures += 1
+          end
+        rescue
+          failures += 1
+        end
+        if (failures - 1) % TELEGRAF_FAILURE_LOGGING_THROTTLE == 0
+          puts "telegraf execution failed, #{failures} total failures"
+        end
+        sleep TELEGRAF_FAILURE_SLEEP # to prevent racing to restart
+      end
     end
 
     loop do
