@@ -39,6 +39,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency(%q<instrumental_agent>, [">=0.13.2"])
   s.add_runtime_dependency(%q<pidly>, [">=0.1.3"])
+  s.add_runtime_dependency(%q<toml>, ["~>0.0.3"])
   if ENV["INSTALL_WINDOWS"] || RUBY_PLATFORM =~ /(windows|win32|ming)/i
     s.add_runtime_dependency(%q<wmi-lite>, [">=1.0.0"])
   end

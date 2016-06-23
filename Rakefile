@@ -4,7 +4,6 @@ require 'fileutils'
 require 'find'
 require 'socket'
 require 'tempfile'
-require 'yaml'
 
 task :default => 'build'
 
