@@ -230,10 +230,14 @@ namespace "package" do
     FileUtils.cd(telegraf_path) # required or it complains about building outside your GOPATH
 
     # Build all binaries
-    version = system("git describe --always --tags")
-    `#{telegraf_path}/scripts/build.py --package --version="$(version)" --platform=linux --arch=all`
-    `#{telegraf_path}/scripts/build.py --package --version="$(version)" --platform=darwin --arch=amd64`
-    `#{telegraf_path}/scripts/build.py --package --version="$(version)" --platform=windows --arch=amd64`
+    version = `git describe --always --tags`.strip
+    current_branch = `git rev-parse --abbrev-ref HEAD`.strip
+    puts "======================================"
+    puts "Now building Telegraf version #{version} from branch #{current_branch}"
+    puts "======================================"
+    `#{telegraf_path}/scripts/build.py --package --version="#{version}" --platform=linux --arch=all`
+    `#{telegraf_path}/scripts/build.py --package --version="#{version}" --platform=darwin --arch=amd64`
+    `#{telegraf_path}/scripts/build.py --package --version="#{version}" --platform=windows --arch=amd64`
 
     # Copy them into place
     `cp #{telegraf_path}/build/telegraf #{current_directory}/lib/telegraf/darwin/`
