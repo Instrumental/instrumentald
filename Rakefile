@@ -31,7 +31,8 @@ SUPPORTED_DISTROS      = {
                          }
 EXTRA_ARGS             = {
                            'deb' => '--deb-init debian/instrumentald --after-install debian/after-install.sh --before-remove debian/before-remove.sh --after-remove debian/after-remove.sh --deb-user nobody --deb-group nogroup',
-                           'rpm' => '--rpm-init rpm/instrumentald --after-install rpm/after-install.sh --before-remove rpm/before-remove.sh --after-remove rpm/after-remove.sh --rpm-user nobody --rpm-group nobody --rpm-os linux --rpm-attr "-,nobody,nobody:/opt/instrumentald/" --directories /opt/instrumentald/'
+                           'rpm' => '--rpm-init rpm/instrumentald --after-install rpm/after-install.sh --before-remove rpm/before-remove.sh --after-remove rpm/after-remove.sh --rpm-user nobody --rpm-group nobody --rpm-os linux --rpm-attr "-,nobody,nobody:/opt/instrumentald/" --directories /opt/instrumentald/',
+                           "osxpkg" => "--osxpkg-identifier-prefix com.instrumentalapp --name instrumentald --after-install osx/after-install.sh --osxpkg-dont-obsolete /etc/instrumentald.toml", # remove doesn't exist on osx
                          }
 
 
@@ -88,11 +89,12 @@ ARCHITECTURES          = {
                            'osx' => {
                              runtime:      TRAVELING_RUBY_FILE % "osx",
                              arch:         "x86_64",
-                             packages:     [],
+                             packages:     ["osxpkg"],
                              platform:     "darwin",
                              packagecloud: false,
                              wrapper:      WRAPPER_SCRIPT_SHELL,
                              separator:    '/',
+                             package_from_compressed: true,
                              dest_dir:     DEST_DIR
                            },
                            'win32' => {
@@ -248,11 +250,12 @@ def create_packages(directory, platform, architecture, package_formats)
 end
 
 def create_package(source, pkg, platform, architecture)
-  supported_by_fpm  = %w{deb rpm}
+  supported_by_fpm  = %w{deb rpm osxpkg}
   supported_by_nsis = %w{exe}
   if supported_by_fpm.include?(pkg)
-    output_name = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), pkg].join(".")
+    output_name = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), pkg == "osxpkg" ? "pkg" : pkg].join(".")
     extra_args  = EXTRA_ARGS[pkg] || ""
+    # big help: --debug --debug-workspace
     sh %Q{fpm -s tar -t "%s" -f -n "%s" -v "%s" -a "%s" --license "%s" --vendor "%s" --maintainer "%s" --url "%s" --description "%s" --category "%s" --config-files "%s" -C "%s" -p "%s" %s "%s"} % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(source, ".tar.gz"), output_name, extra_args, source]
     output_name
   elsif supported_by_nsis.include?(pkg)

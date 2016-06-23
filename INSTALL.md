@@ -13,6 +13,14 @@ Prebuilt `deb` and `rpm` packages are available via the [packagecloud.io](https:
 * Windows installer [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_win32.exe](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_win32.exe)
 * 64-bit Mac OS X tarball [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_osx.tar.gz](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_osx.tar.gz)
 
+# OS X / Mac
+
+Use pkg installer, then configure `/etc/instrumentald.toml` and run:
+
+```sh
+launchctl load /opt/instrumentald/lib/app/osx/instrumentald.plist
+```
+
 # Ubuntu
 
 ```sh
