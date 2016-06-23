@@ -1,5 +1,5 @@
-require 'instrumental_tools/metric_script_executor'
-require 'instrumental_tools/system_inspector'
+require 'instrumentald/metric_script_executor'
+require 'instrumentald/system_inspector'
 require 'pidly'
 require 'toml'
 require 'erb'
@@ -32,7 +32,7 @@ class ServerController < Pidly::Control
 
   def initialize(options={})
     @run_options = options.delete(:run_options) || {}
-    @telegraf_config_tempfile = Tempfile.new("instrumental_tools_telegraph")
+    @telegraf_config_tempfile = Tempfile.new("instrumentald_telegraph")
     super(options)
   end
 
@@ -190,7 +190,7 @@ class ServerController < Pidly::Control
   end
 
   def run
-    puts "instrumentald version #{Instrumental::Tools::VERSION} started at #{Time.now.utc}"
+    puts "instrumentald version #{Instrumental::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{hostname}"
 
     process_telegraf_config

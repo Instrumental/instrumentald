@@ -17,8 +17,8 @@ require 'socket'
 require 'tmpdir'
 
 $: << File.join(File.dirname(__FILE__), "..", "lib")
-require 'instrumental_tools/version'
-require 'instrumental_tools/server_controller'
+require 'instrumentald/version'
+require 'instrumentald/server_controller'
 
 def coerce_path(path)
   if File::ALT_SEPARATOR

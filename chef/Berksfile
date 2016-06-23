@@ -1,4 +1,4 @@
 source "https://supermarket.chef.io"
 
 cookbook "packagecloud"
-cookbook "instrumental_tools", path: "instrumental_tools"
+cookbook "instrumentald", path: "instrumentald"

@@ -10,8 +10,8 @@ packaging
 \#*
 .#*
 *#*
-instrumental-tools_*-*
-instrumental-tools_*_*
+instrumentald_*-*
+instrumentald_*_*
 .vagrant
 .kitchen/*
 chef/.kitchen

@@ -12,13 +12,13 @@ class SystemInspector
     @platform =
       case RUBY_PLATFORM
       when /linux/
-        require "instrumental_tools/system_inspector/linux"
+        require "instrumentald/system_inspector/linux"
         SystemInspector::Linux
       when /darwin/
-        require "instrumental_tools/system_inspector/osx"
+        require "instrumentald/system_inspector/osx"
         SystemInspector::OSX
       when /(windows|win32|mingw)/
-        require "instrumental_tools/system_inspector/win32"
+        require "instrumentald/system_inspector/win32"
         SystemInspector::Win32
       else
         raise "unsupported OS"

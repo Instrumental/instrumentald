@@ -1,4 +1,4 @@
 forge "https://forgeapi.puppetlabs.com"
 
 mod "computology-packagecloud"
-mod "instrumental_tools", path: "instrumental_tools"
+mod "instrumentald", path: "instrumentald"

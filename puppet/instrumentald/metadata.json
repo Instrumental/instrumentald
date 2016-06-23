@@ -1,10 +1,10 @@
 {
-  "name": "expectedbehavior-instrumental_tools",
+  "name": "instrumental-instrumentald",
   "version": "0.0.1",
   "author": "Expected Behavior",
   "license": "MIT",
-  "source": "https://github.com/expectedbehavior/instrumental_tools",
-  "summary": "Installs the instrumental_tools package",
+  "source": "https://github.com/instrumental/instrumentald",
+  "summary": "Installs the instrumentald package",
   "dependencies": [
     { "name": "computology/packagecloud", "version_requirement": ">=0.2.10" }
   ]

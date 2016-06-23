@@ -1,6 +1,6 @@
 $: << "./lib"
 require 'find'
-require 'instrumental_tools/version'
+require 'instrumentald/version'
 
 gitignore = Array(File.exists?(".gitignore") ? File.read(".gitignore").split("\n") : []) + [".git", ".gitignore"]
 all_files = []
@@ -20,11 +20,11 @@ test_files = all_files.select { |path| path =~ /\A(test|spec|features)\//i }
 bin_files  = all_files.select { |path| path.index("bin") == 0 }.map { |path| File.basename(path) }
 
 Gem::Specification.new do |s|
-  s.name        = "instrumental_tools"
+  s.name        = "instrumentald"
   s.version     = Instrumental::Tools::VERSION
   s.authors     = ["Expected Behavior"]
   s.email       = ["support@instrumentalapp.com"]
-  s.homepage    = "http://github.com/expectedbehavior/instrumental_tools"
+  s.homepage    = "http://github.com/expectedbehavior/instrumentald"
   s.summary     = %q{Command line tools for Instrumental}
   s.description = %q{A collection of scripts useful for monitoring servers and services with Instrumental (instrumentalapp.com)}
   s.licenses    = ["MIT"]

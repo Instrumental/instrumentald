@@ -11,7 +11,7 @@
 
 set -e
 
-DIRECTORY="/opt/instrumental-tools/"
+DIRECTORY="/opt/instrumentald/"
 CONFIG_FILE="/etc/instrumental.yml"
 TMPDIR=$DIRECTORY
 PID="${DIRECTORY}instrumentald.pid"
@@ -38,7 +38,7 @@ case "$1" in
     $PROCESS stop && $PROCESS clean && $PROCESS start
     ;;
   *)
-    echo "Usage: /etc/init.d/instrumental-tools {start|stop|restart|status}"
+    echo "Usage: /etc/init.d/instrumentald {start|stop|restart|status}"
     exit 1
     ;;
 esac

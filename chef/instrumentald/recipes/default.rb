@@ -14,15 +14,15 @@ pkg_arch  = case node["kernel"]["machine"]
             end
 file_name = case node["platform_family"]
             when "osx"
-              "instrumental-tools_%s_osx.tar.gz" % version
+              "instrumentald_%s_osx.tar.gz" % version
             when "debian"
-              "instrumental-tools_%s_%s.deb" % [version, pkg_arch]
+              "instrumentald_%s_%s.deb" % [version, pkg_arch]
             when "rhel", "fedora"
-              "instrumental-tools_%s_%s.rpm" % [version, pkg_arch]
+              "instrumentald_%s_%s.rpm" % [version, pkg_arch]
             when "windows"
-              "instrumental-tools_%s_win32.exe" % version
+              "instrumentald_%s_win32.exe" % version
             else
-              "instrumental-tools_%s_linux-%s.tar.gz" % [version, arch]
+              "instrumentald_%s_linux-%s.tar.gz" % [version, arch]
             end
 
 dest_dir            = node[:instrumental][:destination_dir]
@@ -34,7 +34,7 @@ package_destination = ::File.join(dest_dir, file_name)
 case node["platform_family"]
 when "debian", "rhel", "fedora"
   if node[:instrumental][:use_local]
-    package "instrumental-tools" do
+    package "instrumentald" do
       action :install
       source local_path
       provider node["platform_family"] == "debian" ? Chef::Provider::Package::Dpkg : Chef::Provider::Package::Yum
@@ -49,7 +49,7 @@ when "debian", "rhel", "fedora"
       end
     end
 
-    package "instrumental-tools" do
+    package "instrumentald" do
       action :upgrade
       version node["instrumental"]["version"]
     end
@@ -95,7 +95,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
 
 
   if node[:instrumental][:use_local]
-    execute "copy_instrumental_tools_package" do
+    execute "copy_instrumentald_package" do
       command "cp %s %s" % [local_path, package_destination]
       cwd dest_dir
       user "nobody"
@@ -107,7 +107,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     end
   end
 
-  execute "untar_instrumental_tools_package" do
+  execute "untar_instrumentald_package" do
     command "tar --strip-components=3 -zxvf %s" % file_name
     user "nobody"
     cwd dest_dir
@@ -188,5 +188,5 @@ when "windows"
     action [:enable, :start]
   end
 else
-  Chef::Log.warn("The platform %s is not supported, instrumental_tools will not be installed" % node["platform_family"])
+  Chef::Log.warn("The platform %s is not supported, instrumentald will not be installed" % node["platform_family"])
 end

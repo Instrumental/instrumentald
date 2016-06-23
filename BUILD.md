@@ -1,8 +1,8 @@
-# Building instrumental-tools
+# Building instrumentald
 
 ## The Gem
 
-Building the `instrumental_tools` gem can be done via:
+Building the `instrumentald` gem can be done via:
 
 ```
 rake gem
@@ -62,7 +62,7 @@ brew install rpm
 And then use the package_cloud gem to push our packages.  For example:
 
 ```
-package_cloud push expectedbehavior/instrumental/ubuntu/precise instrumental-tools_YOUR_VERSION_HERE_amd64.deb
+package_cloud push expectedbehavior/instrumental/ubuntu/precise instrumentald_YOUR_VERSION_HERE_amd64.deb
 ```
 
 On release, the tarball should be uploaded to the Github releases page and linked to from the main README.md.

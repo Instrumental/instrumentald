@@ -1,4 +1,4 @@
-class instrumental_tools(
+class instrumentald(
   $api_key = ''
 ) {
 
@@ -23,7 +23,7 @@ class instrumental_tools(
     owner   => "nobody",
     mode    => "0440",
     require => Package["instrumental-tools"],
-    content => template("instrumental_tools/instrumental.yml.erb")
+    content => template("instrumentald/instrumental.yml.erb")
   }
 
 }

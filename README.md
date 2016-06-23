@@ -1,11 +1,11 @@
-# Instrumental Server Monitoring Tools
+# Instrumental Server Monitoring Daemon
 
 Instrumental is a [applicationg platform](https://instrumentalapp.com) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
 
 This tool suite supports [server monitoring](https://instrumentalapp.com/docs/server-monitoring) through the `instrumental_server` daemon. It provides high-data reliability at high scale.
 
 ## Installation
-`instrumental_tools` is currently officially supported on 32-bit and 64-bit Linux, Windows systems and Mac OS X. There are prebuilt packages available for Debian, Ubuntu, RHEL and Win32 systems.
+`instrumentald` is currently officially supported on 32-bit and 64-bit Linux, Windows systems and Mac OS X. There are prebuilt packages available for Debian, Ubuntu, RHEL and Win32 systems.
 
 Installation instructions for supported platforms is available in [INSTALL.md](INSTALL.md). The recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
 
@@ -17,7 +17,7 @@ api_key = "YOUR_PROJECT_API_TOKEN"
 
 ## Metrics
 
-By default, Instrumental Tools will collect metrics on the following server data:
+By default, Instrumental Daemon will collect metrics on the following server data:
 
 * CPU (`user`, `nice`, `system`, `idle`, `iowait` and `total in use`)
 * Load (at 1 minute, 5 minute and 15 minute intervals)
@@ -29,7 +29,7 @@ By default, Instrumental Tools will collect metrics on the following server data
 
 #### Monitoring Services & Other Processes
 
-Instrumental Tools monitors other processes through a powerful plugin system built on binary and shell scripts. Plugin installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md). Existing plugins include:
+Instrumental Daemon monitors other processes through a powerful plugin system built on binary and shell scripts. Plugin installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md). Existing plugins include:
 
 * [MySQL](examples/mysql)
 * [Mongo](examples/mongo)
@@ -70,7 +70,7 @@ The `start` command will start and detach the process. You may issue additional 
 
 ### Capistrano Integration
 
-Add `require "instrumental_tools/capistrano"` to your capistrano
+Add `require "instrumentald/capistrano"` to your capistrano
 configuration and `instrumentald` will be restarted after your
 deploy is finished. Additionally, you will need to add a new variable
 to your capistrano file.

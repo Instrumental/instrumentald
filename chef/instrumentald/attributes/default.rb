@@ -2,7 +2,7 @@ default[:instrumental]                   = {}
 default[:instrumental][:api_key]         = nil
 
 default[:instrumental][:version]         = "1.1.3"
-default[:instrumental][:repo]            = "https://s3.amazonaws.com/instrumental-tools"
+default[:instrumental][:repo]            = "https://s3.amazonaws.com/instrumentald"
 
 default[:instrumental][:curl_path]       = "/usr/bin/curl"
 default[:instrumental][:wget_path]       = "/usr/bin/wget"
@@ -17,11 +17,11 @@ if node[:platform_family] == "windows"
   default[:instrumental][:config_file]     = "C:\\Program Files (x86)\\Instrumental Tools\\etc\\instrumental.toml"
   default[:instrumental][:script_dir]      = "C:\\Program Files (x86)\\Instrumental Tools\\scripts"
 else
-  default[:instrumental][:destination_dir] = "/opt/instrumental-tools/"
+  default[:instrumental][:destination_dir] = "/opt/instrumentald/"
   default[:instrumental][:config_file]     = "/etc/instrumental.toml"
-  default[:instrumental][:script_dir]      = "/opt/instrumental-tools/.scripts"
-  default[:instrumental][:pid_file]        = "/opt/instrumental-tools/instrumentald.pid"
-  default[:instrumental][:log_file]        = "/opt/instrumental-tools/instrumentald.log"
+  default[:instrumental][:script_dir]      = "/opt/instrumentald/.scripts"
+  default[:instrumental][:pid_file]        = "/opt/instrumentald/instrumentald.pid"
+  default[:instrumental][:log_file]        = "/opt/instrumentald/instrumentald.log"
   default[:instrumental][:user]            = "nobody"
 end
 
