@@ -17,4 +17,4 @@ The following metric will be output only once for the host:
 
 * `running` - The total number of docker containers running on the host
 
-This script will only work if the `docker ps` process is executable by the same user that is running `instrument_server`. You should ensure that the user that executes the `instrument_server` process belongs to the `docker` group on your system.
+This script will only work if the `docker ps` process is executable by the same user that is running `instrumentald`. You should ensure that the user that executes the `instrumentald` process belongs to the `docker` group on your system.

@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
-/etc/init.d/instrument_server stop
+/etc/init.d/instrumentald stop
 exit 0

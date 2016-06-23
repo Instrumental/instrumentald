@@ -1,5 +1,5 @@
 #!/bin/sh
 set -e
-service instrument_server stop
-chkconfig instrument_server off
+service instrumentald stop
+chkconfig instrumentald off
 exit 0

@@ -63,26 +63,26 @@ Installing `instrumental_tools` via Rubygems will not create the `/opt/instrumen
 ### systemd
 
 ```sh
-sudo cp /opt/instrumental-tools/lib/app/systemd/instrument_server.service  /etc/systemd/system/
-sudo systemctl enable instrument_server.service
-sudo systemctl start instrument_server
+sudo cp /opt/instrumental-tools/lib/app/systemd/instrumentald.service  /etc/systemd/system/
+sudo systemctl enable instrumentald.service
+sudo systemctl start instrumentald
 ```
 
 ### sysvinit (update-rc.d)
 
 ```sh
-sudo cp /opt/instrumental-tools/lib/app/debian/instrument_server /etc/init.d/
-sudo update-rc.d instrument_server defaults
-sudo /etc/init.d/instrument_server start
+sudo cp /opt/instrumental-tools/lib/app/debian/instrumentald /etc/init.d/
+sudo update-rc.d instrumentald defaults
+sudo /etc/init.d/instrumentald start
 ```
 
 ### sysvinit (chkconfig)
 
 ```sh
-sudo cp /opt/instrumental-tools/lib/app/rpm/instrument_server /etc/init.d/
-sudo chkconfig --add instrument_server
-sudo chkconfig instrument_server on
-sudo service instrument_server start
+sudo cp /opt/instrumental-tools/lib/app/rpm/instrumentald /etc/init.d/
+sudo chkconfig --add instrumentald
+sudo chkconfig instrumentald on
+sudo service instrumentald start
 ```
 
 # Chef

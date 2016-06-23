@@ -71,7 +71,7 @@ namespace Instrumental
     }
 
     public string InstrumentServerScript(string basePath){
-      return AppDir(basePath) + "\\bin\\instrument_server";
+      return AppDir(basePath) + "\\bin\\instrumentald";
     }
 
     public string RubyFlags(){

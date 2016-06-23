@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-update-rc.d instrument_server defaults
-/etc/init.d/instrument_server start
+update-rc.d instrumentald defaults
+/etc/init.d/instrumentald start
 echo "Remember to edit /etc/instrumental.yml with your Instrumental API key"
 exit 0

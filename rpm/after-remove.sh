@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
-chkconfig --del instrument_server
+chkconfig --del instrumentald
 exit 0

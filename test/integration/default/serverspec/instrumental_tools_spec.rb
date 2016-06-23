@@ -17,9 +17,9 @@ else
     check_owner:      true,
     config:           "/etc/instrumental.yml",
     has_pid:          true,
-    pid_path:         "/opt/instrumental-tools/instrument_server.pid",
+    pid_path:         "/opt/instrumental-tools/instrumentald.pid",
     owner:            "nobody",
-    service_name:     "instrument_server"
+    service_name:     "instrumentald"
   }
 end
 

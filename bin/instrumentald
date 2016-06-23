@@ -43,8 +43,8 @@ options = {
   :collector       => 'collector.instrumentalapp.com',
   :port            => '8001',
   :hostname        => Socket.gethostname,
-  :pid_location    => File.join(script_data_directory, 'instrument_server.pid'),
-  :log_location    => File.join(script_data_directory, 'instrument_server.log'),
+  :pid_location    => File.join(script_data_directory, 'instrumentald.pid'),
+  :log_location    => File.join(script_data_directory, 'instrumentald.log'),
   :tmp_location    => Dir.tmpdir,
   :enable_scripts  => false,
   :script_location => default_script_directory,
@@ -82,7 +82,7 @@ Default command: #{default_command.to_s}
     options[:pid_location] = coerce_path(pid_location)
   end
 
-  opts.on('-l', '--log LOCATION', "Where to put the instrument_server log file (default #{options[:log_location]})") do |log_location|
+  opts.on('-l', '--log LOCATION', "Where to put the instrumentald log file (default #{options[:log_location]})") do |log_location|
     options[:log_location] = coerce_path(log_location)
   end
 
@@ -99,7 +99,7 @@ Default command: #{default_command.to_s}
   end
 
   if !windows
-    opts.on('-u', '--user USER_TO_RUN_AS', "User to run instrument_server as. You must have permissions to drop privileges to this user.") do |u|
+    opts.on('-u', '--user USER_TO_RUN_AS', "User to run instrumentald as. You must have permissions to drop privileges to this user.") do |u|
       options[:user] = u
     end
   end
@@ -118,7 +118,7 @@ Default command: #{default_command.to_s}
   end
 
   opts.on('-v', '--version', 'Display version') do
-    puts "instrument_server: #{Instrumental::Tools::VERSION}"
+    puts "instrumentald: #{Instrumental::Tools::VERSION}"
     exit 0
   end
 end

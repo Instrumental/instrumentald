@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Ensure your instrument_server process runs with these environment variables set,
+# Ensure your instrumentald process runs with these environment variables set,
 # or replace with your own.
 
 MYSQL_HOST              = ENV["MYSQL_HOST"] || "localhost"

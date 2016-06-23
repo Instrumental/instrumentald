@@ -65,7 +65,7 @@ when "debian", "rhel", "fedora"
   end
 
   template node["instrumental"]["dest_init_file"] do
-    source "instrument_server.erb"
+    source "instrumentald.erb"
     mode "0755"
     owner "nobody"
     variables(
@@ -79,7 +79,7 @@ when "debian", "rhel", "fedora"
     )
   end
 
-  service "instrument_server" do
+  service "instrumentald" do
     action :restart
   end
 
@@ -115,7 +115,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
   end
 
   template node["instrumental"]["dest_init_file"] do
-    source "instrument_server.erb"
+    source "instrumentald.erb"
     mode "0755"
     owner "nobody"
     variables(
@@ -138,9 +138,9 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     )
   end
 
-  service "instrument_server" do
+  service "instrumentald" do
     action [:enable, :start]
-    status_command "pgrep instrument_server"
+    status_command "pgrep instrumentald"
     supports :restart => true, :reload => true, :status => false
   end
 when "windows"

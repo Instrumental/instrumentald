@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
-update-rc.d -f instrument_server remove
+update-rc.d -f instrumentald remove
 exit 0

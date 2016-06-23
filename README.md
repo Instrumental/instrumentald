@@ -41,27 +41,27 @@ Instrumental Tools monitors other processes through a powerful plugin system bui
 Basic usage:
 
 ```sh
-instrument_server -k <API_KEY>
+instrumentald -k <API_KEY>
 ```
 
-To start `instrument_server` as a daemon:
+To start `instrumentald` as a daemon:
 
 ```sh
-instrument_server -k <API_KEY> start
+instrumentald -k <API_KEY> start
 ```
 
 The API key can also be provided by setting the INSTRUMENTAL_TOKEN environment variable, which eliminates the need to supply the key via command line option.
 
-By default, instrument_server will use the hostname of the current host when reporting metrics, e.g. 'hostname.cpu.in_use'. To specify a different hostname:
+By default, instrumentald will use the hostname of the current host when reporting metrics, e.g. 'hostname.cpu.in_use'. To specify a different hostname:
 
 ```sh
-instrument_server -k <API_KEY> -H <HOSTNAME>
+instrumentald -k <API_KEY> -H <HOSTNAME>
 ```
 
 The `start` command will start and detach the process. You may issue additional commands to the process like:
 
-* `stop` - stop the currently running `instrument_server` process
-* `restart` - restart the currently running `instrument_server` process
+* `stop` - stop the currently running `instrumentald` process
+* `restart` - restart the currently running `instrumentald` process
 * `foreground` - run the process in the foreground instead of detaching
 * `status` - display daemon status (running, stopped)
 * `clean` - remove any files created by the daemon
@@ -71,7 +71,7 @@ The `start` command will start and detach the process. You may issue additional 
 ### Capistrano Integration
 
 Add `require "instrumental_tools/capistrano"` to your capistrano
-configuration and `instrument_server` will be restarted after your
+configuration and `instrumentald` will be restarted after your
 deploy is finished. Additionally, you will need to add a new variable
 to your capistrano file.
 
@@ -82,17 +82,17 @@ set :instrumental_key, "API_KEY"
 The following configuration will be added:
 
 ```ruby
-after "deploy", "instrumental:restart_instrument_server"
-after "deploy:migrations", "instrumental:restart_instrument_server"
+after "deploy", "instrumental:restart_instrumentald"
+after "deploy:migrations", "instrumental:restart_instrumentald"
 ```
 
-By default, this will attempt to restart the `instrument_server` command
+By default, this will attempt to restart the `instrumentald` command
 on all the servers specified in your configuration. If you need to
 limit the servers on which you restart the server, you can do
 something like this in your capistrano configuration:
 
 ```ruby
-namespaces[:instrumental].tasks[:restart_instrument_server].options[:roles] = [:web, :worker]
+namespaces[:instrumental].tasks[:restart_instrumentald].options[:roles] = [:web, :worker]
 ```
 
 ## Troubleshooting & Help

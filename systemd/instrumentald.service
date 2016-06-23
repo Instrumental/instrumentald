@@ -1,0 +1,13 @@
+[Unit]
+Description=instrumentald process for monitoring your system
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/instrumental-tools/instrumentald -f /etc/instrumental.yml -p /opt/instrumental-tools/instrumentald.pid -l /opt/instrumental-tools/instrumentald.log -s /opt/instrumental-tools/.instrumental_scripts -t /opt/instrumental-tools/ foreground
+
+TimeoutSec=60
+
+[Install]
+WantedBy=multi-user.target
