@@ -39,7 +39,7 @@ windows               = RUBY_PLATFORM =~ /(mswin|win32|mingw)/i
 default_script_directory = File.join(script_data_directory, '.instrumental_scripts')
 default_command          = :foreground
 
-options = {
+default_options = {
   :collector       => 'collector.instrumentalapp.com',
   :port            => '8001',
   :hostname        => Socket.gethostname,
@@ -53,6 +53,11 @@ options = {
   :config_file     => '/etc/instrumental.toml',
   :user            => nil
 }
+run_options = {}
+
+define_method :options do
+  default_options.merge(run_options)
+end
 
 option_parser = OptionParser.new do |opts|
   opts.banner = <<-EOBANNER
@@ -61,55 +66,49 @@ Default command: #{default_command.to_s}
   EOBANNER
 
   opts.on('-k', '--api_key API_KEY', 'API key of your project, not required if you use config file.') do |api_key|
-    options[:api_key] = api_key
+    run_options[:api_key] = api_key
   end
 
-  opts.on('-f', '--config-file PATH', "Configuration path, required if using services(MySQL, redis, etc.) or if API key is not specififed. (default #{options[:config_file]})") do |path|
-    options[:config_file] = coerce_path(path)
+  opts.on('-f', '--config-file PATH', "Configuration path, required if using services(MySQL, redis, etc.) or if API key is not specififed. (default #{default_options[:config_file]})") do |path|
+    run_options[:config_file] = coerce_path(path)
   end
 
-  opts.on('-c', '--collector COLLECTOR[:PORT]', "Collector (default #{options[:collector]}:#{options[:port]})") do |collector|
-    address, port       = collector.split(':')
-    options[:collector] = address
-    options[:port]      = port if port
+  opts.on('-H', '--hostname HOSTNAME', "Hostname to report as (default #{default_options[:hostname]})") do |hostname|
+    run_options[:hostname] = hostname
   end
 
-  opts.on('-H', '--hostname HOSTNAME', "Hostname to report as (default #{options[:hostname]})") do |hostname|
-    options[:hostname] = hostname
+  opts.on('-p', '--pid LOCATION', "Where daemon PID file is located (default #{default_options[:pid_location]})") do |pid_location|
+    run_options[:pid_location] = coerce_path(pid_location)
   end
 
-  opts.on('-p', '--pid LOCATION', "Where daemon PID file is located (default #{options[:pid_location]})") do |pid_location|
-    options[:pid_location] = coerce_path(pid_location)
+  opts.on('-l', '--log LOCATION', "Where to put the instrumentald log file (default #{default_options[:log_location]})") do |log_location|
+    run_options[:log_location] = coerce_path(log_location)
   end
 
-  opts.on('-l', '--log LOCATION', "Where to put the instrumentald log file (default #{options[:log_location]})") do |log_location|
-    options[:log_location] = coerce_path(log_location)
+  opts.on('-r', '--report-interval INTERVAL_IN_SECONDS', "How often to report metrics to Instrumental (default #{default_options[:report_interval]})") do |interval|
+    run_options[:report_interval] = interval.to_i
   end
 
-  opts.on('-r', '--report-interval INTERVAL_IN_SECONDS', "How often to report metrics to Instrumental (default #{options[:report_interval]})") do |interval|
-    options[:report_interval] = interval.to_i
+  opts.on('-e', '--enable-scripts', "Enable custom metric gathering from local scripts (default #{default_options[:enable_scripts]})") do
+    run_options[:enable_scripts] = true
   end
 
-  opts.on('-e', '--enable-scripts', "Enable custom metric gathering from local scripts (default #{options[:enable_scripts]})") do
-    options[:enable_scripts] = true
-  end
-
-  opts.on('-s', '--script-location PATH_TO_DIRECTORY', "Directory where local scripts for custom metrics are located (default #{options[:script_location]})") do |path|
-    options[:script_location] = coerce_path(path)
+  opts.on('-s', '--script-location PATH_TO_DIRECTORY', "Directory where local scripts for custom metrics are located (default #{default_options[:script_location]})") do |path|
+    run_options[:script_location] = coerce_path(path)
   end
 
   if !windows
     opts.on('-u', '--user USER_TO_RUN_AS', "User to run instrumentald as. You must have permissions to drop privileges to this user.") do |u|
-      options[:user] = u
+      run_options[:user] = u
     end
   end
 
-  opts.on('-t', '--temp-dir TEMP_DIRECTORY', "Where to store temporary files (default #{options[:tmp_location]})") do |t|
-    options[:tmp_location] = coerce_path(t)
+  opts.on('-t', '--temp-dir TEMP_DIRECTORY', "Where to store temporary files (default #{default_options[:tmp_location]})") do |t|
+    run_options[:tmp_location] = coerce_path(t)
   end
 
   opts.on('--debug', "Print all sent metrics to the log") do
-    options[:debug] = true
+    run_options[:debug] = true
   end
 
   opts.on('-h', '--help', 'Display this screen') do
@@ -144,7 +143,7 @@ command = ARGV.first && ARGV.first.to_sym
 command ||= default_command
 
 
-options[:api_key] ||= ENV["INSTRUMENTAL_TOKEN"]
+run_options[:api_key] ||= ENV["INSTRUMENTAL_TOKEN"]
 
 def show_option_error(option_parser, message)
   STDERR.puts "ERROR: #{message}\n\n"
@@ -209,12 +208,13 @@ end
 running_as_daemon = [:start, :restart].include?(command)
 
 controller = ServerController.spawn(
-               :name        => File.basename(__FILE__),
-               :path        => options[:tmp_location],
-               :pid_file    => options[:pid_location],
-               :verbose     => true,
-               :log_file    => options[:log_location],
-               :run_options => options.merge(:daemon => running_as_daemon)
+               :name            => File.basename(__FILE__),
+               :path            => options[:tmp_location],
+               :pid_file        => options[:pid_location],
+               :verbose         => true,
+               :log_file        => options[:log_location],
+               :run_options     => run_options.merge(:daemon => running_as_daemon),
+               :default_options => default_options,
              )
 
 if ServerController::COMMANDS.include?(command)

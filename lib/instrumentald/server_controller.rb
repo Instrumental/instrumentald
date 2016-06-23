@@ -10,12 +10,12 @@ class ServerController < Pidly::Control
   TELEGRAF_FAILURE_LOGGING_THROTTLE = 100
   TELEGRAF_FAILURE_SLEEP = 1
 
-  attr_accessor :run_options, :pid
+  attr_accessor :run_options, :default_options, :pid
   attr_reader :current_api_key
 
   before_start do
-    extra_info = if run_options[:daemon]
-                   "(#{run_options[:pid_location]}), log: #{run_options[:log_location]}"
+    extra_info = if opts[:daemon]
+                   "(#{opts[:pid_location]}), log: #{opts[:log_location]}"
                  end
     puts "Starting daemon process: #{@pid} #{extra_info}"
   end
@@ -32,8 +32,15 @@ class ServerController < Pidly::Control
 
   def initialize(options={})
     @run_options = options.delete(:run_options) || {}
+    @default_options = options.delete(:default_options) || {}
     @telegraf_config_tempfile = Tempfile.new("instrumentald_telegraph")
     super(options)
+  end
+
+  def opts
+    @opts ||= Hash.new do |hash, key|
+      hash[key] = run_options[key.to_sym] || config_file[key.to_s] || default_options[key.to_sym]
+    end
   end
 
   def foreground
@@ -41,19 +48,20 @@ class ServerController < Pidly::Control
   end
 
   def collector_address
-    [run_options[:collector], run_options[:port]].compact.join(':')
+    [opts[:collector], opts[:port]].compact.join(':')
   end
 
   def user_specified_api_key
-    run_options[:api_key]
+    opts[:api_key]
   end
 
   def config_file
     return @config_file if @config_file
-    config_contents = if File.exist?(run_options[:config_file])
-      TOML::Parser.new(File.read(run_options[:config_file])).parsed
+    opts[:config_file] = run_options[:config_file] || default_options[:config_file]
+    config_contents = if File.exist?(opts[:config_file])
+      TOML::Parser.new(File.read(opts[:config_file])).parsed
     else
-      puts "Config file #{run_options[:config_file]} not found, defaulting to an empty config"
+      puts "Config file #{opts[:config_file]} not found, defaulting to an empty config"
     end
     if config_contents.is_a?(Hash)
       @config_file = config_contents
@@ -64,13 +72,13 @@ class ServerController < Pidly::Control
 
   def config_file_api_key
     if config_file_available?
-      config_contents = TOML::Parser.new(File.read(run_options[:config_file])).parsed
+      config_contents = TOML::Parser.new(File.read(opts[:config_file])).parsed
       if config_contents.is_a?(Hash)
         config_contents['api_key']
       end
     end
   rescue Exception => e
-    puts "Error loading config file %s: %s" % [run_options[:config_file], e.message]
+    puts "Error loading config file %s: %s" % [opts[:config_file], e.message]
     nil
   end
 
@@ -97,15 +105,15 @@ class ServerController < Pidly::Control
   end
 
   def report_interval
-    run_options[:report_interval]
+    opts[:report_interval]
   end
 
   def hostname
-    run_options[:hostname]
+    opts[:hostname]
   end
 
   def script_location
-    run_options[:script_location]
+    opts[:script_location]
   end
 
   def script_executor
@@ -122,7 +130,7 @@ class ServerController < Pidly::Control
   end
 
   def config_file_available?
-    File.exists?(run_options[:config_file])
+    File.exists?(opts[:config_file])
   end
 
   def enabled?
@@ -130,11 +138,11 @@ class ServerController < Pidly::Control
   end
 
   def debug?
-    !!run_options[:debug]
+    !!opts[:debug]
   end
 
   def enable_scripts?
-    !!run_options[:enable_scripts]
+    !!opts[:enable_scripts]
   end
 
   def key_has_changed?
