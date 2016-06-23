@@ -20,13 +20,6 @@ $: << File.join(File.dirname(__FILE__), "..", "lib")
 require 'instrumental_tools/version'
 require 'instrumental_tools/server_controller'
 
-def require_api_key(options, parser)
-  if options[:api_key].to_s.strip.empty? && !File.exists?(options[:config_file])
-    print parser.help
-    exit 1
-  end
-end
-
 def coerce_path(path)
   if File::ALT_SEPARATOR
     File.expand_path(File.join(*path.split(File::ALT_SEPARATOR)))
@@ -63,15 +56,15 @@ options = {
 
 option_parser = OptionParser.new do |opts|
   opts.banner = <<-EOBANNER
-Usage: instrument_server -k API_KEY [options] [#{ServerController::COMMANDS.join('|')}]"
+Usage: instrument_server [options] [#{ServerController::COMMANDS.join('|')}]"
 Default command: #{default_command.to_s}
   EOBANNER
 
-  opts.on('-k', '--api_key API_KEY', 'API key of your project') do |api_key|
+  opts.on('-k', '--api_key API_KEY', 'API key of your project, not required if you use config file.') do |api_key|
     options[:api_key] = api_key
   end
 
-  opts.on('-f', '--config-file PATH', "Config file with location of your API key (default #{options[:config_file]})") do |path|
+  opts.on('-f', '--config-file PATH', "Configuration path, required if using services(MySQL, redis, etc.) or if API key is not specififed. (default #{options[:config_file]})") do |path|
     options[:config_file] = coerce_path(path)
   end
 
@@ -153,6 +146,16 @@ command ||= default_command
 
 options[:api_key] ||= ENV["INSTRUMENTAL_TOKEN"]
 
+def show_option_error(option_parser, message)
+  STDERR.puts "ERROR: #{message}\n\n"
+  print option_parser.help
+  exit 1
+end
+
+if options[:api_key].to_s.strip.empty? && !File.exist?(options[:config_file])
+  show_option_error option_parser, "You must provide an API key, or a config path that exists(#{options[:config_file]})"
+end
+
 if options[:pid_location].to_s.strip.empty?
   raise "You must provide a valid path for the PID file (-p PID_PATH)"
 end
@@ -197,9 +200,6 @@ if options[:enable_scripts]
 
 end
 
-if [:start, :restart, :foreground].include?(command)
-  require_api_key(options, option_parser)
-end
 
 running_as_daemon = [:start, :restart].include?(command)
 
