@@ -43,7 +43,7 @@ sudo yum install instrumentald
 ```sh
 sudo mkdir -p /opt/instrumentald/
 sudo tar -zxvf ./instrumentald_1.0.0_linux-x86_64.tar.gz -C /opt/instrumentald/ --strip 1
-sudo cp /opt/instrumentald/etc/instrumental.yml /etc/
+sudo cp /opt/instrumentald/etc/instrumentald.toml /etc/
 ```
 
 # Windows

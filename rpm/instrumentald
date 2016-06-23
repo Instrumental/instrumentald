@@ -12,7 +12,7 @@
 set -e
 
 DIRECTORY="/opt/instrumental-tools/"
-CONFIG_FILE="/etc/instrumental.yml"
+CONFIG_FILE="/etc/instrumentald.toml"
 TMPDIR=$DIRECTORY
 PID="${DIRECTORY}instrumentald.pid"
 LOG="${DIRECTORY}instrumentald.log"

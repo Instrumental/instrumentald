@@ -56,7 +56,7 @@ when "debian", "rhel", "fedora"
   end
 
   template conf_file do
-    source "instrumental.yml.erb"
+    source "instrumentald.toml.erb"
     mode   "0440"
     owner  "nobody"
     variables(
@@ -130,7 +130,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
   end
 
   template conf_file do
-    source "instrumental.yml.erb"
+    source "instrumentald.toml.erb"
     mode   "0440"
     owner  "nobody"
     variables(
@@ -178,7 +178,7 @@ when "windows"
   end
 
   template conf_file do
-    source "instrumental.yml.erb"
+    source "instrumentald.toml.erb"
     variables(
       :api_key => node[:instrumental][:api_key]
     )

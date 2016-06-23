@@ -93,7 +93,7 @@ namespace Instrumental
     }
 
     public static string DefaultConfig() {
-      return DefaultBasePath() + "\\etc\\instrumental.yml";
+      return DefaultBasePath() + "\\etc\\instrumentald.toml";
     }
 
     public static string Hostname(){

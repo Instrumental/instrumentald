@@ -19,11 +19,11 @@ class instrumentald(
   }
 
   file { "instrumental-config":
-    path    => "/etc/instrumental.yml",
+    path    => "/etc/instrumentald.toml",
     owner   => "nobody",
     mode    => "0440",
     require => Package["instrumental-tools"],
-    content => template("instrumentald/instrumental.yml.erb")
+    content => template("instrumentald/instrumentald.toml.erb")
   }
 
 }

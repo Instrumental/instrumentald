@@ -89,7 +89,7 @@ StrCpy $Hostname $0
 FunctionEnd
 
 Function WriteConfigFile
-FileOpen $4 "$INSTDIR\etc\instrumental.yml" "w"
+FileOpen $4 "$INSTDIR\etc\instrumentald.toml" "w"
 FileWrite $4 "---$\r$\n"
 FileWrite $4 "# Replace YOUR_API_KEY with the API key for your Instrumental project and$\r$\n"
 FileWrite $4 "# remove the # from the beginning of the following line to have instrumentald$\r$\n"
@@ -216,9 +216,9 @@ Call WriteConfigFile
 
 ${If} $EnableScripts == 1
 CreateDirectory "$ScriptDirectoryDestination"
-Exec '"$InstallUtilPath" /Hostname="$Hostname" /ScriptsDirectory="$ScriptDirectoryDestination" /ScriptsEnabled="True" /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" InstrumentServer.exe'
+Exec '"$InstallUtilPath" /Hostname="$Hostname" /ScriptsDirectory="$ScriptDirectoryDestination" /ScriptsEnabled="True" /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumentald.toml" InstrumentServer.exe'
 ${Else}
-Exec '"$InstallUtilPath" /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumental.yml" /Hostname="$Hostname" InstrumentServer.exe'
+Exec '"$InstallUtilPath" /Path="$INSTDIR" /Config="$INSTDIR\etc\instrumentald.toml" /Hostname="$Hostname" InstrumentServer.exe'
 ${EndIf}
 
 Exec '"sc" start "Instrument Server"'

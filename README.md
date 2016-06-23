@@ -9,7 +9,7 @@ This tool suite supports [server monitoring](https://instrumentalapp.com/docs/se
 
 Installation instructions for supported platforms is available in [INSTALL.md](INSTALL.md). The recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
 
-Once you've installed the package, you will want to edit the `/etc/instrumental.yml` file with your [Instrumental project token](https://instrumentalapp.com/docs/tokens). Example `/etc/instrumental.yml`:
+Once you've installed the package, you will want to edit the `/etc/instrumentald.toml` file with your [Instrumental project token](https://instrumentalapp.com/docs/tokens). Example `/etc/instrumentald.toml`:
 
 ```toml
 api_key = "YOUR_PROJECT_API_TOKEN"
