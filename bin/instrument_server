@@ -194,7 +194,12 @@ if options[:enable_scripts]
   correct_mode = windows || ((stat.mode & 0xFFF) ^ 0O700) === 0
   unless stat.owned? && correct_mode
     uid      = Process.uid
-    username = Etc.getpwuid(uid).try(:name)
+    user = Etc.getpwuid(uid).try(:name)
+    username = if user.respond_to?(:name)
+      user.name
+    else
+      "unknown"
+    end
     show_option_error option_parser, "The directory #{options[:script_location]} is writable/readable by others. Please ensure it is only writable / readable by user/uid #{username}/#{uid}"
   end
 
