@@ -106,7 +106,7 @@ We are here to help! Email us at [support@instrumentalapp.com](mailto:support@in
 # set GOPATH
 >
 > go get github.com/influxdata/telegraf
-> cd $GOPATH/influxdata/telegraf
+> cd "$GOPATH/src/github.com/influxdata/telegraf"
 > git remote add isd git@github.com:Instrumental/telegraf.git
 > git checkout -b my-feature
 >
