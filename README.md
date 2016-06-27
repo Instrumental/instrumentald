@@ -102,20 +102,19 @@ We are here to help! Email us at [support@instrumentalapp.com](mailto:support@in
 
 ## Telegraf Feature Development
 
-```
-# set GOPATH
->
-> go get github.com/influxdata/telegraf
-> cd "$GOPATH/src/github.com/influxdata/telegraf"
-> git remote add isd git@github.com:Instrumental/telegraf.git
-> git checkout -b my-feature
->
+```sh
+export GOPATH=SOME_DIRECTORY_HERE # see https://golang.org/cmd/go/#hdr-GOPATH_environment_variable
+go get github.com/influxdata/telegraf
+cd "$GOPATH/src/github.com/influxdata/telegraf"
+git remote add isd git@github.com:Instrumental/telegraf.git
+git checkout -b my-feature
+
 # work hard for a while
->
-> make test-short # should pass
->
-> git push isd my-feature
->
+
+make test-short # should pass
+
+git push isd my-feature
+
 # PR that feature
 # upstream to telegraf somehow ???
 ```
