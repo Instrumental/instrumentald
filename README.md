@@ -107,6 +107,8 @@ export GOPATH=SOME_DIRECTORY_HERE # see https://golang.org/cmd/go/#hdr-GOPATH_en
 go get github.com/influxdata/telegraf
 cd "$GOPATH/src/github.com/influxdata/telegraf"
 git remote add isd git@github.com:Instrumental/telegraf.git
+brew install gdm # go dependency manager
+make # will install dependencies
 git checkout -b my-feature
 
 # work hard for a while
