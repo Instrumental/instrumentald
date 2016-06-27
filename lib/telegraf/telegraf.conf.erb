@@ -855,7 +855,11 @@
 
 
 # # Read metrics from one or many redis servers
+<% if redis_servers != nil %>
 [[inputs.redis]]
+<% else %>
+# [[inputs.redis]]
+<% end %>
   ## specify servers via a url matching:
   ##  [protocol://][:password]@address[:port]
   ##  e.g.
