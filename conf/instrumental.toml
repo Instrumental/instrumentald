@@ -3,4 +3,5 @@
 # start sending metrics to your account.
 
 api_key = "YOUR_API_KEY"
-#redis = ["tcp://localhost:6379"]
+# redis = ["tcp://localhost:6379"]
+# memcached = ["localhost:11211"]
