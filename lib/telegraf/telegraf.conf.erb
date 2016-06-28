@@ -520,12 +520,18 @@
 
 
 # # Read metrics from one or many memcached servers
+<% if memcached_servers != nil %>
+[[inputs.memcached]]
+<% else %>
 # [[inputs.memcached]]
+<% end %>
 #   ## An array of address to gather stats about. Specify an ip on hostname
 #   ## with optional port. ie localhost, 10.0.0.1:11211, etc.
 #   servers = ["localhost:11211"]
 #   # unix_sockets = ["/var/run/memcached.sock"]
-
+<% if memcached_servers != nil %>
+  servers = <%= memcached_servers %>
+<% end %>
 
 # # Telegraf plugin for gathering metrics from N Mesos masters
 # [[inputs.mesos]]
@@ -855,7 +861,11 @@
 
 
 # # Read metrics from one or many redis servers
+<% if redis_servers != nil %>
 [[inputs.redis]]
+<% else %>
+# [[inputs.redis]]
+<% end %>
   ## specify servers via a url matching:
   ##  [protocol://][:password]@address[:port]
   ##  e.g.
