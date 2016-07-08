@@ -576,6 +576,7 @@
   servers = <%= config_file['mysql'] %>
   tagexclude = ["server", "host"]
   fieldpass = ["queries", "bytes_sent", "bytes_received", "connections", "slow_queries"]
+  namedrop = ["mysql_users*"]
   ## the limits for metrics form perf_events_statements
   perf_events_statements_digest_text_limit  = 120
   perf_events_statements_limit              = 250
