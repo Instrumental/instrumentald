@@ -73,7 +73,7 @@
   prefix = ""
   ## Stats output template (Graphite formatting)
   ## see https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_OUTPUT.md#graphite
-  template = "host.tags.measurement.field"
+  template = "host.measurement.tags.field"
   ## Timeout in seconds to connect
   timeout = "2s"
   ## Debug true - Print communcation to Instrumental
@@ -574,7 +574,7 @@
   #
   ## If no servers are specified, then localhost is used as the host.
   servers = <%= config_file['mysql'] %>
-  tagexclude = ["server"]
+  tagexclude = ["server", "host"]
   fieldpass = ["queries", "bytes_sent", "bytes_received", "connections", "slow_queries"]
   ## the limits for metrics form perf_events_statements
   perf_events_statements_digest_text_limit  = 120
@@ -619,6 +619,8 @@
   #
   ## Some queries we may want to run less often (such as SHOW GLOBAL VARIABLES)
   interval_slow                   = "30m"
+  [inputs.mysql.tags]
+    server_name = "<%= config_file['mysql'].first.split(/[()]/)[1].split(":").first %>"
 <% end %>
 
 
