@@ -562,6 +562,7 @@
 #   servers = ["127.0.0.1:27017"]
 
 
+<% if config_file['mysql'] %>
 # # Read metrics from one or many mysql servers
 [[inputs.mysql]]
   ## specify servers via a url matching:
@@ -572,7 +573,9 @@
   ##    root@tcp(127.0.0.1:3306)/?tls=false
   #
   ## If no servers are specified, then localhost is used as the host.
-  servers = ["root@tcp(127.0.0.1:3306)/"]
+  servers = <%= config_file['mysql'] %>
+  tagexclude = ["server"]
+  fieldpass = ["queries", "bytes_sent", "bytes_received", "connections", "slow_queries"]
   ## the limits for metrics form perf_events_statements
   perf_events_statements_digest_text_limit  = 120
   perf_events_statements_limit              = 250
@@ -616,6 +619,7 @@
   #
   ## Some queries we may want to run less often (such as SHOW GLOBAL VARIABLES)
   interval_slow                   = "30m"
+<% end %>
 
 
 # # Read metrics about network interface usage
