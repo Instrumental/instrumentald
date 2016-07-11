@@ -1,5 +1,4 @@
 require 'instrumentald/metric_script_executor'
-require 'instrumentald/system_inspector'
 require 'pidly'
 require 'toml'
 require 'erb'
@@ -230,8 +229,6 @@ class ServerController < Pidly::Control
     loop do
       sleep time_to_sleep
       if enabled?
-        inspector = SystemInspector.new
-        inspector.load_all
         count = 0
         if enable_scripts?
           script_executor.run.each do |(stat, value, time)|
