@@ -562,7 +562,7 @@
 #   servers = ["127.0.0.1:27017"]
 
 
-<% config_file['mysql'].each do |server_url| %>
+<% (config_file['mysql'] || []).each do |server_url| %>
 # # Read metrics from one or many mysql servers
 [[inputs.mysql]]
   ## specify servers via a url matching:
