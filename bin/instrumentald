@@ -69,7 +69,7 @@ Default command: #{default_command.to_s}
     run_options[:api_key] = api_key
   end
 
-  opts.on('-f', '--config-file PATH', "Configuration path, required if using services(MySQL, redis, etc.) or if API key is not specififed. (default #{default_options[:config_file]})") do |path|
+  opts.on('-c', '--config-file PATH', "Configuration path, required if using services(MySQL, redis, etc.) or if API key is not specififed. (default #{default_options[:config_file]})") do |path|
     run_options[:config_file] = coerce_path(path)
   end
 
