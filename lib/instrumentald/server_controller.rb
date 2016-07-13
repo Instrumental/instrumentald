@@ -32,7 +32,7 @@ class ServerController < Pidly::Control
   def initialize(options={})
     @run_options = options.delete(:run_options) || {}
     @default_options = options.delete(:default_options) || {}
-    @telegraf_config_tempfile = Tempfile.new("instrumentald_telegraph")
+    @telegraf_config_tempfile = Tempfile.new("instrumentald_telegraf")
     super(options)
   end
 
@@ -204,7 +204,7 @@ class ServerController < Pidly::Control
     puts "Collecting stats under the hostname: #{hostname}"
 
     process_telegraf_config
-    run_telegraph
+    run_telegraf
 
     loop do
       sleep time_to_sleep
@@ -229,7 +229,7 @@ class ServerController < Pidly::Control
     end
   end
 
-  def run_telegraph
+  def run_telegraf
     instrumentald_pid = Process.pid
     daemonize_block do
       $0 = "[Monitor] #{$0}"
@@ -245,7 +245,7 @@ class ServerController < Pidly::Control
 
         # if we get here instrumentald has exited and we need to clean up
         should_run = false
-        sleep 5 # wait for telegraph to start if it's going to start
+        sleep 5 # wait for telegraf to start if it's going to start
         Process.kill("KILL", telegraf_pid)
       end
 
