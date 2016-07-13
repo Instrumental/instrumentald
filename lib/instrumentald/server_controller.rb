@@ -191,6 +191,7 @@ class ServerController < Pidly::Control
     instrumental_api_key = configured_api_key
     redis_servers = config_file['redis']
     memcached_servers = config_file['memcached']
+    postgresql_servers = config_file['postgresql'] || []
 
     File.open(telegraf_config_path, "w+") do |config|
       result = ERB.new(File.read(telegraf_template_config_path)).result(binding)
