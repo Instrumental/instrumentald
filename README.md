@@ -1,6 +1,6 @@
 # Instrumental Server Monitoring Daemon
 
-Instrumental is a [applicationg platform](https://instrumentalapp.com) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
+Instrumental is a [application platform](https://instrumentalapp.com) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
 
 This tool suite supports [server monitoring](https://instrumentalapp.com/docs/server-monitoring) through the `instrumentald` daemon. It provides high-data reliability at high scale.
 
