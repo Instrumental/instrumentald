@@ -6,3 +6,4 @@ api_key = "YOUR_API_KEY"
 # redis = ["tcp://localhost:6379"]
 # memcached = ["localhost:11211"]
 # mysql = ["root@tcp(127.0.0.1:3306)/"]
+# postgresql = ["postgres://postgres@localhost?sslmode=disable"]
