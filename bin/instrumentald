@@ -50,7 +50,7 @@ default_options = {
   :script_location => default_script_directory,
   :report_interval => 30,
   :debug           => false,
-  :config_file     => '/etc/instrumental.toml',
+  :config_file     => '/etc/instrumentald.toml',
   :user            => nil
 }
 run_options = {}
