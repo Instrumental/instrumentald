@@ -204,28 +204,7 @@ class ServerController < Pidly::Control
     puts "Collecting stats under the hostname: #{hostname}"
 
     process_telegraf_config
-    Thread.new do
-      if debug?
-        puts "starting metrics collector"
-        puts "telegraf binary: #{telegraf_binary_path}"
-        puts "telegraf config: #{telegraf_config_path}"
-      end
-      failures = 0
-      loop do
-        begin
-          success = system(telegraf_binary_path, "-config", telegraf_config_path)
-          if !success
-            failures += 1
-          end
-        rescue
-          failures += 1
-        end
-        if (failures - 1) % TELEGRAF_FAILURE_LOGGING_THROTTLE == 0
-          puts "telegraf execution failed, #{failures} total failures"
-        end
-        sleep TELEGRAF_FAILURE_SLEEP # to prevent racing to restart
-      end
-    end
+    run_telegraph
 
     loop do
       sleep time_to_sleep
@@ -246,6 +225,69 @@ class ServerController < Pidly::Control
         if debug?
           puts "Sent #{count} metrics"
         end
+      end
+    end
+  end
+
+  def run_telegraph
+    instrumentald_pid = Process.pid
+    daemonize_block do
+      $0 = "[Monitor] #{$0}"
+      telegraf_pid = nil
+      should_run = true
+
+      # monitor thread
+      Thread.new do
+        # wait for instrumentald to die
+        while (Process.kill(0, instrumentald_pid) rescue nil)
+          sleep 1
+        end
+
+        # if we get here instrumentald has exited and we need to clean up
+        should_run = false
+        sleep 5 # wait for telegraph to start if it's going to start
+        Process.kill("KILL", telegraf_pid)
+      end
+
+      if debug?
+        puts "starting metrics collector"
+        puts "telegraf binary: #{telegraf_binary_path}"
+        puts "telegraf config: #{telegraf_config_path}"
+      end
+      failures = 0
+      loop do
+        break unless should_run
+        begin
+          telegraf_pid = fork do
+            exec(telegraf_binary_path, "-config", telegraf_config_path)
+          end
+          Process.detach telegraf_pid
+          Process.wait telegraf_pid
+
+          pid, status = Process.wait2(telegraf_pid)
+
+          if !status.success?
+            failures += 1
+          end
+        rescue
+          failures += 1
+        end
+        if (failures - 1) % TELEGRAF_FAILURE_LOGGING_THROTTLE == 0
+          puts "telegraf execution failed, #{failures} total failures"
+        end
+        sleep TELEGRAF_FAILURE_SLEEP # to prevent racing to restart
+      end
+
+    end
+  end
+
+  # This is how you daemonize in ruby, preventing an orphaned inner process.
+  def daemonize_block(&block)
+    fork do
+      Process.setsid
+      trap 'SIGHUP', 'IGNORE'
+      fork do
+        yield
       end
     end
   end
