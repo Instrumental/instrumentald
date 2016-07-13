@@ -18,7 +18,7 @@ PID="${DIRECTORY}instrumentald.pid"
 LOG="${DIRECTORY}instrumentald.log"
 SCRIPT_LOCATION="${DIRECTORY}.instrumental_scripts"
 USER_TO_RUN_AS="nobody"
-ARGS="-f ${CONFIG_FILE} -p ${PID} -l ${LOG} -s ${SCRIPT_LOCATION} -u ${USER_TO_RUN_AS} -t ${TMPDIR}"
+ARGS="-c ${CONFIG_FILE} -p ${PID} -l ${LOG} -s ${SCRIPT_LOCATION} -u ${USER_TO_RUN_AS} -t ${TMPDIR}"
 PROCESS="${DIRECTORY}instrumentald ${ARGS}"
 
 case "$1" in
