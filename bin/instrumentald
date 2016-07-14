@@ -226,12 +226,7 @@ end
 
 
 if running_as_daemon
-  begin
-    Timeout.timeout(1) do
-      Process.waitpid(controller.pid)
-    end
-  rescue Timeout::Error
-  end
+  sleep 1
   if !controller.running?
     raise "Failed to start process, see #{options[:log_location]}"
   end
