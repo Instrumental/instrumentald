@@ -13,9 +13,9 @@ default[:instrumental][:enable_scripts]  = false
 
 
 if node[:platform_family] == "windows"
-  default[:instrumental][:destination_dir] = "C:\\Program Files (x86)\\Instrumental Tools"
-  default[:instrumental][:config_file]     = "C:\\Program Files (x86)\\Instrumental Tools\\etc\\instrumentald.toml"
-  default[:instrumental][:script_dir]      = "C:\\Program Files (x86)\\Instrumental Tools\\scripts"
+  default[:instrumental][:destination_dir] = "C:\\Program Files (x86)\\Instrumentald"
+  default[:instrumental][:config_file]     = "C:\\Program Files (x86)\\Instrumentald\\etc\\instrumentald.toml"
+  default[:instrumental][:script_dir]      = "C:\\Program Files (x86)\\Instrumentald\\scripts"
 else
   default[:instrumental][:destination_dir] = "/opt/instrumentald/"
   default[:instrumental][:config_file]     = "/etc/instrumentald.toml"
