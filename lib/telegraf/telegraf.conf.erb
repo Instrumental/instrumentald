@@ -798,20 +798,20 @@
   ##   withdbname boolean
   ##   tagvalue string (comma separated)
   ##   measurement string
-  <% server_part = server_url.split("@").last.split("?").first.strip %>
-  <% server_part = ".#{server_part}" unless server_part.empty? %>
   [[inputs.postgresql_extensible.query]]
     sqlquery="SELECT * FROM pg_stat_database WHERE datname"
     version=901
     withdbname=true
     tagvalue=""
-    measurement="postgresql<%= server_part %>"
+    measurement=""
   [[inputs.postgresql_extensible.query]]
     sqlquery="SELECT * FROM pg_stat_bgwriter"
     version=901
     withdbname=false
     tagvalue=""
-    measurement="postgresql<%= server_part %>"
+    measurement=""
+  [inputs.postgresql_extensible.tags]
+    server_name = <%= server_url.split("@").last.split("?").first.strip.inspect %>
 <% end %>
 
 # # Read metrics from one or many PowerDNS servers
