@@ -160,7 +160,7 @@ ARCHITECTURES.each do |name, config|
       if config[:packagecloud]
         namespace "packagecloud" do
           desc "Push packages (%s) to package_cloud" % config[:packages].join(",")
-          task "push" do
+          task "release" do
             destination = create_directory_bundle(name, config[:wrapper], config[:separator], config[:extension], config[:dest_dir])
             if config[:package_from_compressed]
               destination = create_compressed_package(destination, config[:compress_format])
@@ -173,6 +173,14 @@ ARCHITECTURES.each do |name, config|
                 repo = File.join(PACKAGECLOUD_REPO, distro)
                 files.each do |file|
                   yank_cmd = %Q{package_cloud yank "%s" "%s"} % [repo, file]
+                  # Package cloud adds a "-1" as the "release" version
+                  # http://www.rpm.org/max-rpm/ch-rpm-file-format.html
+                  # changing instrumentald_0.0.3_i386.rpm
+                  # into     instrumentald-0.0.3-1.i386.rpm
+                  yank_cmd = yank_cmd.sub(/_#{Regexp.escape(VERSION.to_s)}_/, "-#{VERSION.to_s}-1.") if distro =~ /el/
+                  # and      instrumentald_0.0.3_amd64.rpm
+                  # into     instrumentald-0.0.3-1.x86_64.rpm
+                  yank_cmd = yank_cmd.sub(/\.amd64/, ".x86_64") if distro =~ /el/
                   puts yank_cmd
                   system(yank_cmd)
                   sh %Q{package_cloud push "%s" "%s"} % [repo, file]
@@ -193,6 +201,11 @@ ARCHITECTURES.each do |name, config|
 end
 
 namespace "package" do
+
+  desc "Release built packages"
+  task :release => ARCHITECTURES.map { |name, config|
+    "package:#{name}:packagecloud:release" if config[:packagecloud]
+  }.compact
 
   desc "Install gems to local directory"
   task :bundle_install, [:platform] do |t, args|
