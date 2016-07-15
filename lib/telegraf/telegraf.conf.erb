@@ -574,18 +574,19 @@
 #   # campaign_id = ""
 
 
-# # Read metrics from one or many memcached servers
-<% if memcached_servers != nil %>
+# Read metrics from one or many memcached servers
+
+<% memcached_servers.each do |server_url| %>
+  <% puts server_url %>
 [[inputs.memcached]]
-<% else %>
-# [[inputs.memcached]]
-<% end %>
-#   ## An array of address to gather stats about. Specify an ip on hostname
-#   ## with optional port. ie localhost, 10.0.0.1:11211, etc.
-#   servers = ["localhost:11211"]
-#   # unix_sockets = ["/var/run/memcached.sock"]
-<% if memcached_servers != nil %>
-  servers = <%= memcached_servers %>
+  tagexclude = ["server", "host"]
+  ## An array of address to gather stats about. Specify an ip on hostname
+  ## with optional port. ie localhost, 10.0.0.1:11211, etc.
+  servers = [<%= server_url.inspect %>]
+  # unix_sockets = ["/var/run/memcached.sock"]
+
+  [inputs.memcached.tags]
+    server_name = <%= server_url.split(":").first.strip.inspect %>
 <% end %>
 
 # # Telegraf plugin for gathering metrics from N Mesos masters
