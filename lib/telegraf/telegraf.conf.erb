@@ -73,7 +73,7 @@
   prefix = ""
   ## Stats output template (Graphite formatting)
   ## see https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_OUTPUT.md#graphite
-  template = "host.measurement.tags.field"
+  template = "measurement.host.system_measurement_tag.tags.field"
   ## Timeout in seconds to connect
   timeout = "2s"
   ## Debug true - Print communcation to Instrumental
@@ -92,6 +92,12 @@
   ## Comment this line if you want the raw CPU time metrics
   fielddrop = ["time_*"]
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.cpu.tags]
+    system_measurement_tag = "cpu"
 
 # Read metrics about disk usage by mount point
 [[inputs.disk]]
@@ -103,6 +109,13 @@
   ## present on /run, /var/run, /dev/shm or /dev).
   ignore_fs = ["tmpfs", "devtmpfs"]
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.disk.tags]
+    system_measurement_tag = "disk"
+
 
 # Read metrics about disk IO by device
 [[inputs.diskio]]
@@ -113,30 +126,72 @@
   ## Uncomment the following line if you do not need disk serial numbers.
   # skip_serial_number = true
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.diskio.tags]
+    system_measurement_tag = "diskio"
+
 
 # Get kernel statistics from /proc/stat
 [[inputs.kernel]]
   # no configuration
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.kernel.tags]
+    system_measurement_tag = "kernel"
 
 
 # Read metrics about memory usage
 [[inputs.mem]]
   # no configuration
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.mem.tags]
+    system_measurement_tag = "mem"
+
 
 # Get the number of processes and group them by status
 [[inputs.processes]]
   # no configuration
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.processes.tags]
+    system_measurement_tag = "processes"
 
 
 # Read metrics about swap memory usage
 [[inputs.swap]]
   # no configuration
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.swap.tags]
+    system_measurement_tag = "swap"
+
 
 # Read metrics about system load & uptime
 [[inputs.system]]
   # no configuration
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.system.tags]
+    system_measurement_tag = "system"
 
 
 # # Read stats from an aerospike server
@@ -632,6 +687,13 @@
 #   ## regardless of status.
 #   ##
 #   # interfaces = ["eth0"]
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.net.tags]
+    system_measurement_tag = "net"
 
 
 # # TCP or UDP 'ping' given url and collect response time in seconds
