@@ -798,6 +798,23 @@
   ##   withdbname boolean
   ##   tagvalue string (comma separated)
   ##   measurement string
+  fieldpass=[
+    "blk_read_time",
+    "blk_write_time",
+    "blks_read",
+    "checkpoint_sync_time",
+    "checkpoint_write_time",
+    "deadlocks",
+    "numbackends",
+    "temp_bytes",
+    "tup_deleted",
+    "tup_fetched",
+    "tup_inserted",
+    "tup_returned",
+    "tup_updated",
+    "xact_commit",
+    "xact_rollback"
+  ]
   [[inputs.postgresql_extensible.query]]
     sqlquery="SELECT * FROM pg_stat_database WHERE datname"
     version=901
