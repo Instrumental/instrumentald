@@ -7,7 +7,7 @@ if RUBY_PLATFORM =~ /(win|mswin|mingw)/i
   set :os, :family => 'windows'
   details = {
     check_owner:      false,
-    config:           "c:\\Program Files (x86)\\Instrumental Tools\\etc\\instrumentald.toml",
+    config:           "c:\\Program Files (x86)\\Instrumentald\\etc\\instrumentald.toml",
     has_pid:          false,
     service_name:     "Instrument Server"
   }
