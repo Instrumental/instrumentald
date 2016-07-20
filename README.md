@@ -1,4 +1,4 @@
-# Instrumental System Daemon
+# Instrumental System Daemon (ISD)
 
 ** Warning: This is not production ready! **
 
