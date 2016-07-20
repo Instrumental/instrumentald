@@ -903,6 +903,7 @@
   ##
   ## If no servers are specified, then localhost is used as the host.
   ## If no port is specified, 6379 is used
+  name_override="redis"
   servers = [<%= server_url.inspect %>]
   tagexclude = ["host", "port"]
 <% end %>
