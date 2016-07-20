@@ -553,14 +553,19 @@
 #   ]
 
 
+<% (config_file['mongodb'] || []).each do |server_url| %>
 # # Read metrics from one or many MongoDB servers
-# [[inputs.mongodb]]
+[[inputs.mongodb]]
 #   ## An array of URI to gather stats about. Specify an ip or hostname
 #   ## with optional port add password. ie,
 #   ##   mongodb://user:auth_key@10.10.3.30:27017,
 #   ##   mongodb://10.10.3.33:18832,
 #   ##   10.0.0.1:10000, etc.
-#   servers = ["127.0.0.1:27017"]
+  servers = <%= [server_url] %>
+  tagexclude = ["host"]
+  [inputs.mongodb.tags]
+    server_name = "<%= server_url.split(":").first %>"
+<% end %>
 
 
 <% (config_file['mysql'] || []).each do |server_url| %>
