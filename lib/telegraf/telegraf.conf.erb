@@ -892,12 +892,9 @@
 #   urls = ["http://localhost:8080/_raindrops"]
 
 
+<% redis_servers.each do |server_url| %>
 # # Read metrics from one or many redis servers
-<% if redis_servers != nil %>
 [[inputs.redis]]
-<% else %>
-# [[inputs.redis]]
-<% end %>
   ## specify servers via a url matching:
   ##  [protocol://][:password]@address[:port]
   ##  e.g.
@@ -906,10 +903,9 @@
   ##
   ## If no servers are specified, then localhost is used as the host.
   ## If no port is specified, 6379 is used
-<% if redis_servers != nil %>
-  servers = <%= redis_servers %>
+  servers = [<%= server_url.inspect %>]
+  tagexclude = ["host", "port"]
 <% end %>
-
 
 # # Read metrics from one or many RethinkDB servers
 # [[inputs.rethinkdb]]
