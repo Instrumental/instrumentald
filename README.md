@@ -1,8 +1,10 @@
-# Instrumental Server Monitoring Daemon
+# Instrumental System Daemon (ISD)
+
+** Warning: This is not production ready! **
 
 Instrumental is an [application monitoring platform](https://instrumentalapp.com) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
 
-This tool suite supports [server monitoring](https://instrumentalapp.com/docs/server-monitoring) through the `instrumentald` daemon. It provides high-data reliability at high scale.
+ISD provides [server monitoring](https://instrumentalapp.com/docs/server-monitoring) through the `instrumentald` daemon. It provides high-data reliability at high scale.
 
 ## Installation
 `instrumentald` is currently officially supported on 32-bit and 64-bit Linux, Windows systems and Mac OS X. There are prebuilt packages available for Debian, Ubuntu, RHEL and Win32 systems.
