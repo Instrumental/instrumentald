@@ -553,7 +553,7 @@
 #   ]
 
 
-<% (config_file['mongodb'] || []).each do |server_url| %>
+<% mongodb_servers.each do |server_url| %>
 # # Read metrics from one or many MongoDB servers
 [[inputs.mongodb]]
 #   ## An array of URI to gather stats about. Specify an ip or hostname
