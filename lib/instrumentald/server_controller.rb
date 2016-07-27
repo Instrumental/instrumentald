@@ -232,7 +232,7 @@ class ServerController < Pidly::Control
 
   def run_telegraf
     instrumentald_pid = Process.pid
-    daemonize_block do
+    daemonize do
       $0 = "[Monitor] #{$0}"
       telegraf_pid = nil
       should_run = true
@@ -283,7 +283,7 @@ class ServerController < Pidly::Control
   end
 
   # This is how you daemonize in ruby, preventing an orphaned inner process.
-  def daemonize_block(&block)
+  def daemonize(&block)
     fork do
       Process.setsid
       trap 'SIGHUP', 'IGNORE'
