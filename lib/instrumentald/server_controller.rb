@@ -284,13 +284,15 @@ class ServerController < Pidly::Control
 
   # This is how you daemonize in ruby, preventing an orphaned inner process.
   def daemonize(&block)
-    fork do
+    temp_pid = fork do
       Process.setsid
       trap 'SIGHUP', 'IGNORE'
       fork do
         yield
       end
     end
+    # This prevents the short lived fork from sticking around as a zombie
+    Process.detach(temp_pid)
   end
 
   alias_method :clean, :clean!
