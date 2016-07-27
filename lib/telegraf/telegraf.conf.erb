@@ -73,11 +73,23 @@
   prefix = ""
   ## Stats output template (Graphite formatting)
   ## see https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_OUTPUT.md#graphite
-  template = "host.measurement.tags.field"
+  template = "measurement.host.system_measurement_tag.tags.field"
   ## Timeout in seconds to connect
   timeout = "2s"
   ## Debug true - Print communcation to Instrumental
   debug = <%= opts[:debug] %>
+
+<% if opts[:debug] %>
+# Send telegraf metrics to file(s)
+[[outputs.file]]
+  ## Files to write to, "stdout" is a specially handled file.
+  files = ["stdout"]
+  ## Data format to output.
+  ## Each data format has it's own unique set of configuration options, read
+  ## more about them here:
+  ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_OUTPUT.md
+  data_format = "influx"
+<% end %>
 
 ###############################################################################
 #                            INPUT PLUGINS                                    #
@@ -92,6 +104,12 @@
   ## Comment this line if you want the raw CPU time metrics
   fielddrop = ["time_*"]
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.cpu.tags]
+    system_measurement_tag = "cpu"
 
 # Read metrics about disk usage by mount point
 [[inputs.disk]]
@@ -103,6 +121,13 @@
   ## present on /run, /var/run, /dev/shm or /dev).
   ignore_fs = ["tmpfs", "devtmpfs"]
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.disk.tags]
+    system_measurement_tag = "disk"
+
 
 # Read metrics about disk IO by device
 [[inputs.diskio]]
@@ -113,30 +138,72 @@
   ## Uncomment the following line if you do not need disk serial numbers.
   # skip_serial_number = true
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.diskio.tags]
+    system_measurement_tag = "diskio"
+
 
 # Get kernel statistics from /proc/stat
 [[inputs.kernel]]
   # no configuration
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.kernel.tags]
+    system_measurement_tag = "kernel"
 
 
 # Read metrics about memory usage
 [[inputs.mem]]
   # no configuration
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.mem.tags]
+    system_measurement_tag = "memory"
+
 
 # Get the number of processes and group them by status
 [[inputs.processes]]
   # no configuration
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.processes.tags]
+    system_measurement_tag = "processes"
 
 
 # Read metrics about swap memory usage
 [[inputs.swap]]
   # no configuration
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.swap.tags]
+    system_measurement_tag = "swap"
+
 
 # Read metrics about system load & uptime
 [[inputs.system]]
   # no configuration
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.system.tags]
+    system_measurement_tag = "system"
 
 
 # # Read stats from an aerospike server
@@ -553,14 +620,19 @@
 #   ]
 
 
+<% mongodb_servers.each do |server_url| %>
 # # Read metrics from one or many MongoDB servers
-# [[inputs.mongodb]]
+[[inputs.mongodb]]
 #   ## An array of URI to gather stats about. Specify an ip or hostname
 #   ## with optional port add password. ie,
 #   ##   mongodb://user:auth_key@10.10.3.30:27017,
 #   ##   mongodb://10.10.3.33:18832,
 #   ##   10.0.0.1:10000, etc.
-#   servers = ["127.0.0.1:27017"]
+  servers = <%= [server_url] %>
+  tagexclude = ["host"]
+  [inputs.mongodb.tags]
+    server_name = "<%= server_url.split(":").first %>"
+<% end %>
 
 
 <% (config_file['mysql'] || []).each do |server_url| %>
@@ -633,6 +705,13 @@
   ## regardless of status.
   ##
   # interfaces = ["eth0"]
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.net.tags]
+    system_measurement_tag = "network"
 
 
 # # TCP or UDP 'ping' given url and collect response time in seconds
