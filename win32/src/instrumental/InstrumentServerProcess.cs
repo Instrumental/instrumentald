@@ -84,7 +84,7 @@ namespace Instrumental
 
     public void SetupProcess(string executablePath, string configPath, string hostname, bool scriptsEnabled, string scriptsDirectory){
       CleanupProcess();
-      string args                              = $"{RubyFlags()} \"{InstrumentServerScript(executablePath)}\" -f \"{configPath}\" -H \"{hostname}\"";
+      string args                              = $"{RubyFlags()} \"{InstrumentServerScript(executablePath)}\" -c \"{configPath}\" -H \"{hostname}\"";
       if(scriptsEnabled){
         args += $" -e -s \"{scriptsDirectory}\"";
       }

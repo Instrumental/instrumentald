@@ -13,7 +13,7 @@ class instrumentald(
     type => $package_type,
   }
 
-  package { "instrumental-tools":
+  package { "instrumentald":
     ensure  => latest,
     require => Packagecloud::Repo["expectedbehavior/instrumental"]
   }
@@ -22,7 +22,7 @@ class instrumentald(
     path    => "/etc/instrumentald.toml",
     owner   => "nobody",
     mode    => "0440",
-    require => Package["instrumental-tools"],
+    require => Package["instrumentald"],
     content => template("instrumentald/instrumentald.toml.erb")
   }
 

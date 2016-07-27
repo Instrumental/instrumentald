@@ -73,11 +73,23 @@
   prefix = ""
   ## Stats output template (Graphite formatting)
   ## see https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_OUTPUT.md#graphite
-  template = "host.measurement.tags.field"
+  template = "measurement.host.system_measurement_tag.tags.field"
   ## Timeout in seconds to connect
   timeout = "2s"
   ## Debug true - Print communcation to Instrumental
   debug = <%= opts[:debug] %>
+
+<% if opts[:debug] %>
+# Send telegraf metrics to file(s)
+[[outputs.file]]
+  ## Files to write to, "stdout" is a specially handled file.
+  files = ["stdout"]
+  ## Data format to output.
+  ## Each data format has it's own unique set of configuration options, read
+  ## more about them here:
+  ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_OUTPUT.md
+  data_format = "influx"
+<% end %>
 
 ###############################################################################
 #                            INPUT PLUGINS                                    #
@@ -92,6 +104,12 @@
   ## Comment this line if you want the raw CPU time metrics
   fielddrop = ["time_*"]
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.cpu.tags]
+    system_measurement_tag = "cpu"
 
 # Read metrics about disk usage by mount point
 [[inputs.disk]]
@@ -103,6 +121,13 @@
   ## present on /run, /var/run, /dev/shm or /dev).
   ignore_fs = ["tmpfs", "devtmpfs"]
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.disk.tags]
+    system_measurement_tag = "disk"
+
 
 # Read metrics about disk IO by device
 [[inputs.diskio]]
@@ -113,30 +138,72 @@
   ## Uncomment the following line if you do not need disk serial numbers.
   # skip_serial_number = true
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.diskio.tags]
+    system_measurement_tag = "diskio"
+
 
 # Get kernel statistics from /proc/stat
 [[inputs.kernel]]
   # no configuration
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.kernel.tags]
+    system_measurement_tag = "kernel"
 
 
 # Read metrics about memory usage
 [[inputs.mem]]
   # no configuration
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.mem.tags]
+    system_measurement_tag = "memory"
+
 
 # Get the number of processes and group them by status
 [[inputs.processes]]
   # no configuration
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.processes.tags]
+    system_measurement_tag = "processes"
 
 
 # Read metrics about swap memory usage
 [[inputs.swap]]
   # no configuration
 
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.swap.tags]
+    system_measurement_tag = "swap"
+
 
 # Read metrics about system load & uptime
 [[inputs.system]]
   # no configuration
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.system.tags]
+    system_measurement_tag = "system"
 
 
 # # Read stats from an aerospike server
@@ -519,18 +586,19 @@
 #   # campaign_id = ""
 
 
-# # Read metrics from one or many memcached servers
-<% if memcached_servers != nil %>
+# Read metrics from one or many memcached servers
+
+<% memcached_servers.each do |server_url| %>
+  <% puts server_url %>
 [[inputs.memcached]]
-<% else %>
-# [[inputs.memcached]]
-<% end %>
-#   ## An array of address to gather stats about. Specify an ip on hostname
-#   ## with optional port. ie localhost, 10.0.0.1:11211, etc.
-#   servers = ["localhost:11211"]
-#   # unix_sockets = ["/var/run/memcached.sock"]
-<% if memcached_servers != nil %>
-  servers = <%= memcached_servers %>
+  tagexclude = ["server", "host"]
+  ## An array of address to gather stats about. Specify an ip on hostname
+  ## with optional port. ie localhost, 10.0.0.1:11211, etc.
+  servers = [<%= server_url.inspect %>]
+  # unix_sockets = ["/var/run/memcached.sock"]
+
+  [inputs.memcached.tags]
+    server_name = <%= server_url.split(":").first.strip.inspect %>
 <% end %>
 
 # # Telegraf plugin for gathering metrics from N Mesos masters
@@ -552,14 +620,19 @@
 #   ]
 
 
+<% mongodb_servers.each do |server_url| %>
 # # Read metrics from one or many MongoDB servers
-# [[inputs.mongodb]]
+[[inputs.mongodb]]
 #   ## An array of URI to gather stats about. Specify an ip or hostname
 #   ## with optional port add password. ie,
 #   ##   mongodb://user:auth_key@10.10.3.30:27017,
 #   ##   mongodb://10.10.3.33:18832,
 #   ##   10.0.0.1:10000, etc.
-#   servers = ["127.0.0.1:27017"]
+  servers = <%= [server_url] %>
+  tagexclude = ["host"]
+  [inputs.mongodb.tags]
+    server_name = "<%= server_url.split(":").first %>"
+<% end %>
 
 
 <% (config_file['mysql'] || []).each do |server_url| %>
@@ -625,13 +698,20 @@
 <% end %>
 
 
-# # Read metrics about network interface usage
+# Read metrics about network interface usage
 [[inputs.net]]
-#   ## By default, telegraf gathers stats from any up interface (excluding loopback)
-#   ## Setting interfaces will tell it to gather these explicit interfaces,
-#   ## regardless of status.
-#   ##
-#   # interfaces = ["eth0"]
+  ## By default, telegraf gathers stats from any up interface (excluding loopback)
+  ## Setting interfaces will tell it to gather these explicit interfaces,
+  ## regardless of status.
+  ##
+  # interfaces = ["eth0"]
+
+  ## These lines fix the system metric names to basically be
+  ## system.<host>.<measurement>.<field>
+  ## Look at the output template for more info.
+  name_override = "system"
+  [inputs.net.tags]
+    system_measurement_tag = "network"
 
 
 # # TCP or UDP 'ping' given url and collect response time in seconds
@@ -798,20 +878,37 @@
   ##   withdbname boolean
   ##   tagvalue string (comma separated)
   ##   measurement string
-  <% server_part = server_url.split("@").last.split("?").first.strip %>
-  <% server_part = ".#{server_part}" unless server_part.empty? %>
+  fieldpass=[
+    "blk_read_time",
+    "blk_write_time",
+    "blks_read",
+    "checkpoint_sync_time",
+    "checkpoint_write_time",
+    "deadlocks",
+    "numbackends",
+    "temp_bytes",
+    "tup_deleted",
+    "tup_fetched",
+    "tup_inserted",
+    "tup_returned",
+    "tup_updated",
+    "xact_commit",
+    "xact_rollback"
+  ]
   [[inputs.postgresql_extensible.query]]
     sqlquery="SELECT * FROM pg_stat_database WHERE datname"
     version=901
     withdbname=true
     tagvalue=""
-    measurement="postgresql<%= server_part %>"
+    measurement=""
   [[inputs.postgresql_extensible.query]]
     sqlquery="SELECT * FROM pg_stat_bgwriter"
     version=901
     withdbname=false
     tagvalue=""
-    measurement="postgresql<%= server_part %>"
+    measurement=""
+  [inputs.postgresql_extensible.tags]
+    server_name = <%= server_url.split("@").last.split("?").first.strip.inspect %>
 <% end %>
 
 # # Read metrics from one or many PowerDNS servers
@@ -874,12 +971,9 @@
 #   urls = ["http://localhost:8080/_raindrops"]
 
 
-# # Read metrics from one or many redis servers
-<% if redis_servers != nil %>
+<% redis_servers.each do |server_url| %>
+# Read metrics from one or many redis servers
 [[inputs.redis]]
-<% else %>
-# [[inputs.redis]]
-<% end %>
   ## specify servers via a url matching:
   ##  [protocol://][:password]@address[:port]
   ##  e.g.
@@ -888,10 +982,38 @@
   ##
   ## If no servers are specified, then localhost is used as the host.
   ## If no port is specified, 6379 is used
-<% if redis_servers != nil %>
-  servers = <%= redis_servers %>
+  name_override="redis"
+  servers = [<%= server_url.inspect %>]
+  tagexclude = ["host", "port"]
+  # Fields to feed out that are important. There are two distinct kinds of metric,
+  # but TOML doesn't allow for in-array comments, so:
+  # Redis Instance-Wide begin at "clients"
+  # DB-specific begin at "avg_ttl"
+  fieldpass=[
+    "clients",
+    "connected_slaves",
+    "evicted_keys",
+    "expired_keys",
+    "instantaneous_input_kbps",
+    "instantaneous_ops_per_sec",
+    "instantaneous_output_kbps",
+    "keyspace_hits",
+    "keyspace_misses",
+    "pubsub_channels",
+    "pubsub_patterns",
+    "repl_backlog_histlen",
+    "sync_full",
+    "sync_partial_err",
+    "sync_partial_ok",
+    "used_cpu_sys",
+    "used_cpu_user",
+    "used_memory",
+    "used_memory_rss",
+    "avg_ttl",
+    "expires",
+    "keys"
+  ]
 <% end %>
-
 
 # # Read metrics from one or many RethinkDB servers
 # [[inputs.rethinkdb]]

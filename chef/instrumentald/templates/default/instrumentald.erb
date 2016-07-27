@@ -18,7 +18,7 @@ PID="<%= @pid_file %>"
 LOG="<%= @log_file %>"
 SCRIPT_LOCATION="<%= @script_dir %>"
 USER_TO_RUN_AS="<%= @user %>"
-ARGS="-f ${CONFIG_FILE} -p ${PID} -l ${LOG} -s ${SCRIPT_LOCATION} -u ${USER_TO_RUN_AS} -t ${TMPDIR} <%= '-e' if @enable_scripts %>"
+ARGS="-c ${CONFIG_FILE} -p ${PID} -l ${LOG} -s ${SCRIPT_LOCATION} -u ${USER_TO_RUN_AS} -t ${TMPDIR} <%= '-e' if @enable_scripts %>"
 PROCESS="${DIRECTORY}instrumentald ${ARGS}"
 
 case "$1" in

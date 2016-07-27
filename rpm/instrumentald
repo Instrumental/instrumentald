@@ -11,14 +11,14 @@
 
 set -e
 
-DIRECTORY="/opt/instrumental-tools/"
+DIRECTORY="/opt/instrumentald/"
 CONFIG_FILE="/etc/instrumentald.toml"
 TMPDIR=$DIRECTORY
 PID="${DIRECTORY}instrumentald.pid"
 LOG="${DIRECTORY}instrumentald.log"
 SCRIPT_LOCATION="${DIRECTORY}.instrumental_scripts"
 USER_TO_RUN_AS="nobody"
-ARGS="-f ${CONFIG_FILE} -p ${PID} -l ${LOG} -s ${SCRIPT_LOCATION} -u ${USER_TO_RUN_AS} -t ${TMPDIR}"
+ARGS="-c ${CONFIG_FILE} -p ${PID} -l ${LOG} -s ${SCRIPT_LOCATION} -u ${USER_TO_RUN_AS} -t ${TMPDIR}"
 PROCESS="${DIRECTORY}instrumentald ${ARGS}"
 
 case "$1" in
@@ -38,7 +38,7 @@ case "$1" in
     $PROCESS stop && $PROCESS clean && $PROCESS start
     ;;
   *)
-    echo "Usage: /etc/init.d/instrumental-tools {start|stop|restart|status}"
+    echo "Usage: /etc/init.d/instrumentald {start|stop|restart|status}"
     exit 1
     ;;
 esac

@@ -117,7 +117,7 @@ Default command: #{default_command.to_s}
   end
 
   opts.on('-v', '--version', 'Display version') do
-    puts "instrumentald: #{Instrumental::Tools::VERSION}"
+    puts "instrumentald: #{Instrumentald::VERSION}"
     exit 0
   end
 end
