@@ -698,13 +698,13 @@
 <% end %>
 
 
-# # Read metrics about network interface usage
+# Read metrics about network interface usage
 [[inputs.net]]
-#   ## By default, telegraf gathers stats from any up interface (excluding loopback)
-#   ## Setting interfaces will tell it to gather these explicit interfaces,
-#   ## regardless of status.
-#   ##
-#   # interfaces = ["eth0"]
+  ## By default, telegraf gathers stats from any up interface (excluding loopback)
+  ## Setting interfaces will tell it to gather these explicit interfaces,
+  ## regardless of status.
+  ##
+  # interfaces = ["eth0"]
 
   ## These lines fix the system metric names to basically be
   ## system.<host>.<measurement>.<field>
@@ -971,12 +971,9 @@
 #   urls = ["http://localhost:8080/_raindrops"]
 
 
-# # Read metrics from one or many redis servers
-<% if redis_servers != nil %>
+<% redis_servers.each do |server_url| %>
+# Read metrics from one or many redis servers
 [[inputs.redis]]
-<% else %>
-# [[inputs.redis]]
-<% end %>
   ## specify servers via a url matching:
   ##  [protocol://][:password]@address[:port]
   ##  e.g.
@@ -985,10 +982,38 @@
   ##
   ## If no servers are specified, then localhost is used as the host.
   ## If no port is specified, 6379 is used
-<% if redis_servers != nil %>
-  servers = <%= redis_servers %>
+  name_override="redis"
+  servers = [<%= server_url.inspect %>]
+  tagexclude = ["host", "port"]
+  # Fields to feed out that are important. There are two distinct kinds of metric,
+  # but TOML doesn't allow for in-array comments, so:
+  # Redis Instance-Wide begin at "clients"
+  # DB-specific begin at "avg_ttl"
+  fieldpass=[
+    "clients",
+    "connected_slaves",
+    "evicted_keys",
+    "expired_keys",
+    "instantaneous_input_kbps",
+    "instantaneous_ops_per_sec",
+    "instantaneous_output_kbps",
+    "keyspace_hits",
+    "keyspace_misses",
+    "pubsub_channels",
+    "pubsub_patterns",
+    "repl_backlog_histlen",
+    "sync_full",
+    "sync_partial_err",
+    "sync_partial_ok",
+    "used_cpu_sys",
+    "used_cpu_user",
+    "used_memory",
+    "used_memory_rss",
+    "avg_ttl",
+    "expires",
+    "keys"
+  ]
 <% end %>
-
 
 # # Read metrics from one or many RethinkDB servers
 # [[inputs.rethinkdb]]
