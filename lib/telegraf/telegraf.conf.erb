@@ -972,7 +972,7 @@
 
 
 <% redis_servers.each do |server_url| %>
-# # Read metrics from one or many redis servers
+# Read metrics from one or many redis servers
 [[inputs.redis]]
   ## specify servers via a url matching:
   ##  [protocol://][:password]@address[:port]
@@ -985,6 +985,34 @@
   name_override="redis"
   servers = [<%= server_url.inspect %>]
   tagexclude = ["host", "port"]
+  # Fields to feed out that are important. There are two distinct kinds of metric,
+  # but TOML doesn't allow for in-array comments, so:
+  # Redis Instance-Wide begin at "clients"
+  # DB-specific begin at "avg_ttl"
+  fieldpass=[
+    "clients",
+    "connected_slaves",
+    "evicted_keys",
+    "expired_keys",
+    "instantaneous_input_kbps",
+    "instantaneous_ops_per_sec",
+    "instantaneous_output_kbps",
+    "keyspace_hits",
+    "keyspace_misses",
+    "pubsub_channels",
+    "pubsub_patterns",
+    "repl_backlog_histlen",
+    "sync_full",
+    "sync_partial_err",
+    "sync_partial_ok",
+    "used_cpu_sys",
+    "used_cpu_user",
+    "used_memory",
+    "used_memory_rss",
+    "avg_ttl",
+    "expires",
+    "keys"
+  ]
 <% end %>
 
 # # Read metrics from one or many RethinkDB servers
