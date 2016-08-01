@@ -589,13 +589,34 @@
 # Read metrics from one or many memcached servers
 
 <% memcached_servers.each do |server_url| %>
-  <% puts server_url %>
 [[inputs.memcached]]
   tagexclude = ["server", "host"]
   ## An array of address to gather stats about. Specify an ip on hostname
   ## with optional port. ie localhost, 10.0.0.1:11211, etc.
   servers = [<%= server_url.inspect %>]
   # unix_sockets = ["/var/run/memcached.sock"]
+
+  fieldpass = [
+    "bytes",
+    "bytes_read",
+    "bytes_written",
+    "cas_hits",
+    "cas_misses",
+    "cmd_get",
+    "cmd_set",
+    "conn_yields",
+    "curr_connections",
+    "curr_items",
+    "decr_hits",
+    "decr_misses",
+    "delete_hits",
+    "delete_misses",
+    "evictions",
+    "get_hits",
+    "get_misses",
+    "incr_hits",
+    "incr_misses",
+    "limit_maxbytes"]
 
   [inputs.memcached.tags]
     server_name = <%= server_url.split(":").first.strip.inspect %>
