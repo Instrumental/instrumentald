@@ -338,17 +338,98 @@
 #   timeout = 2 # optional
 
 
-# # Read metrics about docker containers
-# [[inputs.docker]]
-#   ## Docker Endpoint
-#   ##   To use TCP, set endpoint = "tcp://[ip]:[port]"
-#   ##   To use environment variables (ie, docker-machine), set endpoint = "ENV"
-#   endpoint = "unix:///var/run/docker.sock"
-#   ## Only collect metrics for these containers, collect all if empty
-#   container_names = []
-#   ## Timeout for docker list, info, and stats commands
-#   timeout = "5s"
+<% docker_containers.each do |container_endpoint| %>
+# Read metrics about docker containers
+## Host Metrics
+[[inputs.docker]]
+  ## Docker Endpoint
+  ##   To use TCP, set endpoint = "tcp://[ip]:[port]"
+  ##   To use environment variables (ie, docker-machine), set endpoint = "ENV"
+  endpoint = <%= container_endpoint.inspect %>
+  ## Only collect metrics for these containers, collect all if empty
+  container_names = []
+  ## Timeout for docker list, info, and stats commands
+  timeout = "5s"
+  fieldpass = [
+    "bytes.memory_total",
+    "n_containers",
+    "n_cpus",
+    "n_goroutines",
+    "n_images",
+    "n_listener_events",
+    "n_used_file_descriptors"
+  ]
+  name_override = "docker.host"
 
+## Container Metrics
+[[inputs.docker]]
+  ## Docker Endpoint
+  ##   To use TCP, set endpoint = "tcp://[ip]:[port]"
+  ##   To use environment variables (ie, docker-machine), set endpoint = "ENV"
+  endpoint = <%= container_endpoint.inspect %>
+  ## Only collect metrics for these containers, collect all if empty
+  container_names = []
+  ## Timeout for docker list, info, and stats commands
+  timeout = "5s"
+
+  tagexclude = ["host"]
+
+  fieldpass = [
+    "active_anon",
+    "active_file",
+    "cache",
+    "fail_count",
+    "hierarchical_memory_limit",
+    "inactive_anon",
+    "inactive_file",
+    "limit",
+    "mapped_file",
+    "pgfault",
+    "pgmajfault",
+    "pgpgin",
+    "pgpgout",
+    "rss",
+    "rss_huge",
+    "total_active_anon",
+    "total_active_file",
+    "total_cache",
+    "total_inactive_anon",
+    "total_inactive_file",
+    "total_mapped_file",
+    "total_pgfault",
+    "total_pgmafault",
+    "total_pgpgin",
+    "total_pgpgout",
+    "total_rss",
+    "total_rss_huge",
+    "total_unevictable",
+    "total_writeback",
+    "unevictable",
+    "usage",
+    "usage_percent",
+    "writeback",
+
+    "throttling_periods",
+    "throttling_throttled_periods",
+    "throttling_throttled_time",
+    "usage_in_kernelmode",
+    "usage_in_usermode",
+    "usage_percent",
+    "usage_system",
+    "usage_total",
+
+    "rx_bytes",
+    "rx_dropped",
+    "rx_errors",
+    "rx_packets",
+    "tx_bytes",
+    "tx_dropped",
+    "tx_errors",
+    "tx_packets"
+  ]
+  name_override = "docker.container"
+
+<% end %>
 
 # # Read statistics from one or many dovecot servers
 # [[inputs.dovecot]]
