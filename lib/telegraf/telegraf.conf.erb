@@ -377,6 +377,7 @@
   # * memory stats
   # * cpu stats
   # * network stats
+  # * blockio stats
   fieldpass = [
     "fail_count",
     "limit",
@@ -401,7 +402,16 @@
     "tx_bytes",
     "tx_dropped",
     "tx_errors",
-    "tx_packets"
+    "tx_packets",
+
+    "io_service_bytes_recursive_async",
+    "io_service_bytes_recursive_read",
+    "io_service_bytes_recursive_sync",
+    "io_service_bytes_recursive_write",
+    "io_serviced_recursive_async",
+    "io_serviced_recursive_read",
+    "io_serviced_recursive_sync",
+    "io_serviced_recursive_write"
   ]
   name_override = "docker.container"
 
