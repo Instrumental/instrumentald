@@ -2,9 +2,11 @@
 # remove the # from the beginning of the following line to have instrumentald
 # start sending metrics to your account.
 
-api_key = "YOUR_API_KEY"
+api_key = "2b1145f7b4004ea8121250abe4a5cb89"
+# api_key = "YOUR_API_KEY"
 # redis = ["tcp://localhost:6379"]
 # memcached = ["localhost:11211"]
 # mongodb = ["localhost:27017"]
 # mysql = ["root@tcp(127.0.0.1:3306)/"]
+# nginx = ["http://localhost:80/status"]
 # postgresql = ["postgres://postgres@localhost?sslmode=disable"]

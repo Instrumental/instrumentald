@@ -192,6 +192,7 @@ class ServerController < Pidly::Control
     redis_servers      = Array(config_file['redis'])
     mysql_servers      = Array(config_file['mysql'])
     memcached_servers  = Array(config_file['memcached'])
+    nginx_servers      = Array(config_file['nginx'])
     postgresql_servers = Array(config_file['postgresql'])
     mongodb_servers    = Array(config_file['mongodb'])
 
