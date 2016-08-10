@@ -756,11 +756,13 @@
 #   # no configuration
 
 
-# # Read Nginx's basic status information (ngx_http_stub_status_module)
-# [[inputs.nginx]]
-#   ## An array of Nginx stub_status URI to gather stats.
-#   urls = ["http://localhost/status"]
-
+<% nginx_servers.each do |server_url| %>
+# Read Nginx's basic status information (ngx_http_stub_status_module)
+[[inputs.nginx]]
+  ## An array of Nginx stub_status URI to gather stats.
+  urls = [<%= server_url.inspect %>]
+  tagexclude = ["host", "port"]
+<% end %>
 
 # # Read NSQ topic and channel statistics.
 # [[inputs.nsq]]
