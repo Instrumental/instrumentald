@@ -56,7 +56,7 @@ sudo cp /opt/instrumentald/etc/instrumentald.toml /etc/
 
 # Windows
 
-Download the [installer](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_win32.exe) and run it, adding in your API key when prompted.
+Download the [installer](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_win32.exe) and run it, adding in your project token when prompted.
 
 # RubyGems
 

@@ -1,8 +1,8 @@
-# Replace YOUR_API_KEY with the API key for your Instrumental project and
+# Replace PROJECT_TOKEN with the project token from an Instrumental project and
 # remove the # from the beginning of the following line to have instrumentald
-# start sending metrics to your account.
+# start sending metrics for your project.
 
-api_key = "YOUR_API_KEY"
+project_token = "PROJECT_TOKEN"
 # redis = ["tcp://localhost:6379"]
 # memcached = ["localhost:11211"]
 # mongodb = ["localhost:27017"]
