@@ -29,14 +29,9 @@ By default, Instrumental Daemon will collect metrics on the following server dat
 * Disk Usage (`percent_utilization` for all mounted disks)
 * Filesystem stats (`open_files`, `max_open_files`)
 
-#### Monitoring Services & Other Processes
+## Custom Plugin Scripts
 
-Instrumental Daemon monitors other processes through a powerful plugin system built on binary and shell scripts. Plugin installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md). Existing plugins include:
-
-* [MySQL](examples/mysql)
-* [Mongo](examples/mongo)
-* [Docker](examples/docker)
-* [Redis](examples/redis)
+Instrumental Daemon can monitor arbitrary processes and system events through a pluign scripting system.  Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md).
 
 ## Command Line Usage
 
