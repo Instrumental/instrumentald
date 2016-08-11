@@ -31,7 +31,7 @@ By default, Instrumental Daemon will collect metrics on the following server dat
 
 ## Custom Plugin Scripts
 
-Instrumental Daemon can monitor arbitrary processes and system events through a pluign scripting system.  Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md).
+Instrumental Daemon can monitor arbitrary processes and system events through a plugin scripting system.  Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md).
 
 ## Command Line Usage
 
