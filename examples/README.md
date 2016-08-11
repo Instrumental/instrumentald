@@ -10,6 +10,10 @@ The following scripts are examples of how to monitor other parts of your system 
 
 The [log size](plugin_scripts/log_size.sh) script simply monitors the size of logs in /var/log, so you can see if a log is failing to rotate or growing out of control.  It demonstrates using an executable shell script as a plugin script.
 
+#### ISS Monitor
+
+The [ISS Monitor](plugin_scripts/iss_monitor.rb) script monitors the distance between my current location and the international space station (or, more exactly, a point directly UNDER the international space station).  You can use environment variables to track the distance between your location and the ISS.
+
 #### MySQL
 
 The [MySQL](plugin_scripts/mysql.rb) script collects the following metrics:
