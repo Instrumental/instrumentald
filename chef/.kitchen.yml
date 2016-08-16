@@ -12,7 +12,7 @@ provisioner:
 
 platforms:
   - name: ubuntu-12.04
-  #- name: centos-7.1
+  - name: centos-7.1
   #- name: "d11wtq/gentoo"
   #- name: "opentable/win-2012r2-standard-amd64-nocm"
 
