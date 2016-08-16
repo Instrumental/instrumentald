@@ -1,5 +1,5 @@
 supported_platforms = %w{debian rhel fedora arch gentoo slackware suse}
-version   = node["instrumental"]["version"]
+version   = node[:instrumental][:version]
 arch      = case node["kernel"]["machine"]
             when "i386"
               "x86"
@@ -51,7 +51,7 @@ when "debian", "rhel", "fedora"
 
     package "instrumentald" do
       action :upgrade
-      version node["instrumental"]["version"]
+      version node[:instrumental][:version]
     end
   end
 
@@ -60,11 +60,11 @@ when "debian", "rhel", "fedora"
     mode   "0440"
     owner  "nobody"
     variables(
-      :api_key => node[:instrumental][:api_key]
+      :project_token => node[:instrumental][:project_token]
     )
   end
 
-  template node["instrumental"]["dest_init_file"] do
+  template node[:instrumental][:dest_init_file] do
     source "instrumentald.erb"
     mode "0755"
     owner "nobody"
@@ -114,7 +114,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     only_if { ::File.exists?(local_path) }
   end
 
-  template node["instrumental"]["dest_init_file"] do
+  template node[:instrumental][:dest_init_file] do
     source "instrumentald.erb"
     mode "0755"
     owner "nobody"
@@ -134,7 +134,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     mode   "0440"
     owner  "nobody"
     variables(
-      :api_key => node[:instrumental][:api_key]
+      :project_token => node[:instrumental][:project_token]
     )
   end
 
@@ -180,7 +180,7 @@ when "windows"
   template conf_file do
     source "instrumentald.toml.erb"
     variables(
-      :api_key => node[:instrumental][:api_key]
+      :project_token => node[:instrumental][:project_token]
     )
   end
 
