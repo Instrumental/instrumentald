@@ -1,5 +1,5 @@
 supported_platforms = %w{debian rhel fedora arch gentoo slackware suse}
-version   = node["instrumental"]["version"]
+version   = node[:instrumental][:version]
 arch      = case node["kernel"]["machine"]
             when "i386"
               "x86"
@@ -61,7 +61,7 @@ when "debian", "rhel", "fedora"
 
     package "instrumentald" do
       action :upgrade
-      version node["instrumental"]["version"]
+      version node[:instrumental]["version"]
     end
   end
 
@@ -74,7 +74,7 @@ when "debian", "rhel", "fedora"
     )
   end
 
-  template node["instrumental"]["dest_init_file"] do
+  template node[:instrumental][:dest_init_file] do
     source "instrumentald.erb"
     mode "0755"
     owner "nobody"
@@ -94,8 +94,6 @@ when "debian", "rhel", "fedora"
   end
 
 when "arch", "gentoo", "slackware", "suse", "osx"
-
-  local_path = "%s/%s" % [dest_dir, file_name]
 
   directory dest_dir do
     owner "nobody"
@@ -124,7 +122,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     only_if { ::File.exists?(local_path) }
   end
 
-  template node["instrumental"]["dest_init_file"] do
+  template node[:instrumental][:dest_init_file] do
     source "instrumentald.erb"
     mode "0755"
     owner "nobody"
