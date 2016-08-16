@@ -95,8 +95,6 @@ when "debian", "rhel", "fedora"
 
 when "arch", "gentoo", "slackware", "suse", "osx"
 
-  local_path = "%s/%s" % [dest_dir, file_name]
-
   directory dest_dir do
     owner "nobody"
     action :create
