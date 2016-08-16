@@ -12,7 +12,7 @@ provisioner:
 
 platforms:
   - name: ubuntu-12.04
-  - name: centos-6.6
+  - name: centos-6.7
   - name: "d11wtq/gentoo"
   - name: "windows-2012r2"
 
