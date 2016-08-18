@@ -43,6 +43,10 @@ ISD is built to make it easy to collect the most important metrics from your cri
 * [PostgreSQL](https://instrumentalapp.com/docs/isd/postgresql)
 * [Redis](https://instrumentalapp.com/docs/isd/redis)
 
+## Custom Plugin Scripts
+
+Instrumental Daemon can monitor arbitrary processes and system events through a plugin scripting system. Writing plugins is easier than you'd think! Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md).
+
 ## Command Line Usage
 
 Basic usage:
