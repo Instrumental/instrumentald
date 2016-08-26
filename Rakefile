@@ -26,7 +26,7 @@ MAINTAINER             = Array(GEMSPEC.email).first || [Etc.getlogin, Socket.get
 HOMEPAGE               = GEMSPEC.homepage || ""
 DESCRIPTION            = GEMSPEC.description || ""
 SUPPORTED_DISTROS      = {
-                           'deb' => ['ubuntu/precise', 'ubuntu/lucid', 'ubuntu/trusty', 'ubuntu/utopic', 'debian/lenny', 'debian/squeeze', 'debian/wheezy'],
+                           'deb' => ['ubuntu/xenial', 'ubuntu/precise', 'ubuntu/lucid', 'ubuntu/trusty', 'ubuntu/utopic', 'debian/lenny', 'debian/squeeze', 'debian/wheezy'],
                            'rpm' => ['el/5', 'el/6', 'el/7']
                          }
 EXTRA_ARGS             = {
