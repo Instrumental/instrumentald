@@ -1,7 +1,7 @@
 default[:instrumental]                   = {}
 default[:instrumental][:api_key]         = nil
 
-default[:instrumental][:version]         = "0.0.3"
+default[:instrumental][:version]         = "0.0.4"
 default[:instrumental][:repo]            = "https://s3.amazonaws.com/instrumentald"
 
 default[:instrumental][:curl_path]       = "/usr/bin/curl"
