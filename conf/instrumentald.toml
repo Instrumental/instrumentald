@@ -8,5 +8,6 @@ api_key = "YOUR_PROJECT_TOKEN"
 # memcached = ["localhost:11211"]
 # mongodb = ["localhost:27017"]
 # mysql = ["root@tcp(127.0.0.1:3306)/"]
+# nginx = ["http://localhost:80/status"]
 # postgresql = ["postgres://postgres@localhost?sslmode=disable"]
 # redis = ["tcp://localhost:6379"]

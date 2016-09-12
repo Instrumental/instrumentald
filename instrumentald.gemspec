@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.email       = ["support@instrumentalapp.com"]
   s.homepage    = "http://github.com/expectedbehavior/instrumentald"
   s.summary     = %q{Command line tools for Instrumental}
-  s.description = %q{A collection of scripts useful for monitoring servers and services with Instrumental (instrumentalapp.com)}
+  s.description = %q{Instrumental is an application monitoring platform built for developers who want a better understanding of their production software. Powerful tools, like the Instrumental Query Language, combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time. ISD provides server and service monitoring through the instrumentald daemon. It provides strong data reliability at high scale.}
   s.licenses    = ["MIT"]
 
   s.files         = all_files
@@ -54,5 +54,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<librarian-puppet>, [">=0"])
   s.add_development_dependency(%q<puppet>, [">=0"])
   s.add_development_dependency(%q<serverspec>, [">=0"])
+  s.add_development_dependency(%q<winrm-fs>, ["~> 0.4.1"])
   s.add_development_dependency(%q<winrm-transport>, ["~>1.0"])
 end
