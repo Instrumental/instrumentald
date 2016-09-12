@@ -2,14 +2,15 @@
 
 ** Warning: This is not production ready! **
 
-Instrumental is an [application monitoring platform](https://instrumentalapp.com) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
+Instrumental is an [application monitoring platform](https://instrumentalapp.com/) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
 
-ISD provides [server monitoring](https://instrumentalapp.com/docs/server-monitoring) through the `instrumentald` daemon. It provides high-data reliability at high scale.
+**Instrumental System Daemon** (ISD for short) is a server agent that provides [system monitoring](#system-metrics) and [service monitoring](#service-metrics). It's fast, reliable, runs on *nix and Windows, is [simple to configure](conf/instrumental.toml) and deploy, and has a small memory footprint.
+
 
 ## Installation
-`instrumentald` is currently officially supported on 32-bit and 64-bit Linux, Windows systems and Mac OS X. There are prebuilt packages available for Debian, Ubuntu, RHEL and Win32 systems.
+`instrumentald` is supported on 32-bit and 64-bit Linux, Windows and OSX/macOS. There are prebuilt packages available for Debian, Ubuntu, RHEL and Win32 systems.
 
-Installation instructions for supported platforms is available in [INSTALL.md](INSTALL.md). The recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
+Detailed installation instructions for supported platforms are available in [INSTALL.md](INSTALL.md). The recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
 
 Once you've installed the package, you will want to edit the `/etc/instrumentald.toml` file with your [Instrumental project token](https://instrumentalapp.com/docs/tokens). Example `/etc/instrumentald.toml`:
 
@@ -17,21 +18,34 @@ Once you've installed the package, you will want to edit the `/etc/instrumentald
 api_key = "YOUR_PROJECT_API_TOKEN"
 ```
 
-## Metrics
+## System Metrics
 
-By default, Instrumental Daemon will collect metrics on the following server data:
+By default, ISD will collect system metrics from every server on which it's installed, including:
 
-* CPU (`user`, `nice`, `system`, `idle`, `iowait` and `total in use`)
-* Load (at 1 minute, 5 minute and 15 minute intervals)
-* Memory (`used`, `free`, `buffers`, `cached`, `free_percent` )
-* Swap (`used`, `free`, `free_percent`)
-* Disk Capacity (`total`, `used`, `available`, `available percent` for all mounted disks)
-* Disk Usage (`percent_utilization` for all mounted disks)
-* Filesystem stats (`open_files`, `max_open_files`)
+* CPU Stats
+* Memory Stats
+* Disk Stats
+* Network Stats
+* Process Stats
+* System Stats
+
+A detailed list of system metrics collected by ISD can be found in the [Instrumental documentation](https://instrumentalapp.com/docs/isd/system-metrics).
+
+## Service Metrics
+
+ISD is built to make it easy to collect the most important metrics from your critical services. It's currently capable of capturing metrics from the following services:
+
+* [Docker](https://instrumentalapp.com/docs/isd/docker)
+* [MySQL](https://instrumentalapp.com/docs/isd/mysql)
+* [Memcached](https://instrumentalapp.com/docs/isd/memcached)
+* [MongoDB](https://instrumentalapp.com/docs/isd/mongodb)
+* [Nginx](https://instrumentalapp.com/docs/isd/nginx)
+* [PostgreSQL](https://instrumentalapp.com/docs/isd/postgresql)
+* [Redis](https://instrumentalapp.com/docs/isd/redis)
 
 ## Custom Plugin Scripts
 
-Instrumental Daemon can monitor arbitrary processes and system events through a plugin scripting system.  Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md).
+Instrumental Daemon can monitor arbitrary processes and system events through a plugin scripting system. Writing plugins is easier than you'd think! Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md).
 
 ## Command Line Usage
 
