@@ -338,17 +338,84 @@
 #   timeout = 2 # optional
 
 
-# # Read metrics about docker containers
-# [[inputs.docker]]
-#   ## Docker Endpoint
-#   ##   To use TCP, set endpoint = "tcp://[ip]:[port]"
-#   ##   To use environment variables (ie, docker-machine), set endpoint = "ENV"
-#   endpoint = "unix:///var/run/docker.sock"
-#   ## Only collect metrics for these containers, collect all if empty
-#   container_names = []
-#   ## Timeout for docker list, info, and stats commands
-#   timeout = "5s"
+<% docker_containers.each do |container_endpoint| %>
+# Read metrics about docker containers
+## Host Metrics
+[[inputs.docker]]
+  ## Docker Endpoint
+  ##   To use TCP, set endpoint = "tcp://[ip]:[port]"
+  ##   To use environment variables (ie, docker-machine), set endpoint = "ENV"
+  endpoint = <%= container_endpoint.inspect %>
+  ## Only collect metrics for these containers, collect all if empty
+  container_names = []
+  ## Timeout for docker list, info, and stats commands
+  timeout = "5s"
+  fieldpass = [
+    "bytes.memory_total",
+    "n_containers",
+    "n_cpus",
+    "n_images",
+    "n_listener_events",
+    "n_used_file_descriptors"
+  ]
+  name_override = "docker.host"
 
+## Container Metrics
+[[inputs.docker]]
+  ## Docker Endpoint
+  ##   To use TCP, set endpoint = "tcp://[ip]:[port]"
+  ##   To use environment variables (ie, docker-machine), set endpoint = "ENV"
+  endpoint = <%= container_endpoint.inspect %>
+  ## Only collect metrics for these containers, collect all if empty
+  container_names = []
+  ## Timeout for docker list, info, and stats commands
+  timeout = "5s"
+
+  tagexclude = ["host", "container_version"]
+
+  # The fields below are broken up these sets:
+  # * memory stats
+  # * cpu stats
+  # * network stats
+  # * blockio stats
+  fieldpass = [
+    "fail_count",
+    "limit",
+    "total_cache",
+    "total_mapped_file",
+    "total_pgfault",
+    "total_pgmafault",
+    "total_rss",
+    "total_unevictable",
+    "usage",
+    "usage_percent",
+
+    "throttling_periods",
+    "throttling_throttled_periods",
+    "throttling_throttled_time",
+    "usage_percent",
+
+    "rx_bytes",
+    "rx_dropped",
+    "rx_errors",
+    "rx_packets",
+    "tx_bytes",
+    "tx_dropped",
+    "tx_errors",
+    "tx_packets",
+
+    "io_service_bytes_recursive_async",
+    "io_service_bytes_recursive_read",
+    "io_service_bytes_recursive_sync",
+    "io_service_bytes_recursive_write",
+    "io_serviced_recursive_async",
+    "io_serviced_recursive_read",
+    "io_serviced_recursive_sync",
+    "io_serviced_recursive_write"
+  ]
+  name_override = "docker.container"
+
+<% end %>
 
 # # Read statistics from one or many dovecot servers
 # [[inputs.dovecot]]

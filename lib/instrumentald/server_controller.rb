@@ -189,12 +189,14 @@ class ServerController < Pidly::Control
 
   def process_telegraf_config
     instrumental_api_key = configured_api_key
-    redis_servers      = Array(config_file['redis'])
-    mysql_servers      = Array(config_file['mysql'])
-    memcached_servers  = Array(config_file['memcached'])
+
+    docker_containers  = Array(config_file["docker"])
+    memcached_servers  = Array(config_file["memcached"])
+    mongodb_servers    = Array(config_file["mongodb"])
+    mysql_servers      = Array(config_file["mysql"])
     nginx_servers      = Array(config_file['nginx'])
-    postgresql_servers = Array(config_file['postgresql'])
-    mongodb_servers    = Array(config_file['mongodb'])
+    postgresql_servers = Array(config_file["postgresql"])
+    redis_servers      = Array(config_file["redis"])
 
     File.open(telegraf_config_path, "w+") do |config|
       result = ERB.new(File.read(telegraf_template_config_path)).result(binding)
