@@ -12,9 +12,16 @@ provisioner:
 
 platforms:
   - name: ubuntu-12.04
-  - name: centos-7.1
-  #- name: "d11wtq/gentoo"
-  #- name: "opentable/win-2012r2-standard-amd64-nocm"
+  - name: ubuntu-14.04
+  # ubuntu 16 works differently, and this doesn't work currently
+  # - name: ubuntu-16.04
+  - name: centos-6.7
+  - name: "d11wtq/gentoo"
+  # windows 12 has changed significantly since the first rodeo,
+  # and this doesn't work currently
+  # - name: windows-2012r2
+  #   driver:
+  #     box: "kensykora/windows_2012_r2_standard"
 
 suites:
   - name: default

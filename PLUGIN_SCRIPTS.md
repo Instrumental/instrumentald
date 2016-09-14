@@ -17,7 +17,7 @@ A script may be a binary or shell script that exists in the scripts directory (`
 * **Argument 1:** The Unix timestamp of the last time this script had been executed, in seconds. If the process has not successfully run by `instrumentald` before, this value will be 0.
 * **Argument 2:** The exit status of the process the last time this script had been executed. If the process has not successfully ran by `instrumentald` before, this value will not be present.
 * **STDIN:**
- The `STDIN` pipe to your process will contain the output of your script the last time it had been executed. You may use this data to compute differences between the last time your script ran and the current execution. (_The [MySQL script](examples/mysql/mysql_status.rb) uses this to compute rate metrics_)
+ The `STDIN` pipe to your process will contain the output of your script the last time it had been executed. You may use this data to compute differences between the last time your script ran and the current execution. (_The [MySQL script](examples/plugin_scripts/mysql.rb) uses this to compute rate metrics_)
 * Environment: Any environment variables set for the `instrumentald` process will be available to your process.
 
 Your script is expected to output data in the following format on `STDOUT` in order to be sent back to Instrumental:

@@ -3,9 +3,10 @@
 # start sending metrics for your project.
 
 project_token = "YOUR_PROJECT_TOKEN"
-# redis = ["tcp://localhost:6379"]
+# docker = ["unix:///var/run/docker.sock"]
 # memcached = ["localhost:11211"]
 # mongodb = ["localhost:27017"]
 # mysql = ["root@tcp(127.0.0.1:3306)/"]
 # nginx = ["http://localhost:80/status"]
 # postgresql = ["postgres://postgres@localhost?sslmode=disable"]
+# redis = ["tcp://localhost:6379"]
