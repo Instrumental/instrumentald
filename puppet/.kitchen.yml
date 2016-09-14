@@ -1,7 +1,6 @@
 ---
 driver:
   name: vagrant
-  provider: vmware_fusion
 
 provisioner:
   name: puppet_apply
@@ -14,12 +13,12 @@ platforms:
     driver_plugin: vagrant
     driver_config:
       box: nocm_ubuntu-12.04
-      box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-12.04-64-nocm/versions/1.0.1/providers/vmware_fusion.box
+      box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-12.04-64-nocm/versions/1.0.1/providers/virtualbox.box
   - name: nocm_centos-6.6
     driver_plugin: vagrant
     driver_config:
       box: nocm_centos-6.6
-      box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.6-64-nocm/versions/1.0.1/providers/vmware_fusion.box
+      box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.6-64-nocm/versions/1.0.1/providers/virtualbox.box
 
 suites:
   - name: default
