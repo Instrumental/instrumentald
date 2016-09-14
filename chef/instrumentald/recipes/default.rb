@@ -34,15 +34,6 @@ package_destination = ::File.join(dest_dir, file_name)
 case node["platform_family"]
 when "debian", "rhel", "fedora"
 
-  template conf_file do
-    source "instrumentald.toml.erb"
-    mode   "0440"
-    owner  "nobody"
-    variables(
-      :project_token => node[:instrumental][:project_token]
-    )
-  end
-
   if node[:instrumental][:use_local]
     package "instrumentald" do
       action :install
