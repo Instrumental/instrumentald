@@ -205,7 +205,7 @@ class ServerController < Pidly::Control
   end
 
   def run
-    puts "instrumentald version #{Instrumental::VERSION} started at #{Time.now.utc}"
+    puts "instrumentald version #{Instrumentald::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{hostname}"
 
     process_telegraf_config
