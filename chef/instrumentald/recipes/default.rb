@@ -39,7 +39,7 @@ when "debian", "rhel", "fedora"
     mode   "0440"
     owner  "nobody"
     variables(
-      :api_key => node[:instrumental][:api_key]
+      :project_token => node[:instrumental][:project_token]
     )
   end
 
