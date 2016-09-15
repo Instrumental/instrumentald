@@ -96,17 +96,6 @@ ARCHITECTURES          = {
                              separator:    '/',
                              package_from_compressed: true,
                              dest_dir:     DEST_DIR
-                           },
-                           'win32' => {
-                             runtime:         TRAVELING_RUBY_FILE % "win32",
-                             packages:        %w{exe},
-                             packagecloud:    false,
-                             compress_format: 'zip',
-                             wrapper:         WRAPPER_SCRIPT_BAT,
-                             separator:       '\\',
-                             extension:       '.bat',
-                             package_from_compressed: false,
-                             dest_dir:        ''
                            }
                          }
 
@@ -223,13 +212,8 @@ namespace "package" do
 
     sh %Q{ln -sf "%s" "%s"} % [File.expand_path("lib"), tmp_package_dir]
 
-    env = if args[:platform] == :win32
-            "INSTALL_WINDOWS=1"
-          else
-            ""
-          end
     Bundler.with_clean_env do
-      sh %Q{cd "%s" && env BUNDLE_IGNORE_CONFIG=1 #{env} bundle install --path ../vendor --without development} % tmp_package_dir
+      sh %Q{cd "%s" && env BUNDLE_IGNORE_CONFIG=1 bundle install --path ../vendor --without development} % tmp_package_dir
     end
 
     sh %Q{rm -rf "%s"} % tmp_package_dir
@@ -250,13 +234,11 @@ namespace "package" do
     puts "======================================"
     `#{telegraf_path}/scripts/build.py --package --version="#{version}" --platform=linux --arch=all`
     `#{telegraf_path}/scripts/build.py --package --version="#{version}" --platform=darwin --arch=amd64`
-    `#{telegraf_path}/scripts/build.py --package --version="#{version}" --platform=windows --arch=amd64`
 
     # Copy them into place
     `cp #{telegraf_path}/build/telegraf #{current_directory}/lib/telegraf/darwin/`
     `cp #{telegraf_path}/build/linux/amd64/telegraf #{current_directory}/lib/telegraf/amd64/`
     `cp #{telegraf_path}/build/linux/i386/telegraf #{current_directory}/lib/telegraf/i386/`
-    `cp #{telegraf_path}/build/telegraf.exe #{current_directory}/lib/telegraf/win32/`
   end
 
 end
@@ -268,26 +250,12 @@ end
 
 def create_package(source, pkg, platform, architecture)
   supported_by_fpm  = %w{deb rpm osxpkg}
-  supported_by_nsis = %w{exe}
   if supported_by_fpm.include?(pkg)
     output_name = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), pkg == "osxpkg" ? "pkg" : pkg].join(".")
     extra_args  = EXTRA_ARGS[pkg] || ""
     # big help: --debug --debug-workspace
     sh %Q{fpm -s tar -t "%s" -f -n "%s" -v "%s" -a "%s" --license "%s" --vendor "%s" --maintainer "%s" --url "%s" --description "%s" --category "%s" --config-files "%s" -C "%s" -p "%s" %s "%s"} % [pkg, PACKAGE_NAME, VERSION, architecture, LICENSE, VENDOR, MAINTAINER, HOMEPAGE, DESCRIPTION, PACKAGE_CATEGORY, CONFIG_DEST, File.basename(source, ".tar.gz"), output_name, extra_args, source]
     output_name
-  elsif supported_by_nsis.include?(pkg)
-    nsis_script    = File.join("win32", "installer.nsis.erb")
-    installer_name = File.basename(source) + ".exe"
-    template       = NSISERBContext.new(installer_name, [source], nsis_script)
-
-    temp         = Tempfile.new("nsis", ".")
-    temp.write(template.result)
-    temp.close(false)
-
-    sh %Q{makensis "%s"} % temp.path
-
-    temp.unlink
-
   else
     raise StandardError.new("Format %s is not supported" % pkg)
   end
@@ -385,50 +353,4 @@ def download_runtime(target)
   traveling_ruby_url      = File.join(traveling_ruby_releases, traveling_ruby_file)
 
   sh "cd packaging && curl -L -O --fail %s" % traveling_ruby_url
-end
-
-
-class NSISERBContext
-  attr_reader :template_path, :directories, :installer_file_name
-
-  def initialize(installer_name, directories, template_path)
-    @directories         = directories
-    @template_path       = template_path
-    @installer_file_name = installer_name
-  end
-
-  def template_source
-    File.read(template_path)
-  end
-
-  def removable_artifacts
-    removable_files       = Set.new
-    removable_directories = Set.new
-    directories.each do |dir|
-      Find.find(dir) do |path|
-        puts path.inspect
-        if File.file?(path)
-          without_base           = path.split(File::SEPARATOR)[1..-1]
-          without_file           = without_base[0..-2]
-          removable_files       << without_base.join("\\")
-          removable_directories << without_file.join("\\")
-        end
-      end
-    end
-    removable_files << "InstrumentServer.exe"
-    dirs = removable_directories.to_a.sort_by { |path| path.split("\\").size }.reverse
-    [removable_files.to_a, dirs]
-  end
-
-  def service_name
-    "instrumentald"
-  end
-
-  def uninstaller_name
-    "uninstaller.exe"
-  end
-
-  def result
-    ERB.new(template_source).result(binding)
-  end
 end

@@ -19,8 +19,6 @@ file_name = case node["platform_family"]
               "instrumentald_%s_%s.deb" % [version, pkg_arch]
             when "rhel", "fedora"
               "instrumentald_%s_%s.rpm" % [version, pkg_arch]
-            when "windows"
-              "instrumentald_%s_win32.exe" % version
             else
               "instrumentald_%s_linux-%s.tar.gz" % [version, arch]
             end
@@ -141,50 +139,6 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     action [:enable, :start]
     status_command "pgrep instrumentald"
     supports :restart => true, :reload => true, :status => false
-  end
-when "windows"
-
-  directory dest_dir do
-    action :create
-    recursive true
-  end
-
-  if node[:instrumental][:enable_scripts]
-    directory node[:instrumental][:script_dir] do
-      action :create
-      recursive true
-    end
-  end
-
-  extra_args = if node[:instrumental][:enable_scripts]
-                 '/SD "%s" /E' % node[:instrumental][:script_dir]
-               else
-                 ""
-               end
-
-  if node[:instrumental][:use_local]
-    execute "install-tools" do
-      command 'call "%s" %s /S /D=%s' % [local_path, extra_args, dest_dir]
-    end
-  else
-    remote_file package_destination do
-      source remote_name
-      action :create
-    end
-    execute "install-tools" do
-      command 'call "%s" %s /S /D=%s' % [package_destination, extra_args, dest_dir]
-    end
-  end
-
-  template conf_file do
-    source "instrumentald.toml.erb"
-    variables(
-      :api_key => node[:instrumental][:api_key]
-    )
-  end
-
-  service "Instrument Server" do
-    action [:enable, :start]
   end
 else
   Chef::Log.warn("The platform %s is not supported, instrumentald will not be installed" % node["platform_family"])

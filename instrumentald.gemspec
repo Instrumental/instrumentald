@@ -33,16 +33,12 @@ Gem::Specification.new do |s|
   s.test_files    = test_files
   s.executables   = bin_files
   s.require_paths = ["lib"]
-  s.extensions    = "ext/mkrf_conf.rb"
 
   s.required_ruby_version = ">= 1.9"
 
   s.add_runtime_dependency(%q<instrumental_agent>, [">=0.13.2"])
   s.add_runtime_dependency(%q<pidly>, [">=0.1.3"])
   s.add_runtime_dependency(%q<toml>, ["~>0.0.3"])
-  if ENV["INSTALL_WINDOWS"] || RUBY_PLATFORM =~ /(windows|win32|ming)/i
-    s.add_runtime_dependency(%q<wmi-lite>, [">=1.0.0"])
-  end
 
   s.add_development_dependency(%q<rake>, [">=0"])
   s.add_development_dependency(%q<fpm>, [">=1.3.3"])
@@ -54,6 +50,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<librarian-puppet>, [">=0"])
   s.add_development_dependency(%q<puppet>, [">=0"])
   s.add_development_dependency(%q<serverspec>, [">=0"])
-  s.add_development_dependency(%q<winrm-fs>, ["~> 0.4.1"])
-  s.add_development_dependency(%q<winrm-transport>, ["~>1.0"])
 end
