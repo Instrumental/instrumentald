@@ -64,17 +64,17 @@ set BUNDLE_IGNORE_CONFIG=
 EOSCRIPT
 
 ARCHITECTURES          = {
-                            'linux-x86' => {
-                              runtime:      TRAVELING_RUBY_FILE % "linux-x86",
-                              arch:         "i386",
-                              packages:     %w{deb rpm},
-                              platform:     "linux",
-                              packagecloud: true,
-                              wrapper:      WRAPPER_SCRIPT_SHELL,
-                              separator:    '/',
-                              package_from_compressed: true,
-                              dest_dir:     DEST_DIR
-                             },
+                           'linux-x86' => {
+                             runtime:      TRAVELING_RUBY_FILE % "linux-x86",
+                             arch:         "i386",
+                             packages:     %w{deb rpm},
+                             platform:     "linux",
+                             packagecloud: true,
+                             wrapper:      WRAPPER_SCRIPT_SHELL,
+                             separator:    '/',
+                             package_from_compressed: true,
+                             dest_dir:     DEST_DIR
+                            },
                            'linux-x86_64' => {
                              runtime:      TRAVELING_RUBY_FILE % "linux-x86_64",
                              arch:         "amd64",
