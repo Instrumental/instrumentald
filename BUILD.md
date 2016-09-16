@@ -43,18 +43,3 @@ On release, the tarball should be uploaded to the Github releases page and linke
 ```
 rake package:osx:compress
 ```
-
-## Windows
-
-In order to build the Windows installer, you'll need to have [NSIS](http://nsis.sourceforge.net/Main_Page) and [Mono](http://www.mono-project.com/) installed. If you're using Mac OS X, run the following commands:
-
-```
-brew install makensis
-brew install mono
-```
-
-To build the installer:
-
-```
-rake package:win32:package
-```
