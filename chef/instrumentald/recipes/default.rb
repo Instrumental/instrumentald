@@ -50,7 +50,7 @@ when "debian", "rhel", "fedora"
 
     package "instrumentald" do
       action :upgrade
-      version node[:instrumental]["version"]
+      version node[:instrumental][:version]
     end
   end
 
@@ -59,7 +59,7 @@ when "debian", "rhel", "fedora"
     mode   "0440"
     owner  "nobody"
     variables(
-      :api_key => node[:instrumental][:api_key]
+      :project_token => node[:instrumental][:project_token]
     )
   end
 
@@ -131,7 +131,7 @@ when "arch", "gentoo", "slackware", "suse", "osx"
     mode   "0440"
     owner  "nobody"
     variables(
-      :api_key => node[:instrumental][:api_key]
+      :project_token => node[:instrumental][:project_token]
     )
   end
 

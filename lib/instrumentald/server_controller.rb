@@ -10,7 +10,7 @@ class ServerController < Pidly::Control
   TELEGRAF_FAILURE_SLEEP = 1
 
   attr_accessor :run_options, :default_options, :pid
-  attr_reader :current_api_key
+  attr_reader :current_project_token
 
   before_start do
     extra_info = if opts[:daemon]
@@ -50,8 +50,8 @@ class ServerController < Pidly::Control
     [opts[:collector], opts[:port]].compact.join(':')
   end
 
-  def user_specified_api_key
-    opts[:api_key]
+  def user_specified_project_token
+    opts[:project_token]
   end
 
   def config_file
@@ -69,11 +69,11 @@ class ServerController < Pidly::Control
     end
   end
 
-  def config_file_api_key
+  def config_file_project_token
     if config_file_available?
       config_contents = TOML::Parser.new(File.read(opts[:config_file])).parsed
       if config_contents.is_a?(Hash)
-        config_contents['api_key']
+        config_contents['project_token']
       end
     end
   rescue Exception => e
@@ -81,8 +81,8 @@ class ServerController < Pidly::Control
     nil
   end
 
-  def configured_api_key
-    (user_specified_api_key || config_file_api_key).to_s.strip
+  def configured_project_token
+    (user_specified_project_token || config_file_project_token).to_s.strip
   end
 
   def build_agent(key, address, enabled)
@@ -92,13 +92,13 @@ class ServerController < Pidly::Control
 
   def set_new_agent(key, address)
     key              = key.to_s.strip
-    @current_api_key = key
+    @current_project_token = key
     @agent           = build_agent(key, collector_address, key.size > 0)
   end
 
   def agent
     if key_has_changed?
-      set_new_agent(configured_api_key, collector_address)
+      set_new_agent(configured_project_token, collector_address)
     end
     @agent
   end
@@ -145,7 +145,7 @@ class ServerController < Pidly::Control
   end
 
   def key_has_changed?
-    current_api_key != configured_api_key
+    current_project_token != configured_project_token
   end
 
   def telegraf_path
@@ -183,7 +183,7 @@ class ServerController < Pidly::Control
   end
 
   def process_telegraf_config
-    instrumental_api_key = configured_api_key
+    instrumental_project_token = configured_project_token
 
     docker_containers  = Array(config_file["docker"])
     memcached_servers  = Array(config_file["memcached"])
@@ -200,7 +200,7 @@ class ServerController < Pidly::Control
   end
 
   def run
-    puts "instrumentald version #{Instrumental::VERSION} started at #{Time.now.utc}"
+    puts "instrumentald version #{Instrumentald::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{hostname}"
 
     process_telegraf_config

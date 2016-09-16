@@ -15,7 +15,8 @@ Detailed installation instructions for supported platforms are available in [INS
 Once you've installed the package, you will want to edit the `/etc/instrumentald.toml` file with your [Instrumental project token](https://instrumentalapp.com/docs/tokens). Example `/etc/instrumentald.toml`:
 
 ```toml
-api_key = "YOUR_PROJECT_API_TOKEN"
+project_token = "YOUR_PROJECT_TOKEN"
+# TODO add the services that should be listed here and probably something about custom scripts
 ```
 
 ## System Metrics
@@ -52,21 +53,21 @@ Instrumental Daemon can monitor arbitrary processes and system events through a 
 Basic usage:
 
 ```sh
-instrumentald -k <API_KEY>
+instrumentald -k <PROJECT_TOKEN>
 ```
 
 To start `instrumentald` as a daemon:
 
 ```sh
-instrumentald -k <API_KEY> start
+instrumentald -k <PROJECT_TOKEN> start
 ```
 
-The API key can also be provided by setting the INSTRUMENTAL_TOKEN environment variable, which eliminates the need to supply the key via command line option.
+The project token can also be provided by setting the INSTRUMENTAL_TOKEN environment variable, which eliminates the need to supply the key via command line option.
 
 By default, instrumentald will use the hostname of the current host when reporting metrics, e.g. 'hostname.cpu.in_use'. To specify a different hostname:
 
 ```sh
-instrumentald -k <API_KEY> -H <HOSTNAME>
+instrumentald -k <PROJECT_TOKEN> -H <HOSTNAME>
 ```
 
 The `start` command will start and detach the process. You may issue additional commands to the process like:

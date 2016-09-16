@@ -1,9 +1,8 @@
-# Replace “YOUR_PROJECT_TOKEN” with the project token for your Instrumental project
-# and remove the “#” from the beginning of the following line to have instrumentald
-# start sending metrics to your account.
+# Replace YOUR_PROJECT_TOKEN with the project token from an Instrumental project and
+# remove the # from the beginning of the following line to have instrumentald
+# start sending metrics for your project.
 
-api_key = "YOUR_PROJECT_TOKEN"
-
+project_token = "YOUR_PROJECT_TOKEN"
 # docker = ["unix:///var/run/docker.sock"]
 # memcached = ["localhost:11211"]
 # mongodb = ["localhost:27017"]

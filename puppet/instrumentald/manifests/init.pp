@@ -1,5 +1,5 @@
 class instrumentald(
-  $api_key = ''
+  $project_token = ''
 ) {
 
   include packagecloud
