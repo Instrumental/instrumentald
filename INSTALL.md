@@ -10,7 +10,6 @@ Prebuilt `deb` and `rpm` packages are available via the [packagecloud.io](https:
 * 32-bit RPM package (RHEL, Amazon AMI) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_i386.rpm](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_i386.rpm)
 * 64-bit Linux tarball (CoreOS, etc.) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86_64.tar.gz](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86_64.tar.gz)
 * 32-bit Linux tarball (CoreOS, etc.) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86.tar.gz](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86.tar.gz)
-* Windows installer [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_win32.exe](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_win32.exe)
 * 64-bit Mac OS X tarball [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_osx.tar.gz](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_osx.tar.gz)
 
 # OS X / Mac
@@ -53,10 +52,6 @@ sudo mkdir -p /opt/instrumentald/
 sudo tar -zxvf ./instrumentald_1.0.0_linux-x86_64.tar.gz -C /opt/instrumentald/ --strip 1
 sudo cp /opt/instrumentald/etc/instrumentald.toml /etc/
 ```
-
-# Windows
-
-Download the [installer](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_win32.exe) and run it, adding in your project token when prompted.
 
 # RubyGems
 

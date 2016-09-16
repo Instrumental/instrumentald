@@ -5,8 +5,6 @@ cd "$(dirname "$0")/.."
 brew list gnu-tar >/dev/null 2>&1 || brew install gnu-tar
 brew list rpm >/dev/null 2>&1 || brew install rpm
 brew list go >/dev/null 2>&1 || brew install go --with-cc-all
-brew list makensis >/dev/null 2>&1 || brew install makensis
-brew list mono >/dev/null 2>&1 || brew install mono
 
 rbenv which ruby >/dev/null 2>&1 || (brew upgrade ruby-build || true; rbenv install)
 gem list -i bundler >/dev/null || gem install bundler

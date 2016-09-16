@@ -160,8 +160,6 @@ class ServerController < Pidly::Control
       "#{telegraf_path}/amd64/telegraf"
     when /darwin/
       "#{telegraf_path}/darwin/telegraf"
-    when /(windows|win32|mingw)/
-      "#{telegraf_path}/win32/telegraf.exe"
     else
       raise "unsupported OS"
     end
@@ -179,9 +177,6 @@ class ServerController < Pidly::Control
       "#{telegraf_path}/telegraf.conf.erb"
     when /darwin/
       "#{telegraf_path}/telegraf.conf.erb"
-    when /(windows|win32|mingw)/
-      # TODO: get a windows config in place
-      "#{telegraf_path}/win32/telegraf.conf.erb"
     else
       raise "unsupported OS"
     end

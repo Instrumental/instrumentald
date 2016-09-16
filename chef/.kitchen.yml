@@ -18,11 +18,6 @@ platforms:
   - name: centos-6.7
   # gentoo is probably not a good choice for servers, and would take some more effort to make work
   # - name: "d11wtq/gentoo"
-  # windows 12 has changed significantly since the first rodeo,
-  # and this doesn't work currently
-  # - name: windows-2012r2
-  #   driver:
-  #     box: "kensykora/windows_2012_r2_standard"
 
 suites:
   - name: default

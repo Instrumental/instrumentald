@@ -34,7 +34,6 @@ home_directory        = Dir.home rescue nil
 script_location       = File.expand_path(File.dirname(__FILE__))
 tmp_dir               = Dir.tmpdir
 script_data_directory = [cur_directory, home_directory, script_location, tmp_dir].compact.detect { |dir| File.writable?(dir) }
-windows               = RUBY_PLATFORM =~ /(mswin|win32|mingw)/i
 
 default_script_directory = File.join(script_data_directory, '.instrumental_scripts')
 default_command          = :foreground
@@ -97,10 +96,8 @@ Default command: #{default_command.to_s}
     run_options[:script_location] = coerce_path(path)
   end
 
-  if !windows
-    opts.on('-u', '--user USER_TO_RUN_AS', "User to run instrumentald as. You must have permissions to drop privileges to this user.") do |u|
-      run_options[:user] = u
-    end
+  opts.on('-u', '--user USER_TO_RUN_AS', "User to run instrumentald as. You must have permissions to drop privileges to this user.") do |u|
+    run_options[:user] = u
   end
 
   opts.on('-t', '--temp-dir TEMP_DIRECTORY', "Where to store temporary files (default #{default_options[:tmp_location]})") do |t|
@@ -124,7 +121,7 @@ end
 
 option_parser.parse!
 
-if options[:user] && !windows
+if options[:user]
   desired_uid = Etc.getpwnam(options[:user]).uid
   Process::Sys.setuid(desired_uid)
   if desired_uid && desired_uid != 0
@@ -190,7 +187,7 @@ if options[:enable_scripts]
   end
 
   stat         = File::Stat.new(File.expand_path(options[:script_location]))
-  correct_mode = windows || ((stat.mode & 0xFFF) ^ 0O700) === 0
+  correct_mode = ((stat.mode & 0xFFF) ^ 0O700) === 0
   unless stat.owned? && correct_mode
     uid      = Process.uid
     user = Etc.getpwuid(uid)

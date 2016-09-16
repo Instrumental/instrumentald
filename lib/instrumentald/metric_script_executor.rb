@@ -11,7 +11,7 @@ class MetricScriptExecutor
 
   def can_execute_file?(path)
     stat = File::Stat.new(path)
-    powershell_script?(path) || (stat.executable? && file_is_owner_only?(stat))
+    stat.executable? && file_is_owner_only?(stat)
   end
 
   def can_execute_in_directory?(directory)
@@ -19,39 +19,18 @@ class MetricScriptExecutor
     stat.directory? && file_is_owner_only?(stat)
   end
 
-  def powershell_script?(path)
-    windows? && File.extname(path).to_s.downcase == ".ps1"
-  end
-
-  def windows?
-    RUBY_PLATFORM =~ /(win32|mswin|mingw)/
-  end
-
   def file_is_owner_only?(file_stat)
-    owned_by_executor = file_stat.owned?
-    unless windows?
-      owned_by_executor && ((file_stat.mode & 0xFFF) ^ 0O700) == 0
-    else
-      owned_by_executor
-    end
+    owned_by_executor && ((file_stat.mode & 0xFFF) ^ 0O700) == 0
   end
 
   def print_executable_warning(path)
-    if windows?
-      puts "[INFO] Cannot execute #{path}, must exist and be executable"
-    else
-      uid  = Process.uid
-      user = Etc.getpwuid(uid).name
-      puts "[INFO] Cannot execute #{path}, must exist, be executable and only readable/writable by #{user}/#{uid}"
-    end
+    uid  = Process.uid
+    user = Etc.getpwuid(uid).name
+    puts "[INFO] Cannot execute #{path}, must exist, be executable and only readable/writable by #{user}/#{uid}"
   end
 
   def print_executable_in_directory_warning(directory)
-    if windows?
-      puts "Directory #{directory} has gone away, not scanning for metric scripts."
-    else
-      puts "Directory #{directory} has gone away or does not have the correct permissions (0700), not scanning for metric scripts."
-    end
+    puts "Directory #{directory} has gone away or does not have the correct permissions (0700), not scanning for metric scripts."
   end
 
   def execute_custom_script(full_path)
@@ -66,17 +45,6 @@ class MetricScriptExecutor
 
 
     cmd = [full_path, (previous_time || 0).to_i, (previous_status && previous_status.to_i)].compact.map(&:to_s)
-    if powershell_script?(full_path) && !File.executable?(full_path)
-      native_path = if File::ALT_SEPARATOR
-                      full_path.split(File::SEPARATOR).join(File::ALT_SEPARATOR)
-                    else
-                      full_path
-                    end
-      cmd[0] = native_path
-      cmd.unshift "-File"
-      cmd.unshift "powershell"
-    end
-
     pid = Process.spawn(*cmd,
                         :chdir => File.dirname(full_path),
                         :in    => stdin_r,

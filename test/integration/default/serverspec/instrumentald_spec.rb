@@ -2,26 +2,16 @@ require 'serverspec'
 
 details = {}
 
-if RUBY_PLATFORM =~ /(win|mswin|mingw)/i
-  set :backend, :cmd
-  set :os, :family => 'windows'
-  details = {
-    check_owner:      false,
-    config:           "c:\\Program Files (x86)\\Instrumentald\\etc\\instrumentald.toml",
-    has_pid:          false,
-    service_name:     "Instrument Server"
-  }
-else
-  set :backend, :exec
-  details = {
-    check_owner:      true,
-    config:           "/etc/instrumentald.toml",
-    has_pid:          true,
-    pid_path:         "/opt/instrumentald/instrumentald.pid",
-    owner:            "nobody",
-    service_name:     "instrumentald"
-  }
-end
+set :backend, :exec
+details = {
+  check_owner:      true,
+  config:           "/etc/instrumentald.toml",
+  has_pid:          true,
+  pid_path:         "/opt/instrumentald/instrumentald.pid",
+  owner:            "nobody",
+  service_name:     "instrumentald"
+}
+
 
 describe service(details[:service_name]) do
   it { should be_enabled }
