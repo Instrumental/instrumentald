@@ -1,9 +1,12 @@
-require 'bundler/gem_tasks'
+$: << "./lib"
+
 require 'etc'
 require 'fileutils'
 require 'find'
 require 'socket'
 require 'tempfile'
+require 'find'
+require 'instrumentald/version'
 
 task :default => 'build'
 
@@ -12,19 +15,17 @@ PACKAGECLOUD_REPO      = "expectedbehavior/instrumental"
 CONFIG_DIR             = "conf"
 CONFIG_DEST            = "/etc/"
 
-GEMSPEC                = Bundler::GemHelper.instance.gemspec
-SPEC_PATH              = Bundler::GemHelper.instance.spec_path
-PACKAGE_NAME           = GEMSPEC.name.gsub("_", "-") # Debian packages cannot include _ in name
-VERSION                = GEMSPEC.version
+PACKAGE_NAME           = 'instrumentald'
+VERSION                = Instrumentald::VERSION
 TRAVELING_RUBY_VERSION = "20150517-2.1.6"
 TRAVELING_RUBY_FILE    = "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-%s.tar.gz"
 DEST_DIR               = File.join("/opt/", PACKAGE_NAME)
 PACKAGE_OUTPUT_NAME    = [PACKAGE_NAME, VERSION].join("_")
-LICENSE                = Array(GEMSPEC.licenses).first || "None"
-VENDOR                 = Array(GEMSPEC.authors).first || Etc.getlogin
-MAINTAINER             = Array(GEMSPEC.email).first || [Etc.getlogin, Socket.gethostname].join("@")
-HOMEPAGE               = GEMSPEC.homepage || ""
-DESCRIPTION            = GEMSPEC.description || ""
+LICENSE                = "MIT"
+VENDOR                 = "Expected Behavior"
+MAINTAINER             = "support@instrumentalapp.com"
+HOMEPAGE               = "http://github.com/instrumental/instrumentald"
+DESCRIPTION            = "Instrumental is an application monitoring platform built for developers who want a better understanding of their production software. Powerful tools, like the Instrumental Query Language, combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time. ISD provides server and service monitoring through the instrumentald daemon. It provides strong data reliability at high scale."
 SUPPORTED_DISTROS      = {
                            'deb' => ['ubuntu/xenial', 'ubuntu/precise', 'ubuntu/lucid', 'ubuntu/trusty', 'ubuntu/utopic', 'debian/lenny', 'debian/squeeze', 'debian/wheezy'],
                            'rpm' => ['el/5', 'el/6', 'el/7']
@@ -203,12 +204,11 @@ namespace "package" do
     end
 
     tmp_package_dir = File.join("packaging", "tmp")
-    spec_path       = SPEC_PATH
     cache_dir       = File.join("packaging", "vendor", "*", "*", "cache", "*")
 
     sh %Q{rm -rf "%s"}                       % tmp_package_dir
     sh %Q{mkdir -p "%s"}                     % tmp_package_dir
-    sh %Q{cp "%s" Gemfile Gemfile.lock "%s"} % [spec_path, tmp_package_dir]
+    sh %Q{cp Gemfile Gemfile.lock "%s"}      % tmp_package_dir
 
     sh %Q{ln -sf "%s" "%s"} % [File.expand_path("lib"), tmp_package_dir]
 
@@ -275,7 +275,6 @@ def create_directory_bundle(target, wrapper_script, separator, extension = nil, 
   dest_vendor_dir     = File.join(lib_dir, "vendor")
   vendor_dir          = File.join("packaging", "vendor")
   traveling_ruby_file = "packaging/traveling-ruby-%s-%s.tar.gz" % [TRAVELING_RUBY_VERSION, target]
-  spec_path           = SPEC_PATH
   bundle_dir          = File.join(dest_vendor_dir, ".bundle")
 
 
@@ -285,7 +284,23 @@ def create_directory_bundle(target, wrapper_script, separator, extension = nil, 
   sh %Q{mkdir -p "%s"} % config_dest_dir
   sh %Q{mkdir -p "%s"} % app_dir
 
-  GEMSPEC.files.each do |file|
+  gitignore = Array(File.exists?(".gitignore") ? File.read(".gitignore").split("\n") : []) + [".git", ".gitignore"]
+  all_files = []
+
+  Find.find(".") do |path|
+    scrubbed_path = path.gsub(/\A\.\//, "")
+    if gitignore.any? { |glob| File.fnmatch(glob, scrubbed_path) }
+      Find.prune
+    else
+      if !File.directory?(scrubbed_path)
+        all_files << scrubbed_path
+      end
+    end
+  end
+
+  bin_files = all_files.select { |path| path.index("bin") == 0 }.map { |path| File.basename(path) }
+
+  all_files.each do |file|
     destination_dir = File.join(app_dir, File.dirname(file))
     FileUtils.mkdir_p(destination_dir)
 
@@ -299,7 +314,7 @@ def create_directory_bundle(target, wrapper_script, separator, extension = nil, 
   sh %Q{mkdir "%s"}            % ruby_dir
   sh %Q{tar -xzf "%s" -C "%s"} % [traveling_ruby_file, ruby_dir]
 
-  GEMSPEC.executables.each do |file|
+  bin_files.each do |file|
     destination = File.join(prefixed_dir, file + extension.to_s)
 
     bin_path = "bin" + separator + file
@@ -309,7 +324,6 @@ def create_directory_bundle(target, wrapper_script, separator, extension = nil, 
   end
 
   sh %Q{cp -pR "%s" "%s"}                  % [vendor_dir, lib_dir]
-  sh %Q{cp "%s" Gemfile Gemfile.lock "%s"} % [spec_path, dest_vendor_dir]
 
 
   sh %Q{ln -sf "../app/%s" "%s"} % ["lib", File.join(dest_vendor_dir, "lib")]
