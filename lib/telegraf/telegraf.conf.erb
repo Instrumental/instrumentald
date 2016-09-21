@@ -129,21 +129,21 @@
     system_measurement_tag = "disk"
 
 
-# Read metrics about disk IO by device
-[[inputs.diskio]]
-  ## By default, telegraf will gather stats for all devices including
-  ## disk partitions.
-  ## Setting devices will restrict the stats to the specified devices.
-  # devices = ["sda", "sdb"]
-  ## Uncomment the following line if you do not need disk serial numbers.
-  # skip_serial_number = true
+# # Read metrics about disk IO by device
+# [[inputs.diskio]]
+#   ## By default, telegraf will gather stats for all devices including
+#   ## disk partitions.
+#   ## Setting devices will restrict the stats to the specified devices.
+#   # devices = ["sda", "sdb"]
+#   ## Uncomment the following line if you do not need disk serial numbers.
+#   # skip_serial_number = true
 
-  ## These lines fix the system metric names to basically be
-  ## system.<host>.<measurement>.<field>
-  ## Look at the output template for more info.
-  name_override = "system"
-  [inputs.diskio.tags]
-    system_measurement_tag = "diskio"
+#   ## These lines fix the system metric names to basically be
+#   ## system.<host>.<measurement>.<field>
+#   ## Look at the output template for more info.
+#   name_override = "system"
+#   [inputs.diskio.tags]
+#     system_measurement_tag = "diskio"
 
 
 # Get kernel statistics from /proc/stat
