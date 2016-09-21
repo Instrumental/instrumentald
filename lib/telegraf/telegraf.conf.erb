@@ -147,15 +147,15 @@
 
 
 # Get kernel statistics from /proc/stat
-[[inputs.kernel]]
-  # no configuration
-
-  ## These lines fix the system metric names to basically be
-  ## system.<host>.<measurement>.<field>
-  ## Look at the output template for more info.
-  name_override = "system"
-  [inputs.kernel.tags]
-    system_measurement_tag = "kernel"
+# [[inputs.kernel]]
+#   # no configuration
+#
+#   ## These lines fix the system metric names to basically be
+#   ## system.<host>.<measurement>.<field>
+#   ## Look at the output template for more info.
+#   name_override = "system"
+#   [inputs.kernel.tags]
+#     system_measurement_tag = "kernel"
 
 
 # Read metrics about memory usage
