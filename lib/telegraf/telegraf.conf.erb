@@ -125,6 +125,8 @@
   ## system.<host>.<measurement>.<field>
   ## Look at the output template for more info.
   name_override = "system"
+  tagexclude = ["fstype"]
+  fieldpass = ["free", "total", "used", "used_percent"]
   [inputs.disk.tags]
     system_measurement_tag = "disk"
 
