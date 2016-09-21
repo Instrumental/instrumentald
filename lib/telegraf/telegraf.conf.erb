@@ -803,6 +803,8 @@
   name_override = "system"
   [inputs.net.tags]
     system_measurement_tag = "network"
+  [inputs.net.tagdrop]
+    interface = ["all"]
 
 
 # # TCP or UDP 'ping' given url and collect response time in seconds
