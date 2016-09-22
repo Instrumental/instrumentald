@@ -96,6 +96,7 @@
 ###############################################################################
 
 # Read metrics about cpu usage
+<% if opts[:system] %>
 [[inputs.cpu]]
   ## Whether to report per-cpu stats or not
   percpu = false
@@ -111,8 +112,10 @@
   tagexclude = ["cpu"]
   [inputs.cpu.tags]
     system_measurement_tag = "cpu"
+<% end %>
 
 # Read metrics about disk usage by mount point
+<% if opts[:system] %>
 [[inputs.disk]]
   ## By default, telegraf gather stats for all mountpoints.
   ## Setting mountpoints will restrict the stats to the specified mountpoints.
@@ -130,7 +133,7 @@
   fieldpass = ["free", "total", "used", "used_percent"]
   [inputs.disk.tags]
     system_measurement_tag = "disk"
-
+<% end %>
 
 # # Read metrics about disk IO by device
 # [[inputs.diskio]]
@@ -160,8 +163,8 @@
 #   [inputs.kernel.tags]
 #     system_measurement_tag = "kernel"
 
-
 # Read metrics about memory usage
+<% if opts[:system] %>
 [[inputs.mem]]
   # no configuration
 
@@ -171,7 +174,7 @@
   name_override = "system"
   [inputs.mem.tags]
     system_measurement_tag = "memory"
-
+<% end %>
 
 # # Get the number of processes and group them by status
 # [[inputs.processes]]
@@ -186,6 +189,7 @@
 
 
 # Read metrics about swap memory usage
+<% if opts[:system] %>
 [[inputs.swap]]
   # no configuration
 
@@ -196,9 +200,10 @@
   fieldpass = ["used", "free"]
   [inputs.swap.tags]
     system_measurement_tag = "swap"
-
+<% end %>
 
 # Read metrics about system load & uptime
+<% if opts[:system] %>
 [[inputs.system]]
   # no configuration
 
@@ -209,7 +214,7 @@
   fieldpass=["load*"]
   [inputs.system.tags]
     system_measurement_tag = "load"
-
+<% end %>
 
 # # Read stats from an aerospike server
 # [[inputs.aerospike]]
@@ -792,6 +797,7 @@
 
 
 # Read metrics about network interface usage
+<% if opts[:system] %>
 [[inputs.net]]
   ## By default, telegraf gathers stats from any up interface (excluding loopback)
   ## Setting interfaces will tell it to gather these explicit interfaces,
@@ -807,7 +813,7 @@
     system_measurement_tag = "network"
   [inputs.net.tagdrop]
     interface = ["all"]
-
+<% end %>
 
 # # TCP or UDP 'ping' given url and collect response time in seconds
 # [[inputs.net_response]]

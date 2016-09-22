@@ -3,6 +3,7 @@
 # start sending metrics for your project.
 
 project_token = "YOUR_PROJECT_TOKEN"
+# system = true
 # docker = ["unix:///var/run/docker.sock"]
 # memcached = ["localhost:11211"]
 # mongodb = ["localhost:27017"]

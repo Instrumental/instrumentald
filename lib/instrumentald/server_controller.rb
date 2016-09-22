@@ -192,6 +192,7 @@ class ServerController < Pidly::Control
     nginx_servers      = Array(config_file['nginx'])
     postgresql_servers = Array(config_file["postgresql"])
     redis_servers      = Array(config_file["redis"])
+    system_metrics     = config_file["system"] || true
 
     File.open(telegraf_config_path, "w+") do |config|
       result = ERB.new(File.read(telegraf_template_config_path)).result(binding)
