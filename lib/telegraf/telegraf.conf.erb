@@ -108,6 +108,7 @@
   ## system.<host>.<measurement>.<field>
   ## Look at the output template for more info.
   name_override = "system"
+  tagexclude = ["cpu"]
   [inputs.cpu.tags]
     system_measurement_tag = "cpu"
 
@@ -172,16 +173,16 @@
     system_measurement_tag = "memory"
 
 
-# Get the number of processes and group them by status
-[[inputs.processes]]
-  # no configuration
-
-  ## These lines fix the system metric names to basically be
-  ## system.<host>.<measurement>.<field>
-  ## Look at the output template for more info.
-  name_override = "system"
-  [inputs.processes.tags]
-    system_measurement_tag = "processes"
+# # Get the number of processes and group them by status
+# [[inputs.processes]]
+#   # no configuration
+#
+#   ## These lines fix the system metric names to basically be
+#   ## system.<host>.<measurement>.<field>
+#   ## Look at the output template for more info.
+#   name_override = "system"
+#   [inputs.processes.tags]
+#     system_measurement_tag = "processes"
 
 
 # Read metrics about swap memory usage
@@ -205,8 +206,9 @@
   ## system.<host>.<measurement>.<field>
   ## Look at the output template for more info.
   name_override = "system"
+  fieldpass=["load*"]
   [inputs.system.tags]
-    system_measurement_tag = "system"
+    system_measurement_tag = "load"
 
 
 # # Read stats from an aerospike server
