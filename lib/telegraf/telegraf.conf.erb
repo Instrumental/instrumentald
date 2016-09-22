@@ -172,16 +172,16 @@
     system_measurement_tag = "memory"
 
 
-# Get the number of processes and group them by status
-[[inputs.processes]]
-  # no configuration
-
-  ## These lines fix the system metric names to basically be
-  ## system.<host>.<measurement>.<field>
-  ## Look at the output template for more info.
-  name_override = "system"
-  [inputs.processes.tags]
-    system_measurement_tag = "processes"
+# # Get the number of processes and group them by status
+# [[inputs.processes]]
+#   # no configuration
+#
+#   ## These lines fix the system metric names to basically be
+#   ## system.<host>.<measurement>.<field>
+#   ## Look at the output template for more info.
+#   name_override = "system"
+#   [inputs.processes.tags]
+#     system_measurement_tag = "processes"
 
 
 # Read metrics about swap memory usage
