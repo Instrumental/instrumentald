@@ -212,9 +212,19 @@ class ServerController < Pidly::Control
     end
   end
 
+  def configured_to_collect_any_metrics?
+    service_keys = ["docker", "memcached", "mongodb", "mysql", "nginx", "postgresql", "redis"]
+    system_metrics_config.any? || (config_file.keys & service_keys).any?
+  end
+
   def run
     puts "instrumentald version #{Instrumentald::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{hostname}"
+
+    unless configured_to_collect_any_metrics?
+      puts "No system or service metrics configured. Stopping."
+      return false
+    end
 
     process_telegraf_config
     run_telegraf
