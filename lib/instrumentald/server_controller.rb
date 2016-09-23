@@ -145,7 +145,7 @@ class ServerController < Pidly::Control
   def system_metrics_config
     return @system_metrics_config_value if @system_metrics_config_value
     config_value  = config_file["system"]
-    default_value = ["cpu", "disk", "load", "memory", "network"]
+    default_value = ["cpu", "disk", "load", "memory", "network", "swap"]
 
     @system_metrics_config_value =
       if config_value == true
