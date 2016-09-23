@@ -60,7 +60,8 @@ class ServerController < Pidly::Control
     config_contents = if File.exist?(opts[:config_file])
       TOML::Parser.new(File.read(opts[:config_file])).parsed
     else
-      puts "Config file #{opts[:config_file]} not found, defaulting to an empty config"
+      puts "Config file #{opts[:config_file]} not found, using default config"
+      { 'system' => true }
     end
     if config_contents.is_a?(Hash)
       @config_file = config_contents
