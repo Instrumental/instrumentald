@@ -140,6 +140,15 @@ class ServerController < Pidly::Control
     !!opts[:debug]
   end
 
+  def collect_system_metrics?
+    config_value = config_file["system"]
+    if config_value
+      !!config_value
+    else
+      true
+    end
+  end
+
   def enable_scripts?
     !!opts[:enable_scripts]
   end
@@ -192,7 +201,6 @@ class ServerController < Pidly::Control
     nginx_servers      = Array(config_file['nginx'])
     postgresql_servers = Array(config_file["postgresql"])
     redis_servers      = Array(config_file["redis"])
-    system_metrics     = config_file["system"] || true
 
     File.open(telegraf_config_path, "w+") do |config|
       result = ERB.new(File.read(telegraf_template_config_path)).result(binding)

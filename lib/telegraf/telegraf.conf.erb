@@ -96,7 +96,7 @@
 ###############################################################################
 
 # Read metrics about cpu usage
-<% if opts[:system] %>
+<% if collect_system_metrics? %>
 [[inputs.cpu]]
   ## Whether to report per-cpu stats or not
   percpu = false
@@ -115,7 +115,7 @@
 <% end %>
 
 # Read metrics about disk usage by mount point
-<% if opts[:system] %>
+<% if collect_system_metrics? %>
 [[inputs.disk]]
   ## By default, telegraf gather stats for all mountpoints.
   ## Setting mountpoints will restrict the stats to the specified mountpoints.
@@ -164,7 +164,7 @@
 #     system_measurement_tag = "kernel"
 
 # Read metrics about memory usage
-<% if opts[:system] %>
+<% if collect_system_metrics? %>
 [[inputs.mem]]
   # no configuration
 
@@ -189,7 +189,7 @@
 
 
 # Read metrics about swap memory usage
-<% if opts[:system] %>
+<% if collect_system_metrics? %>
 [[inputs.swap]]
   # no configuration
 
@@ -203,7 +203,7 @@
 <% end %>
 
 # Read metrics about system load & uptime
-<% if opts[:system] %>
+<% if collect_system_metrics? %>
 [[inputs.system]]
   # no configuration
 
@@ -797,7 +797,7 @@
 
 
 # Read metrics about network interface usage
-<% if opts[:system] %>
+<% if collect_system_metrics? %>
 [[inputs.net]]
   ## By default, telegraf gathers stats from any up interface (excluding loopback)
   ## Setting interfaces will tell it to gather these explicit interfaces,
