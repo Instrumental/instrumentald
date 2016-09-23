@@ -143,16 +143,18 @@ class ServerController < Pidly::Control
   end
 
   def system_metrics_config
+    return @system_metrics_config_value if @system_metrics_config_value
     config_value  = config_file["system"]
     default_value = ["cpu", "disk", "load", "memory", "network"]
 
-    if config_value == true
-      default_value
-    elsif config_value.is_a?(Array)
-      config_value & default_value # intersection of default and config
-    else
-      []
-    end
+    @system_metrics_config_value =
+      if config_value == true
+        default_value
+      elsif config_value.is_a?(Array)
+        config_value & default_value # intersection of default and config
+      else
+        []
+      end
   end
 
   def enable_scripts?
