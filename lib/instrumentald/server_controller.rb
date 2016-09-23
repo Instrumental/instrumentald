@@ -140,12 +140,16 @@ class ServerController < Pidly::Control
     !!opts[:debug]
   end
 
-  def collect_system_metrics?
-    config_value = config_file["system"]
-    if config_value
-      !!config_value
+  def system_metrics_config
+    config_value  = config_file["system"]
+    default_value = ["cpu", "disk", "load", "memory", "network"]
+
+    if config_value == true
+      default_value
+    elsif config_value.is_a?(Array)
+      config_value & default_value # intersection of default and config
     else
-      true
+      []
     end
   end
 
