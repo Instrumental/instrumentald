@@ -8,6 +8,7 @@ class ServerController < Pidly::Control
   COMMANDS = [:start, :stop, :status, :restart, :clean, :kill, :foreground]
   TELEGRAF_FAILURE_LOGGING_THROTTLE = 100
   TELEGRAF_FAILURE_SLEEP = 1
+  DEFAULT_CONFIG_CONTENTS = { 'system' => true }
 
   attr_accessor :run_options, :default_options, :pid
   attr_reader :current_project_token
@@ -61,7 +62,7 @@ class ServerController < Pidly::Control
       TOML::Parser.new(File.read(opts[:config_file])).parsed
     else
       puts "Config file #{opts[:config_file]} not found, using default config"
-      { 'system' => true }
+      DEFAULT_CONFIG_CONTENTS
     end
     if config_contents.is_a?(Hash)
       @config_file = config_contents
