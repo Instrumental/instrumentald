@@ -8,6 +8,7 @@ class ServerController < Pidly::Control
   COMMANDS = [:start, :stop, :status, :restart, :clean, :kill, :foreground]
   TELEGRAF_FAILURE_LOGGING_THROTTLE = 100
   TELEGRAF_FAILURE_SLEEP = 1
+  DEFAULT_CONFIG_CONTENTS = { 'system' => true }
 
   attr_accessor :run_options, :default_options, :pid
   attr_reader :current_project_token
@@ -60,7 +61,8 @@ class ServerController < Pidly::Control
     config_contents = if File.exist?(opts[:config_file])
       TOML::Parser.new(File.read(opts[:config_file])).parsed
     else
-      puts "Config file #{opts[:config_file]} not found, defaulting to an empty config"
+      puts "Config file #{opts[:config_file]} not found, using default config"
+      DEFAULT_CONFIG_CONTENTS
     end
     if config_contents.is_a?(Hash)
       @config_file = config_contents
@@ -140,6 +142,21 @@ class ServerController < Pidly::Control
     !!opts[:debug]
   end
 
+  def system_metrics_config
+    return @system_metrics_config_value if @system_metrics_config_value
+    config_value  = config_file["system"]
+    default_value = ["cpu", "disk", "load", "memory", "network", "swap"]
+
+    @system_metrics_config_value =
+      if config_value == true
+        default_value
+      elsif config_value.is_a?(Array)
+        config_value & default_value # intersection of default and config
+      else
+        []
+      end
+  end
+
   def enable_scripts?
     !!opts[:enable_scripts]
   end
@@ -199,9 +216,19 @@ class ServerController < Pidly::Control
     end
   end
 
+  def configured_to_collect_any_metrics?
+    service_keys = ["docker", "memcached", "mongodb", "mysql", "nginx", "postgresql", "redis"]
+    system_metrics_config.any? || (config_file.keys & service_keys).any?
+  end
+
   def run
     puts "instrumentald version #{Instrumentald::VERSION} started at #{Time.now.utc}"
     puts "Collecting stats under the hostname: #{hostname}"
+
+    unless configured_to_collect_any_metrics?
+      puts "No system or service metrics configured. Stopping."
+      return false
+    end
 
     process_telegraf_config
     run_telegraf
