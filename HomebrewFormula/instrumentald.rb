@@ -7,6 +7,10 @@ class Instrumentald < Formula
   sha256 "1c6eb9516c9a99d8ba55d1ab3a99d744c442f1aafbe2ded220302b76288c6023"
 
   def install
+    # The binary will think it's in one place (/usr/local/bin/), but the lib
+    # files it wants are actually somewhere else (/usr/local/Cellar/instrumentald/VERSION/bin)
+    # Rather than making a custom version of this executable for homebrew, let's
+    # just edit-in-place to make do right
     inreplace "opt/instrumentald/instrumentald" do |s|
       s.gsub! /SELFDIR=.*/, "SELFDIR=\"#{bin}\""
     end
