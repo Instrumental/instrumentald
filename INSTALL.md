@@ -12,9 +12,24 @@ Prebuilt `deb` and `rpm` packages are available via the [packagecloud.io](https:
 * 32-bit Linux tarball (CoreOS, etc.) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86.tar.gz](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86.tar.gz)
 * 64-bit Mac OS X tarball [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_osx.tar.gz](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_osx.tar.gz)
 
-# OS X / Mac
+ # OS X / Mac
+ # macOS
 
-Use pkg installer, then configure `/etc/instrumentald.toml` and run:
+ Use pkg installer, then configure `/etc/instrumentald.toml` and run:
+ ## Via Homebrew
+
+ ```
+ brew update
+ brew install instrumental/instrumentald/instrumentald
+ ```
+
+ The Homebrew installer does not add `/etc/instrumentald.toml` or set `instrumentald` to run at startup. It's intended to make it easier to kick the tires, not for production metric gathering.
+
+ ## pkg
+
+ Use pkg installer, then configure `/etc/instrumentald.toml`.
+
+ To make `instrumentald` run at startup, run:
 
 ```sh
 launchctl load /opt/instrumentald/lib/app/osx/instrumentald.plist
