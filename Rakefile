@@ -211,7 +211,7 @@ namespace "package" do
 
   desc "Build telegraf binaries and move them into this repo"
   task :build_telegraf do
-    telegraf_path = "#{ENV['GOPATH']}/src/github.com/influxdata/telegraf"
+    telegraf_path     = "#{ENV['GOPATH']}/src/github.com/influxdata/telegraf"
     current_directory = File.dirname(__FILE__)
     FileUtils.cd(telegraf_path) # required or it complains about building outside your GOPATH
 
@@ -222,10 +222,13 @@ namespace "package" do
     puts "Now building Telegraf version #{version} from branch #{current_branch}"
     puts "======================================"
     `#{telegraf_path}/scripts/build.py --package --version="#{version}" --platform=linux --arch=all`
-    `#{telegraf_path}/scripts/build.py --package --version="#{version}" --platform=darwin --arch=amd64`
+
+    if RUBY_PLATFORM.include?('darwin')
+      `env GOOS=darwin GOARCH=amd64 make prepare build`
+      `cp #{ENV['GOPATH']}/bin/telegraf #{current_directory}/lib/telegraf/darwin/`
+    end
 
     # Copy them into place
-    `cp #{telegraf_path}/build/telegraf #{current_directory}/lib/telegraf/darwin/`
     `cp #{telegraf_path}/build/linux/amd64/telegraf #{current_directory}/lib/telegraf/amd64/`
     `cp #{telegraf_path}/build/linux/i386/telegraf #{current_directory}/lib/telegraf/i386/`
   end
