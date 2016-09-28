@@ -20,6 +20,10 @@ class Instrumentald < Formula
 
   def post_install
     FileUtils.chmod 0666, "#{bin}/lib/vendor/Gemfile.lock"
-    ohai "instrumentald is ready to go! More info about getting started at https://instrumentalapp.com/docs/isd/getting-started"
+
+    ohai "instrumentald is \e[32mready to go!\e[0m"
+    ohai "  instrumentald -k <PROJECT_TOKEN>"
+
+    opoo "You need an Instrumental account and a project key to run instrumentald. More info: \e[4m\e[33mhttps://instrumentalapp.com/docs/isd/getting-started\e[0m"
   end
 end
