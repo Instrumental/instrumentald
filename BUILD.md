@@ -38,8 +38,19 @@ rake package:release
 
 On release, the tarball should be uploaded to the Github releases page and linked to from the main README.md.
 
-## Mac OS X
+## macOS
+
+To build for macOS, you need to be running macOS. This is because of cross-compilation issues with one of the dependencies of telegraf.
+
+There are 2 builds for macOS:
+
+1. a pkg
+2. a tarball
+
+Both should be uploaded to GitHub when making a release.
+
+To make both, do:
 
 ```
-rake package:osx:compress
+rake package:osx
 ```
