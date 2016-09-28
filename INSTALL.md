@@ -53,14 +53,6 @@ sudo tar -zxvf ./instrumentald_1.0.0_linux-x86_64.tar.gz -C /opt/instrumentald/ 
 sudo cp /opt/instrumentald/etc/instrumentald.toml /etc/
 ```
 
-# RubyGems
-
-```sh
-sudo gem install instrumentald
-```
-
-Installing `instrumentald` via Rubygems will not create the `/opt/instrumentald/` directory on your server or setup the process to run on startup. It is advisable that you install the software via the `deb` or `rpm` packages if your system supports its.
-
 ## Adding to system startup
 
 ### systemd
