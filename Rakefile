@@ -315,8 +315,8 @@ def create_directory_bundle(target, wrapper_script, separator, extension = nil, 
     sh %Q{chmod +x "%s"} % destination
   end
 
-  sh %Q{cp -pR "%s" "%s"}                  % [vendor_dir, lib_dir]
-
+  sh %Q{cp -pR "%s" "%s"}             % [vendor_dir, lib_dir]
+  sh %Q{cp Gemfile Gemfile.lock "%s"} % dest_vendor_dir
 
   sh %Q{ln -sf "../app/%s" "%s"} % ["lib", File.join(dest_vendor_dir, "lib")]
 
