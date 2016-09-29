@@ -27,14 +27,23 @@ MAINTAINER             = "support@instrumentalapp.com"
 HOMEPAGE               = "http://github.com/instrumental/instrumentald"
 DESCRIPTION            = "Instrumental is an application monitoring platform built for developers who want a better understanding of their production software. Powerful tools, like the Instrumental Query Language, combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time. ISD provides server and service monitoring through the instrumentald daemon. It provides strong data reliability at high scale."
 SUPPORTED_DISTROS      = {
-                           'deb' => ['ubuntu/xenial', 'ubuntu/precise', 'ubuntu/lucid', 'ubuntu/trusty', 'ubuntu/utopic', 'debian/lenny', 'debian/squeeze', 'debian/wheezy'],
-                           'rpm' => ['el/5', 'el/6', 'el/7']
-                         }
+  'deb' => [
+    'ubuntu/precise', # 12.04
+    'ubuntu/trusty',  # 14.04
+    'ubuntu/xenial',  # 16.04
+    'debian/wheezy'   # 7.0
+  ],
+  'rpm' => [
+    'el/5',
+    'el/6',
+    'el/7'
+  ]
+}
 EXTRA_ARGS             = {
-                           'deb' => '--deb-init debian/instrumentald --after-install debian/after-install.sh --before-remove debian/before-remove.sh --after-remove debian/after-remove.sh --deb-user nobody --deb-group nogroup',
-                           'rpm' => '--rpm-init rpm/instrumentald --after-install rpm/after-install.sh --before-remove rpm/before-remove.sh --after-remove rpm/after-remove.sh --rpm-user nobody --rpm-group nobody --rpm-os linux --rpm-attr "-,nobody,nobody:/opt/instrumentald/" --directories /opt/instrumentald/',
-                           "osxpkg" => "--osxpkg-identifier-prefix com.instrumentalapp --name instrumentald --after-install osx/after-install.sh --osxpkg-dont-obsolete /etc/instrumentald.toml", # remove doesn't exist on osx
-                         }
+  'deb' => '--deb-init debian/instrumentald --after-install debian/after-install.sh --before-remove debian/before-remove.sh --after-remove debian/after-remove.sh --deb-user nobody --deb-group nogroup',
+  'rpm' => '--rpm-init rpm/instrumentald --after-install rpm/after-install.sh --before-remove rpm/before-remove.sh --after-remove rpm/after-remove.sh --rpm-user nobody --rpm-group nobody --rpm-os linux --rpm-attr "-,nobody,nobody:/opt/instrumentald/" --directories /opt/instrumentald/',
+  "osxpkg" => "--osxpkg-identifier-prefix com.instrumentalapp --name instrumentald --after-install osx/after-install.sh --osxpkg-dont-obsolete /etc/instrumentald.toml", # remove doesn't exist on osx
+}
 
 
 WRAPPER_SCRIPT_SHELL = <<-EOSCRIPT
