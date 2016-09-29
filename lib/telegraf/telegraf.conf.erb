@@ -718,20 +718,17 @@
 #   ]
 
 
-<% mongodb_servers.each do |server_url| %>
 # # Read metrics from one or many MongoDB servers
+<% if mongodb_servers.any? %>
 [[inputs.mongodb]]
 #   ## An array of URI to gather stats about. Specify an ip or hostname
 #   ## with optional port add password. ie,
 #   ##   mongodb://user:auth_key@10.10.3.30:27017,
 #   ##   mongodb://10.10.3.33:18832,
 #   ##   10.0.0.1:10000, etc.
-  servers = <%= [server_url] %>
-  tagexclude = ["host"]
-  [inputs.mongodb.tags]
-    server_name = "<%= server_url.split(":").first %>"
+  servers = <%= mongodb_servers %>
+  tagexclude = ["state", "host"]
 <% end %>
-
 
 <% mysql_servers.each do |server_url| %>
 # # Read metrics from one or many mysql servers
