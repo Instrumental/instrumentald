@@ -4,8 +4,6 @@ Prebuilt `deb` and `rpm` packages are available via [packagecloud.io](https://pa
 
 ## OSX/macOS
 
-Use pkg installer, then configure `/etc/instrumentald.toml` and run:
-
 ### Via Homebrew
 
 ```
