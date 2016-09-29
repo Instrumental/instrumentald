@@ -1,6 +1,6 @@
 # Installation
 
-Prebuilt `deb` and `rpm` packages are available via [packagecloud.io](https://packagecloud.io/). These files are also available to download directly, via the [releases page](https://github.com/Instrumental/instrumentald/releases).
+Prebuilt `deb` and `rpm` packages are available via [packagecloud.io](https://packagecloud.io/app/expectedbehavior/instrumental/). These files are also available to download directly, via the [releases page](https://github.com/Instrumental/instrumentald/releases).
 
 ## OSX/macOS
 
@@ -12,11 +12,11 @@ Use pkg installer, then configure `/etc/instrumentald.toml` and run:
 brew install instrumental/instrumentald/instrumentald
 ```
 
-The Homebrew formula does not add `/etc/instrumentald.toml` or set `instrumentald` to run at startup. It's intended to make it easier to kick the tires, not for production metric gathering.
+The [Homebrew formula](https://github.com/Instrumental/homebrew-instrumentald/blob/master/Formula/instrumentald.rb) does not add `/etc/instrumentald.toml` or set `instrumentald` to run at startup. It's intended to make it easier to kick the tires, not for production metric gathering.
 
-### pkg
+### `pkg` Installer
 
-Download the pkp from the [releases page](https://github.com/Instrumental/instrumentald/releases), run it, then edit `/etc/instrumentald.toml` to configure.
+Download the pkg from the [releases page](https://github.com/Instrumental/instrumentald/releases), run it, then edit `/etc/instrumentald.toml` to configure.
 
 To make `instrumentald` run at startup, run:
 

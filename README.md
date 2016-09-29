@@ -54,7 +54,7 @@ ISD is built to make it easy to collect the most important metrics from your cri
 
 ## Custom Plugin Scripts
 
-ISD can monitor arbitrary processes and system events through a plugin scripting system. Writing plugins is easier than you'd think! Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md).
+ISD can monitor arbitrary processes and system events through a plugin scripting system. Writing plugins is easier than you'd think! Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md), and we've got [several examples](examples/) to get you started.
 
 ## Command Line Usage
 
