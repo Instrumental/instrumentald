@@ -93,7 +93,6 @@ By default, instrumentald will look for a configuration file at `/etc/instrument
 instrumentald -k <PROJECT_TOKEN> -H <HOSTNAME> -c <PATH_TO_CONF>
 ```
 
-
 ## Troubleshooting & Help
 
 We are here to help! Email us at [support@instrumentalapp.com](mailto:support@instrumentalapp.com).
