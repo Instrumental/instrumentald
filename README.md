@@ -10,21 +10,29 @@ Instrumental is an [application monitoring platform](https://instrumentalapp.com
 ## Installation
 `instrumentald` is supported on 32-bit and 64-bit Linux, as well as OSX/macOS. There are prebuilt packages available for Debian, Ubuntu, and RHEL systems.
 
-Detailed installation instructions for supported platforms are available in [INSTALL.md](INSTALL.md). The recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
+Detailed installation instructions for supported platforms are available in [INSTALL.md](INSTALL.md). For linux servers, the recommended installation method is to use a prebuilt package, which will automatically install the application as a service in your operating system's startup list.
 
 Once you've installed the package, you will want to edit the `/etc/instrumentald.toml` file with your [Instrumental project token](https://instrumentalapp.com/docs/tokens). Example `/etc/instrumentald.toml`:
 
 ```toml
 project_token = "YOUR_PROJECT_TOKEN"
-# TODO add the services that should be listed here and probably something about custom scripts
+system = ["cpu", "disk", "load", "memory", "network", "swap"]
+docker = ["unix:///var/run/docker.sock"]
+memcached = ["localhost:11211"]
+mongodb = ["localhost:27017"]
+mysql = ["root@tcp(127.0.0.1:3306)/"]
+nginx = ["http://localhost:80/status"]
+postgresql = ["postgres://postgres@localhost?sslmode=disable"]
+redis = ["tcp://localhost:6379"]
 ```
 
 ## System Metrics
 
-By default, ISD will collect system metrics from every server on which it's installed, including:
+Unless configured otherwise, ISD will collect system metrics from every server on which it's installed, including:
 
 * CPU Stats
 * Memory Stats
+* Swap Stats
 * Disk Stats
 * Network Stats
 * Process Stats
@@ -46,7 +54,7 @@ ISD is built to make it easy to collect the most important metrics from your cri
 
 ## Custom Plugin Scripts
 
-Instrumental Daemon can monitor arbitrary processes and system events through a plugin scripting system. Writing plugins is easier than you'd think! Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md).
+ISD can monitor arbitrary processes and system events through a plugin scripting system. Writing plugins is easier than you'd think! Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md), and we've got [several examples](examples/) to get you started.
 
 ## Command Line Usage
 
@@ -79,6 +87,11 @@ The `start` command will start and detach the process. You may issue additional 
 * `clean` - remove any files created by the daemon
 * `kill` - forcibly halt the daemon and remove its pid file
 
+By default, instrumentald will look for a configuration file at `/etc/instrumentald.toml`. You can pass an alternatve instead:
+
+```sh
+instrumentald -k <PROJECT_TOKEN> -H <HOSTNAME> -c <PATH_TO_CONF>
+```
 
 ## Troubleshooting & Help
 
