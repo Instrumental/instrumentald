@@ -31,12 +31,11 @@ redis = ["tcp://localhost:6379"]
 Unless configured otherwise, ISD will collect system metrics from every server on which it's installed, including:
 
 * CPU Stats
-* Memory Stats
-* Swap Stats
 * Disk Stats
+* Load Stats
+* Memory Stats
 * Network Stats
-* Process Stats
-* System Stats
+* Swap Stats
 
 A detailed list of system metrics collected by ISD can be found in the [Instrumental documentation](https://instrumentalapp.com/docs/isd/system-metrics).
 
