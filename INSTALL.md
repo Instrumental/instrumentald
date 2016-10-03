@@ -1,39 +1,28 @@
-# Package Locations
+# Installation
 
-## PackageCloud
+Prebuilt `deb` and `rpm` packages are available via [packagecloud.io](https://packagecloud.io/app/expectedbehavior/instrumental/). These files are also available to download directly, via the [releases page](https://github.com/Instrumental/instrumentald/releases).
 
-Prebuilt `deb` and `rpm` packages are available via the [packagecloud.io](https://packagecloud.io/) service. These files are also available to download directly:
+## OSX/macOS
 
-* 64-bit Debian package (Ubuntu, Debian) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_amd64.deb](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_amd64.deb)
-* 32-bit Debian package (Ubuntu, Debian) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_i386.deb](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_i386.deb)
-* 64-bit RPM package (RHEL, Amazon AMI) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_amd64.rpm](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_amd64.rpm)
-* 32-bit RPM package (RHEL, Amazon AMI) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_i386.rpm](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_i386.rpm)
-* 64-bit Linux tarball (CoreOS, etc.) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86_64.tar.gz](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86_64.tar.gz)
-* 32-bit Linux tarball (CoreOS, etc.) [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86.tar.gz](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_linux-x86.tar.gz)
-* 64-bit Mac OS X tarball [https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_osx.tar.gz](https://s3.amazonaws.com/instrumentald/1.1.2/instrumentald_1.1.2_osx.tar.gz)
+### Via Homebrew
 
- # OSX/macOS
+```
+brew install instrumental/instrumentald/instrumentald
+```
 
- Use pkg installer, then configure `/etc/instrumentald.toml` and run:
- ## Via Homebrew
+The [Homebrew formula](https://github.com/Instrumental/homebrew-instrumentald/blob/master/Formula/instrumentald.rb) does not add `/etc/instrumentald.toml` or set `instrumentald` to run at startup. It's intended to make it easier to kick the tires, not for production metric gathering.
 
- ```
- brew install instrumental/instrumentald/instrumentald
- ```
+### `pkg` Installer
 
- The Homebrew installer does not add `/etc/instrumentald.toml` or set `instrumentald` to run at startup. It's intended to make it easier to kick the tires, not for production metric gathering.
+Download the pkg from the [releases page](https://github.com/Instrumental/instrumentald/releases), run it, then edit `/etc/instrumentald.toml` to configure.
 
- ## pkg
-
- Use pkg installer, then configure `/etc/instrumentald.toml`.
-
- To make `instrumentald` run at startup, run:
+To make `instrumentald` run at startup, run:
 
 ```sh
 launchctl load /opt/instrumentald/lib/app/osx/instrumentald.plist
 ```
 
-# Ubuntu
+## Ubuntu
 
 ```sh
 sudo apt-get install curl
@@ -41,7 +30,7 @@ curl https://packagecloud.io/install/repositories/expectedbehavior/instrumental/
 sudo apt-get install instrumentald
 ```
 
-# Debian
+## Debian
 
 ```sh
 su -c "apt-get install curl"
@@ -49,16 +38,16 @@ su -c "curl https://packagecloud.io/install/repositories/expectedbehavior/instru
 su -c "apt-get install instrumentald"
 ```
 
-# Enterprise Linux (CentOS, AWS Linux, RedHat)
+## Enterprise Linux (CentOS, AWS Linux, RedHat)
 
 ```sh
 curl https://packagecloud.io/install/repositories/expectedbehavior/instrumental/script.rpm.sh | sudo bash
 sudo yum install instrumentald
 ```
 
-# Other ( CoreOS, et al )
+## Other ( CoreOS, et al )
 
-## Installing the software
+### Installing the software
 
 ```sh
 sudo mkdir -p /opt/instrumentald/
@@ -66,9 +55,9 @@ sudo tar -zxvf ./instrumentald_1.0.0_linux-x86_64.tar.gz -C /opt/instrumentald/ 
 sudo cp /opt/instrumentald/etc/instrumentald.toml /etc/
 ```
 
-## Adding to system startup
+### Adding to system startup
 
-### systemd
+#### systemd
 
 ```sh
 sudo cp /opt/instrumentald/lib/app/systemd/instrumentald.service  /etc/systemd/system/
@@ -76,7 +65,7 @@ sudo systemctl enable instrumentald.service
 sudo systemctl start instrumentald
 ```
 
-### sysvinit (update-rc.d)
+#### sysvinit (update-rc.d)
 
 ```sh
 sudo cp /opt/instrumentald/lib/app/debian/instrumentald /etc/init.d/
@@ -84,7 +73,7 @@ sudo update-rc.d instrumentald defaults
 sudo /etc/init.d/instrumentald start
 ```
 
-### sysvinit (chkconfig)
+#### sysvinit (chkconfig)
 
 ```sh
 sudo cp /opt/instrumentald/lib/app/rpm/instrumentald /etc/init.d/
@@ -93,10 +82,10 @@ sudo chkconfig instrumentald on
 sudo service instrumentald start
 ```
 
-# Chef
+## Chef
 
 An example Chef cookbook for installing `instrumentald` is available in [`chef/instrumentald`](chef/instrumentald).
 
-# Puppet
+## Puppet
 
 An example Puppet module for installing `instrumentald` is available in [`puppet/instrumentald`](puppet/instrumentald).
