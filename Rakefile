@@ -25,7 +25,7 @@ LICENSE                = "MIT"
 VENDOR                 = "Expected Behavior"
 MAINTAINER             = "support@instrumentalapp.com"
 HOMEPAGE               = "http://github.com/instrumental/instrumentald"
-DESCRIPTION            = "Instrumental is an application monitoring platform built for developers who want a better understanding of their production software. Powerful tools, like the Instrumental Query Language, combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time. ISD provides server and service monitoring through the instrumentald daemon. It provides strong data reliability at high scale."
+DESCRIPTION            = "Instrumental is an application monitoring platform built for developers who want a better understanding of their production software. Powerful tools, like the Instrumental Query Language, combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time. InstrumentalD provides server and service monitoring through the instrumentald daemon. It provides strong data reliability at high scale."
 SUPPORTED_DISTROS      = {
   'deb' => [
     'ubuntu/precise', # 12.04
