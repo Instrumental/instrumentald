@@ -1,3 +1,6 @@
+### 1.0.0 beta 2 [Oct 2, 2016]
+ * Improved configuration and naming for mongodb metrics
+
 ### 1.0.0 beta 1 [Sept 28, 2016]
 #### New! Shiny! Different!
 * forked from [instrumental_tools](https://github.com/Instrumental/instrumental_tools)
