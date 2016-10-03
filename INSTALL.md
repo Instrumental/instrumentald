@@ -1,6 +1,6 @@
 # Installation
 
-Prebuilt `deb` and `rpm` packages are available via [packagecloud.io](https://packagecloud.io/app/expectedbehavior/instrumental/). These files are also available to download directly, via the [releases page](https://github.com/Instrumental/instrumentald/releases).
+Prebuilt `deb` and `rpm` packages are available via [packagecloud.io](https://packagecloud.io/expectedbehavior/instrumental/). These files are also available to download directly, via the [releases page](https://github.com/Instrumental/instrumentald/releases).
 
 ## OSX/macOS
 
