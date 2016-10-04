@@ -11,7 +11,7 @@ class ServerController < Pidly::Control
   DEFAULT_CONFIG_CONTENTS = { 'system' => true }
 
   attr_accessor :run_options, :default_options, :pid
-  attr_reader :current_project_token
+  attr_reader :agent
 
   before_start do
     extra_info = if opts[:daemon]
@@ -34,6 +34,11 @@ class ServerController < Pidly::Control
     @run_options = options.delete(:run_options) || {}
     @default_options = options.delete(:default_options) || {}
     @telegraf_config_tempfile = Tempfile.new("instrumentald_telegraf")
+
+    secure_protocol = collector_address.split(':').last != '8000'
+    @agent = Instrumental::Agent.new(project_token, :collector => collector_address,
+                                                    :secure    => secure_protocol)
+
     super(options)
   end
 
@@ -83,27 +88,10 @@ class ServerController < Pidly::Control
     nil
   end
 
-  def configured_project_token
+  def project_token
     (user_specified_project_token || config_file_project_token).to_s.strip
   end
 
-  def build_agent(key, address, enabled)
-    secure_protocol = address.split(':').last != '8000'
-    Instrumental::Agent.new(key, collector: address, enabled: enabled, secure: secure_protocol)
-  end
-
-  def set_new_agent(key, address)
-    key              = key.to_s.strip
-    @current_project_token = key
-    @agent           = build_agent(key, collector_address, key.size > 0)
-  end
-
-  def agent
-    if key_has_changed?
-      set_new_agent(configured_project_token, collector_address)
-    end
-    @agent
-  end
 
   def report_interval
     opts[:report_interval]
@@ -134,10 +122,6 @@ class ServerController < Pidly::Control
     File.exists?(opts[:config_file])
   end
 
-  def enabled?
-    agent.enabled
-  end
-
   def debug?
     !!opts[:debug]
   end
@@ -159,10 +143,6 @@ class ServerController < Pidly::Control
 
   def enable_scripts?
     !!opts[:enable_scripts]
-  end
-
-  def key_has_changed?
-    current_project_token != configured_project_token
   end
 
   def telegraf_path
@@ -200,8 +180,6 @@ class ServerController < Pidly::Control
   end
 
   def process_telegraf_config
-    instrumental_project_token = configured_project_token
-
     docker_containers  = Array(config_file["docker"])
     memcached_servers  = Array(config_file["memcached"])
     mongodb_servers    = Array(config_file["mongodb"])
@@ -235,23 +213,21 @@ class ServerController < Pidly::Control
 
     loop do
       sleep time_to_sleep
-      if enabled?
-        count = 0
-        if enable_scripts?
-          script_executor.run.each do |(stat, value, time)|
-            metric = [hostname, stat].join(".")
-            agent.gauge(metric, value, time)
-            if debug?
-              puts [metric, value].join(":")
-            end
-            count += 1
+      count = 0
+      if enable_scripts?
+        script_executor.run.each do |(stat, value, time)|
+          metric = [hostname, stat].join(".")
+          agent.gauge(metric, value, time)
+          if debug?
+            puts [metric, value].join(":")
           end
+          count += 1
         end
-        agent.flush
-        agent.stop
-        if debug?
-          puts "Sent #{count} metrics"
-        end
+      end
+      agent.flush
+      agent.stop
+      if debug?
+        puts "Sent #{count} metrics"
       end
     end
   end
