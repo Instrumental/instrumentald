@@ -1,3 +1,7 @@
+### 1.0.0 beta 3 [Oct 4, 2016]
+ * Made packages no longer auto-start
+ * No longer automatically picks up config file changes, instead waits for explicit restart
+
 ### 1.0.0 beta 2 [Oct 2, 2016]
  * Improved configuration and naming for mongodb metrics
 
