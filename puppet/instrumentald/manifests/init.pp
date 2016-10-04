@@ -23,7 +23,13 @@ class instrumentald(
     owner   => "nobody",
     mode    => "0440",
     require => Package["instrumentald"],
-    content => template("instrumentald/instrumentald.toml.erb")
+    content => template("instrumentald/instrumentald.toml.erb"),
+    notify  => Exec["instrumentald-restart"]
   }
 
+  exec { "instrumentald-restart" :
+    refreshonly => true,
+    command     => "/etc/init.d/instrumentald restart",
+    user        => "root"
+  }
 }
