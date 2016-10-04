@@ -1,10 +1,10 @@
-# Instrumental System Daemon (ISD)
+# InstrumentalD
 
 ** Warning: This is not production ready! **
 
 Instrumental is an [application monitoring platform](https://instrumentalapp.com/) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
 
-**Instrumental System Daemon** (ISD for short) is a server agent that provides [system monitoring](#system-metrics) and [service monitoring](#service-metrics). It's fast, reliable, runs on anything *nix, is [simple to configure](conf/instrumental.toml) and deploy, and has a small memory footprint.
+**InstrumentalD** is a server agent that provides [system monitoring](#system-metrics) and [service monitoring](#service-metrics). It's fast, reliable, runs on anything *nix, is [simple to configure](conf/instrumental.toml) and deploy, and has a small memory footprint.
 
 
 ## Installation
@@ -28,7 +28,7 @@ redis = ["tcp://localhost:6379"]
 
 ## System Metrics
 
-Unless configured otherwise, ISD will collect system metrics from every server on which it's installed, including:
+Unless configured otherwise, InstrumentalD will collect system metrics from every server on which it's installed, including:
 
 * CPU Stats
 * Disk Stats
@@ -37,23 +37,23 @@ Unless configured otherwise, ISD will collect system metrics from every server o
 * Network Stats
 * Swap Stats
 
-A detailed list of system metrics collected by ISD can be found in the [Instrumental documentation](https://instrumentalapp.com/docs/isd/system-metrics).
+A detailed list of system metrics collected by InstrumentalD can be found in the [Instrumental documentation](https://instrumentalapp.com/docs/instrumentald/system-metrics).
 
 ## Service Metrics
 
-ISD is built to make it easy to collect the most important metrics from your critical services. It's currently capable of capturing metrics from the following services:
+InstrumentalD is built to make it easy to collect the most important metrics from your critical services. It's currently capable of capturing metrics from the following services:
 
-* [Docker](https://instrumentalapp.com/docs/isd/docker)
-* [MySQL](https://instrumentalapp.com/docs/isd/mysql)
-* [Memcached](https://instrumentalapp.com/docs/isd/memcached)
-* [MongoDB](https://instrumentalapp.com/docs/isd/mongodb)
-* [Nginx](https://instrumentalapp.com/docs/isd/nginx)
-* [PostgreSQL](https://instrumentalapp.com/docs/isd/postgresql)
-* [Redis](https://instrumentalapp.com/docs/isd/redis)
+* [Docker](https://instrumentalapp.com/docs/instrumentald/docker)
+* [MySQL](https://instrumentalapp.com/docs/instrumentald/mysql)
+* [Memcached](https://instrumentalapp.com/docs/instrumentald/memcached)
+* [MongoDB](https://instrumentalapp.com/docs/instrumentald/mongodb)
+* [Nginx](https://instrumentalapp.com/docs/instrumentald/nginx)
+* [PostgreSQL](https://instrumentalapp.com/docs/instrumentald/postgresql)
+* [Redis](https://instrumentalapp.com/docs/instrumentald/redis)
 
 ## Custom Plugin Scripts
 
-ISD can monitor arbitrary processes and system events through a plugin scripting system. Writing plugins is easier than you'd think! Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md), and we've got [several examples](examples/) to get you started.
+InstrumentalD can monitor arbitrary processes and system events through a plugin scripting system. Writing plugins is easier than you'd think! Plugin script installation and development instructions are listed in [PLUGIN_SCRIPTS.md](PLUGIN_SCRIPTS.md), and we've got [several examples](examples/) to get you started.
 
 ## Command Line Usage
 
