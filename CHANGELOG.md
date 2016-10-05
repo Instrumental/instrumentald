@@ -11,6 +11,6 @@
 * [telegraf](https://github.com/influxdata/telegraf)-based metric collection
 * refactored custom metric collection
 
-See [instrumental_tool's CHANGELOG](https://github.com/Instrumental/instrumental_tools/blob/master/CHANGELOG.md) for the old history.
+See [the instrumental_tools CHANGELOG](https://github.com/Instrumental/instrumental_tools/blob/master/CHANGELOG.md) for the old history.
 
 Notable differences include: no windows support and lots of new services out of the box.
