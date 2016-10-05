@@ -833,11 +833,11 @@
 #   # no configuration
 
 
-<% nginx_servers.each do |server_url| %>
+<% if nginx_servers.any? %>
 # Read Nginx's basic status information (ngx_http_stub_status_module)
 [[inputs.nginx]]
   ## An array of Nginx stub_status URI to gather stats.
-  urls = [<%= server_url.inspect %>]
+  urls = <%= nginx_servers %>
   tagexclude = ["host", "port"]
 <% end %>
 
@@ -1071,7 +1071,7 @@
 #   urls = ["http://localhost:8080/_raindrops"]
 
 
-<% redis_servers.each do |server_url| %>
+<% if redis_servers.any? %>
 # Read metrics from one or many redis servers
 [[inputs.redis]]
   ## specify servers via a url matching:
@@ -1083,7 +1083,7 @@
   ## If no servers are specified, then localhost is used as the host.
   ## If no port is specified, 6379 is used
   name_override="redis"
-  servers = [<%= server_url.inspect %>]
+  servers = <%= redis_servers %>
   tagexclude = ["host", "port"]
   # Fields to feed out that are important. There are two distinct kinds of metric,
   # but TOML doesn't allow for in-array comments, so:
