@@ -169,14 +169,16 @@ ARCHITECTURES.each do |name, config|
             end
           end
 
-          desc "Yank version %s %s packages (%s) from packagecloud.io" % [VERSION, name, config[:packages].join(",")]
+          desc "Yank version %s %s packages (%s) from packagecloud.io, set version=<version> to yank a different version." % [VERSION, name, config[:packages].join(",")]
           task "yank" do
             packages     = config[:packages]
             architecture = config[:arch]
+            version      = ENV['version'] || VERSION
 
             packages.each do |extension|
               SUPPORTED_DISTROS[extension].each do |distro|
-                filename = [[PACKAGE_OUTPUT_NAME, architecture].join("_"), extension].join(".")
+                package  = [PACKAGE_NAME, version].join("_")
+                filename = [[package, architecture].join("_"), extension].join(".")
                 repo     = File.join(PACKAGECLOUD_REPO, distro)
                 yank_cmd = %Q{package_cloud yank "%s" "%s"} % [repo, filename]
 
@@ -185,7 +187,7 @@ ARCHITECTURES.each do |name, config|
                   # http://www.rpm.org/max-rpm/ch-rpm-file-format.html
                   # changing instrumentald_0.0.3_i386.rpm
                   # into     instrumentald-0.0.3-1.i386.rpm
-                  yank_cmd = yank_cmd.sub(/_#{Regexp.escape(VERSION.to_s)}_/, "-#{VERSION.to_s}-1.")
+                  yank_cmd = yank_cmd.sub(/_#{Regexp.escape(version.to_s)}_/, "-#{version.to_s}-1.")
                   # and      instrumentald_0.0.3_amd64.rpm
                   # into     instrumentald-0.0.3-1.x86_64.rpm
                   yank_cmd = yank_cmd.sub(/\.amd64/, ".x86_64")
@@ -215,7 +217,7 @@ namespace "package" do
     "package:#{name}:packagecloud:release" if config[:packagecloud]
   }.compact
 
-  desc "Yank all packages for v%s" % VERSION
+  desc "Yank all packages for v%s, set version=<version> to yank a different version." % VERSION
   task :yank => ARCHITECTURES.map { |name, config|
     "package:#{name}:packagecloud:yank" if config[:packagecloud]
   }.compact
