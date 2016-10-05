@@ -1,3 +1,8 @@
+### 1.0.0 beta 4 [Oct 5, 2016]
+ * Added a task to make yanking old versions (looking at you, beta3) easier
+ * Filtered out default databases in postgresql configuration
+ * Made multi-server configuration smarter for nginx and redis
+
 ### 1.0.0 beta 3 [Oct 4, 2016]
  * Made packages no longer auto-start
  * No longer automatically picks up config file changes, instead waits for explicit restart
