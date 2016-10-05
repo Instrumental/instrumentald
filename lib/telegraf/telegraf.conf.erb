@@ -54,6 +54,7 @@
 
   ## Run telegraf in debug mode
   debug = <%= opts[:debug] %>
+
   ## Run telegraf in quiet mode
   quiet = false
   ## Override default hostname, if empty use os.Hostname()
@@ -948,6 +949,10 @@
   # Don't include server or host as part of the metric name, but instead read from
   # the server config string
   tagexclude = ["server", "host"]
+
+  # Don't collect stats for the template0/template1/postgres dbs
+  [inputs.postgresql_extensible.tagdrop]
+    db = ["template0", "template1", "postgres"]
 
   ## A list of databases to pull metrics about. If not specified, metrics for all
   ## databases are gathered.
