@@ -1,3 +1,6 @@
+### 1.0.0 [Oct 6, 2016]
+ * 1.0.0beta4 is now 1.0.0
+
 ### 1.0.0 beta 4 [Oct 5, 2016]
  * Added a task to make yanking old versions (looking at you, beta3) easier
  * Filtered out default databases in postgresql configuration

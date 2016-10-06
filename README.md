@@ -1,7 +1,5 @@
 # InstrumentalD
 
-** Warning: This is not production ready! **
-
 Instrumental is an [application monitoring platform](https://instrumentalapp.com/) built for developers who want a better understanding of their production software. Powerful tools, like the [Instrumental Query Language](https://instrumentalapp.com/docs/query-language), combined with an exploration-focused interface allow you to get real answers to complex questions, in real-time.
 
 **InstrumentalD** is a server agent that provides [system monitoring](#system-metrics) and [service monitoring](#service-metrics). It's fast, reliable, runs on anything *nix, is [simple to configure](conf/instrumental.toml) and deploy, and has a small memory footprint.

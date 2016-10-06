@@ -1,3 +1,3 @@
 module Instrumentald
-  VERSION = "1.0.0beta4"
+  VERSION = "1.0.0"
 end
