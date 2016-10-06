@@ -86,7 +86,7 @@ The `start` command will start and detach the process. You may issue additional 
 * `clean` - remove any files created by the daemon
 * `kill` - forcibly halt the daemon and remove its pid file
 
-By default, instrumentald will look for a configuration file at `/etc/instrumentald.toml`. You can pass an alternatve instead:
+By default, instrumentald will look for a configuration file at `/etc/instrumentald.toml`. You can pass an alternative instead:
 
 ```sh
 instrumentald -k <PROJECT_TOKEN> -H <HOSTNAME> -c <PATH_TO_CONF>
