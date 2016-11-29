@@ -12,7 +12,7 @@ The [log size](plugin_scripts/log_size.sh) script simply monitors the size of lo
 
 #### ISS Monitor
 
-The [ISS Monitor](plugin_scripts/iss_monitor.rb) script monitors the distance between my current location and the international space station (or, more exactly, a point directly UNDER the international space station).  You can use environment variables to track the distance between your location and the ISS.
+The [ISS Monitor](plugin_scripts/iss_location.rb) script monitors the distance between my current location and the international space station (or, more exactly, a point directly UNDER the international space station).  You can use environment variables to track the distance between your location and the ISS.
 
 #### MySQL
 
