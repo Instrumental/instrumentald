@@ -11,6 +11,7 @@ provisioner:
   chef_omnibus_url: "https://raw.githubusercontent.com/instrumental/instrumentald/master/chef/omnibus.sh"
 
 platforms:
+  - name: debian-7.11
   - name: ubuntu-12.04
   - name: ubuntu-14.04
   # ubuntu 16 works differently, and this doesn't work currently
