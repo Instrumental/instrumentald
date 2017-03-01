@@ -31,7 +31,8 @@ SUPPORTED_DISTROS      = {
     'ubuntu/precise', # 12.04
     'ubuntu/trusty',  # 14.04
     'ubuntu/xenial',  # 16.04
-    'debian/wheezy'   # 7.0
+    'debian/wheezy',  # 7.0
+    'debian/jessie'   # 8.0
   ],
   'rpm' => [
     'el/5',
