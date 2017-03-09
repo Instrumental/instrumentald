@@ -1,3 +1,6 @@
+### 1.0.2 [March 9, 2017]
+ * Fix Ubuntu 12 regression in packaging scripts
+
 ### 1.0.1 [March 9, 2017]
  * Improve installation scripts for compatibility with Ubuntu 16, Debian 8
  * Add Debian 8 release target
