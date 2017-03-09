@@ -1,3 +1,7 @@
+### 1.0.1 [March 9, 2017]
+ * Improve installation scripts for compatibility with Ubuntu 16, Debian 8
+ * Add Debian 8 release target
+
 ### 1.0.0 [Oct 6, 2016]
  * 1.0.0beta4 is now 1.0.0
 
