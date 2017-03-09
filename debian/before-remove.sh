@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-if dpkg -S /sbin/init | grep -q 'sysvinit'
+if dpkg -S /sbin/init | grep -q 'sysvinit' || dpkg -S /sbin/init | grep -q 'upstart'
 then
   /etc/init.d/instrumentald stop
 elif dpkg -S /sbin/init | grep -q 'systemd'

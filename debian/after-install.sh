@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-if dpkg -S /sbin/init | grep -q 'sysvinit'
+if dpkg -S /sbin/init | grep -q 'sysvinit' || dpkg -S /sbin/init | grep -q 'upstart'
 then
   update-rc.d instrumentald defaults
   echo "InstrumentalD will be enabled by default at next reboot"
