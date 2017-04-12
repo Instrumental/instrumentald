@@ -5,17 +5,32 @@ class instrumentald(
   include packagecloud
 
   case $operatingsystem {
-    'RedHat', 'CentOS': { $package_type = 'rpm' }
-    'Debian', 'Ubuntu': { $package_type = 'deb' }
+    'RedHat', 'CentOS': {
+      $package_type = 'rpm'
+      $provider = 'rpm'
+    }
+    'Debian', 'Ubuntu': {
+      $package_type = 'deb'
+      $provider = 'dpkg'
+    }
   }
 
   packagecloud::repo { "expectedbehavior/instrumental":
     type => $package_type,
   }
 
-  package { "instrumentald":
-    ensure  => latest,
-    require => Packagecloud::Repo["expectedbehavior/instrumental"]
+  if str2bool("$instrumentald_use_local") {
+    package { "instrumentald":
+      ensure  => latest,
+      provider => $provider,
+      source => "/tools-root/instrumentald_${instrumentald_version}_amd64.${package_type}",
+      require => Packagecloud::Repo["expectedbehavior/instrumental"]
+    }
+  } else {
+    package { "instrumentald":
+      ensure  => latest,
+      require => Packagecloud::Repo["expectedbehavior/instrumental"]
+    }
   }
 
   file { "instrumental-config":

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Need to build packages for everything because the tests use these packages.
+bundle exec rake package &&
+
+(
+  cd chef &&
+  bundle exec kitchen test
+) &&
+
+(
+  cd puppet &&
+  bundle exec kitchen test
+) &&
+
+success="true"
+
+echo
+
+if [ "$success" == "true" ]; then
+  echo "Tests finished successfully"
+else
+  echo "Tests failed"
+fi
+
+echo
