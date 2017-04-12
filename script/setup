@@ -6,6 +6,9 @@ brew list gnu-tar >/dev/null 2>&1 || brew install gnu-tar
 brew list rpm >/dev/null 2>&1 || brew install rpm
 brew list go >/dev/null 2>&1 || brew install go --with-cc-all
 
+brew cask list vagrant >/dev/null 2>&1 || brew cask install vagrant
+brew cask list virtualbox >/dev/null 2>&1 || brew cask install virtualbox
+
 rbenv which ruby >/dev/null 2>&1 || (brew upgrade ruby-build || true; rbenv install)
 gem list -i bundler >/dev/null || gem install bundler
 bundle install

@@ -15,4 +15,5 @@ group :development do
   gem "librarian-puppet"
   gem "puppet"
   gem "serverspec"
+  gem "CFPropertyList" # currently prevents "fatal: No live threads left. Deadlock"
 end
