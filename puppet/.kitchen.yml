@@ -1,12 +1,21 @@
 ---
 driver:
   name: vagrant
+  synced_folders:
+    - ["../", "/tools-root"]
 
 provisioner:
   name: puppet_apply
   manifests_path: manifests
   modules_path: modules
-  hiera_data_path: hieradata
+  # puppet_debug: true
+  # puppet_verbose: true
+  # puppet_logdest:
+  #   - console
+  #   - /puppet.log
+  custom_facts:
+    instrumentald_version: <%= `ruby -r#{__FILE__}/../../lib/instrumentald/version -e 'puts Instrumentald::VERSION'`.strip %>
+    instrumentald_use_local: true
 
 platforms:
   - name: nocm_ubuntu-12.04
