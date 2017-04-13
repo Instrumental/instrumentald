@@ -8,7 +8,7 @@ driver:
 
 provisioner:
   name: chef_solo
-  chef_omnibus_url: "https://raw.githubusercontent.com/instrumental/instrumentald/master/chef/omnibus.sh"
+  require_chef_omnibus: 12.19.36 # pinned to avoid bugs in sc-mongodb, next version of that should fix them
 
 platforms:
   - name: debian-7.11
@@ -20,7 +20,9 @@ platforms:
 
 suites:
   - name: default
-    run_list: ["instrumentald"]
+    run_list:
+      - recipe[instrumentald]
+      - recipe[sc-mongodb]
     attributes:
       instrumental:
         use_local: true
