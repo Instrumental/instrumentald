@@ -64,68 +64,54 @@ cat_telegraf_conf = %Q{cat `(ls -tr /tmp/instrumentald_telegraf* || echo "no_tmp
 describe command("#{wait_for_telegraf_conf}; #{cat_telegraf_conf}") do
 
   # Plain, one host, mongodb scheme
-  %w(
-    localhost
-  ).map do |str|
-    its(:stdout) do
-        should include(<<~CONF)
-        [[inputs.mongodb]]
-        #   ## An array of URI to gather stats about. Specify an ip or hostname
-        #   ## with optional port add password. ie,
-        #   ##   mongodb://user:auth_key@10.10.3.30:27017,
-        #   ##   mongodb://10.10.3.33:18832,
-        #   ##   10.0.0.1:10000, etc.
-          servers = ["mongodb://#{str}:27017"]
-          tagexclude = ["state", "host"]
+  its(:stdout) do
+      should include(<<~CONF)
+      [[inputs.mongodb]]
+      #   ## An array of URI to gather stats about. Specify an ip or hostname
+      #   ## with optional port add password. ie,
+      #   ##   mongodb://user:auth_key@10.10.3.30:27017,
+      #   ##   mongodb://10.10.3.33:18832,
+      #   ##   10.0.0.1:10000, etc.
+        servers = ["mongodb://localhost:27017"]
+        tagexclude = ["state", "host"]
 
 
-      CONF
-    end
+    CONF
   end
 
   # Multi-host, mongodb scheme
-  [
-    "instrumentald-atlas-test:<PASSWORD>@cluster0-shard-00-00-uvipm.mongodb.net",
-    "instrumentald-atlas-test:<PASSWORD>@cluster0-shard-00-01-uvipm.mongodb.net",
-    "instrumentald-atlas-test:<PASSWORD>@cluster0-shard-00-02-uvipm.mongodb.net",
-  ].map do |str|
-    its(:stdout) do
-        should include(<<~CONF)
-        [[inputs.mongodb]]
-        #   ## An array of URI to gather stats about. Specify an ip or hostname
-        #   ## with optional port add password. ie,
-        #   ##   mongodb://user:auth_key@10.10.3.30:27017,
-        #   ##   mongodb://10.10.3.33:18832,
-        #   ##   10.0.0.1:10000, etc.
-          servers = ["mongodb://#{str}:27017"]
-          tagexclude = ["state", "host"]
+  its(:stdout) do
+      should include(<<~CONF)
+      [[inputs.mongodb]]
+      #   ## An array of URI to gather stats about. Specify an ip or hostname
+      #   ## with optional port add password. ie,
+      #   ##   mongodb://user:auth_key@10.10.3.30:27017,
+      #   ##   mongodb://10.10.3.33:18832,
+      #   ##   10.0.0.1:10000, etc.
+        servers = ["mongodb://instrumentald-atlas-test:<PASSWORD>@cluster0-shard-00-00-uvipm.mongodb.net:27017", "mongodb://instrumentald-atlas-test:<PASSWORD>@cluster0-shard-00-01-uvipm.mongodb.net:27017", "mongodb://instrumentald-atlas-test:<PASSWORD>@cluster0-shard-00-02-uvipm.mongodb.net:27017"]
+        tagexclude = ["state", "host"]
 
-          [inputs.mongodb.ssl]
-          enabled = true
+        [inputs.mongodb.ssl]
+        enabled = true
 
 
-      CONF
-    end
+    CONF
   end
 
   # No-scheme, one host
-  %w(
-    test-no-scheme.com
-  ).map do |str|
-    its(:stdout) do
-        should include(<<~CONF)
-        [[inputs.mongodb]]
-        #   ## An array of URI to gather stats about. Specify an ip or hostname
-        #   ## with optional port add password. ie,
-        #   ##   mongodb://user:auth_key@10.10.3.30:27017,
-        #   ##   mongodb://10.10.3.33:18832,
-        #   ##   10.0.0.1:10000, etc.
-          servers = ["#{str}:27017"]
-          tagexclude = ["state", "host"]
+  its(:stdout) do
+      should include(<<~CONF)
+      [[inputs.mongodb]]
+      #   ## An array of URI to gather stats about. Specify an ip or hostname
+      #   ## with optional port add password. ie,
+      #   ##   mongodb://user:auth_key@10.10.3.30:27017,
+      #   ##   mongodb://10.10.3.33:18832,
+      #   ##   10.0.0.1:10000, etc.
+        servers = ["test-no-scheme.com:27017"]
+        tagexclude = ["state", "host"]
 
 
-      CONF
-    end
+    CONF
   end
 
 end

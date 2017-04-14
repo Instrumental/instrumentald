@@ -204,10 +204,11 @@ class ServerController < Pidly::Control
     mongodb_configs = mongodb_servers.map do |uri|
       begin
         u = Mongo::URI.new(uri)
-        u.servers.map do |server|
+        servers = u.servers.map do |server|
           creds = "#{u.credentials[:user]}:#{u.credentials[:password]}@" if u.credentials.values.any?
-          {:servers => ["mongodb://#{creds}#{server}"], :ssl => u.uri_options[:ssl]}
+          "mongodb://#{creds}#{server}"
         end
+        {:servers => servers, :ssl => u.uri_options[:ssl]}
       rescue Mongo::Error::InvalidURI => ex
         {:servers => [uri]}
       end
