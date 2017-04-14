@@ -11,3 +11,13 @@ system = ["cpu", "disk", "load", "memory", "network", "swap"]
 # mysql = ["root@tcp(127.0.0.1:3306)/"]
 # nginx = ["http://localhost:80/status"]
 # postgresql = ["postgres://postgres@localhost?sslmode=disable"]
+
+
+debug = true
+
+# Setup some hosts to test with serverspec
+mongodb = [
+  "mongodb://localhost:27017",
+  "mongodb://instrumentald-atlas-test:<PASSWORD>@cluster0-shard-00-00-uvipm.mongodb.net:27017,cluster0-shard-00-01-uvipm.mongodb.net:27017,cluster0-shard-00-02-uvipm.mongodb.net:27017/<DATABASE>?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin",
+  "test-no-scheme.com:27017"
+]
