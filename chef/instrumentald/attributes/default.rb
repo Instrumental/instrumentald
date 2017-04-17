@@ -1,7 +1,7 @@
 default[:instrumental]                   = {}
 default[:instrumental][:project_token]   = "YOUR_PROJECT_TOKEN"
 
-default[:instrumental][:version]         = "1.0.2"
+default[:instrumental][:version]         = "1.0.3"
 default[:instrumental][:repo]            = "https://s3.amazonaws.com/instrumentald"
 
 default[:instrumental][:curl_path]       = "/usr/bin/curl"

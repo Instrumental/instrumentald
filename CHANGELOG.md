@@ -1,3 +1,6 @@
+### 1.0.3 [April 17, 2017]
+ * Add support for new MongoDB URIs (including Atlas)
+
 ### 1.0.2 [March 9, 2017]
  * Fix Ubuntu 12 regression in packaging scripts
 
