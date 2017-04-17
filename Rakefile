@@ -218,6 +218,37 @@ namespace "package" do
     "package:#{name}:packagecloud:release" if config[:packagecloud]
   }.compact
 
+  namespace :osx do
+    namespace :homebrew do
+      desc "Print homebrew formula information"
+      task :print_formula_info do
+        url = "https://github.com/Instrumental/instrumentald/releases/download/v#{VERSION}/instrumentald_#{VERSION}_osx.tar.gz"
+        package_data = File.read(File.expand_path("../instrumentald_#{VERSION}_osx.tar.gz", __FILE__))
+        sha256 = Digest::SHA256.hexdigest(package_data)
+
+        puts <<-STR
+          url: #{url}
+          version: #{VERSION}
+          sha256: #{sha256}
+
+          Checking GitHub release...
+        STR
+
+        release_hash = begin
+          Digest::SHA256.hexdigest(URI.parse(url).read)
+        rescue => ex
+          puts "#{ex.inspect}\n#{ex.backtrace.join("\n")}\n\n"
+          raise "Error: the osx package that homebrew would reference doesn't appear to exist. You may need to upload files to the github release."
+        end
+        unless Digest::SHA256.hexdigest(URI.parse(url).read) == sha256
+          raise "Error: the osx package that homebrew would reference appears to exist on github, but doesn't match the expected hash. Have you yanked and re-published and need to update the github releases?"
+        end
+        puts "GitHub release looks good."
+      end
+    end
+  end
+
+
   desc "Yank all packages for v%s, set version=<version> to yank a different version." % VERSION
   task :yank => ARCHITECTURES.map { |name, config|
     "package:#{name}:packagecloud:yank" if config[:packagecloud]
