@@ -78,7 +78,7 @@ describe command("#{wait_for_telegraf_conf}; #{cat_telegraf_conf}") do
 
   # Plain, one host, mongodb scheme
   its(:stdout) do
-      should include(<<~CONF)
+    should include(<<~CONF)
       [[inputs.mongodb]]
       #   ## An array of URI to gather stats about. Specify an ip or hostname
       #   ## with optional port add password. ie,
@@ -94,7 +94,7 @@ describe command("#{wait_for_telegraf_conf}; #{cat_telegraf_conf}") do
 
   # Multi-host, mongodb scheme
   its(:stdout) do
-      should include(<<~CONF)
+    should include(<<~CONF)
       [[inputs.mongodb]]
       #   ## An array of URI to gather stats about. Specify an ip or hostname
       #   ## with optional port add password. ie,
@@ -113,7 +113,7 @@ describe command("#{wait_for_telegraf_conf}; #{cat_telegraf_conf}") do
 
   # No-scheme, one host
   its(:stdout) do
-      should include(<<~CONF)
+    should include(<<~CONF)
       [[inputs.mongodb]]
       #   ## An array of URI to gather stats about. Specify an ip or hostname
       #   ## with optional port add password. ie,
