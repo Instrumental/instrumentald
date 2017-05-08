@@ -1,3 +1,6 @@
+### 1.0.4 [May 8, 2017]
+ * Fix issue with plugin script permission checking
+
 ### 1.0.3 [April 17, 2017]
  * Add support for new MongoDB URIs (including Atlas)
 
