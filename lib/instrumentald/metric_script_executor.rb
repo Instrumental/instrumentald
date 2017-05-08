@@ -26,11 +26,11 @@ class MetricScriptExecutor
   def print_executable_warning(path)
     uid  = Process.uid
     user = Etc.getpwuid(uid).name
-    puts "[INFO] Cannot execute #{path}, must exist, be executable and only readable/writable by #{user}/#{uid}"
+    puts "[INFO] Cannot execute #{path}. Must exist, be executable, and have correct permissions (0700) for #{user}/#{uid}."
   end
 
   def print_executable_in_directory_warning(directory)
-    puts "Directory #{directory} has gone away or does not have the correct permissions (0700), not scanning for metric scripts."
+    puts "[INFO] Directory #{directory} has gone away or does not have the correct permissions (0700), not scanning for metric scripts."
   end
 
   def execute_custom_script(full_path)
