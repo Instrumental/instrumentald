@@ -12,6 +12,7 @@ Update `CHANGELOG.md` with relevant information.
 ## 2. git commit and tag
 
 ```
+./script/test
 git commit -am 'Version <VERSION>'
 git tag v<VERSION>
 git push
