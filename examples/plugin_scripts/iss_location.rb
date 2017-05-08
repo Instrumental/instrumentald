@@ -31,8 +31,8 @@ class Numeric
 end
 
 def haversine_distance(location1, location2)
-  lat1, lon1 = location1
-  lat2, lon2 = location2
+  lat1, lon1 = location1.map(&:to_f)
+  lat2, lon2 = location2.map(&:to_f)
   latitude_difference = (lat2 - lat1).radians
   longitude_difference = (lon2 - lon1).radians
 
