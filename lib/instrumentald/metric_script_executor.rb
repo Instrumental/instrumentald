@@ -20,7 +20,7 @@ class MetricScriptExecutor
   end
 
   def file_is_owner_only?(file_stat)
-    owned_by_executor && ((file_stat.mode & 0xFFF) ^ 0O700) == 0
+    file_stat.owned? && ((file_stat.mode & 0xFFF) ^ 0O700) == 0
   end
 
   def print_executable_warning(path)
