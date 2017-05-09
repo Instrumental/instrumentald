@@ -59,13 +59,26 @@ describe file(details[:log_path]) do
   end
 end
 
+describe command("timeout 5s /opt/instrumentald/instrumentald -e -s /tmp/instrumentald_scripts/ -u nobody -l /tmp/instrumentald_script_test.log --report-interval 1 2>&1") do
+  its(:stdout) do
+    should include(<<~CONF)
+      test_script.test_script.metric:1.0
+    CONF
+  end
+end
+describe file("/tmp/instrumentald_scripts/log") do
+  its(:content) do
+    should match /instrumentald test script success/
+  end
+end
+
 wait_for_telegraf_conf = %Q{for i in `seq 1 20`; do ls -tr /tmp/instrumentald_telegraf* 2>&1 && break; echo "waiting"; sleep 1; done}
 cat_telegraf_conf = %Q{cat `(ls -tr /tmp/instrumentald_telegraf* || echo "no_tmp_telegraf_files_found") | tail -n 1` 2>&1}
 describe command("#{wait_for_telegraf_conf}; #{cat_telegraf_conf}") do
 
   # Plain, one host, mongodb scheme
   its(:stdout) do
-      should include(<<~CONF)
+    should include(<<~CONF)
       [[inputs.mongodb]]
       #   ## An array of URI to gather stats about. Specify an ip or hostname
       #   ## with optional port add password. ie,
@@ -81,7 +94,7 @@ describe command("#{wait_for_telegraf_conf}; #{cat_telegraf_conf}") do
 
   # Multi-host, mongodb scheme
   its(:stdout) do
-      should include(<<~CONF)
+    should include(<<~CONF)
       [[inputs.mongodb]]
       #   ## An array of URI to gather stats about. Specify an ip or hostname
       #   ## with optional port add password. ie,
@@ -100,7 +113,7 @@ describe command("#{wait_for_telegraf_conf}; #{cat_telegraf_conf}") do
 
   # No-scheme, one host
   its(:stdout) do
-      should include(<<~CONF)
+    should include(<<~CONF)
       [[inputs.mongodb]]
       #   ## An array of URI to gather stats about. Specify an ip or hostname
       #   ## with optional port add password. ie,
