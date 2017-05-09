@@ -125,6 +125,8 @@ if options[:user]
   desired_uid = Etc.getpwnam(options[:user]).uid
   Process::Sys.setuid(desired_uid)
   if desired_uid && desired_uid != 0
+
+    # Attempt to drop to root and, if you succeed, stop executing because InstrumentalD should not have that much power.
     begin
       Process::Sys.setuid(0)
     rescue Errno::EPERM
