@@ -78,6 +78,18 @@ when "debian", "rhel", "fedora"
     )
   end
 
+  directory '/tmp/instrumentald_scripts' do
+    owner 'nobody'
+    mode '0700'
+    action :create
+  end
+
+  template "/tmp/instrumentald_scripts/test_script.bash" do
+    source "test_script.bash.erb"
+    mode "0700"
+    owner "nobody"
+  end
+
   service "instrumentald" do
     action :restart
   end
