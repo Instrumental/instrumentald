@@ -2,8 +2,32 @@ DEPENDENCIES
   instrumentald
     path: instrumentald
   packagecloud
+  sc-mongodb (~> 0.18.1)
 
 GRAPH
+  apt (6.1.0)
+  build-essential (8.0.0)
+    mingw (>= 1.1)
+    seven_zip (>= 0.0.0)
+  compat_resource (12.16.3)
   instrumentald (0.0.0)
     packagecloud (>= 0.0.0)
-  packagecloud (0.0.17)
+  mingw (2.0.0)
+    seven_zip (>= 0.0.0)
+  ohai (5.0.3)
+  packagecloud (0.3.0)
+  python (1.4.6)
+    build-essential (>= 0.0.0)
+    yum-epel (>= 0.0.0)
+  sc-mongodb (0.18.1)
+    apt (>= 1.8.2)
+    build-essential (>= 0.0.0)
+    python (>= 0.0.0)
+    yum (>= 3.0)
+  seven_zip (2.0.2)
+    windows (>= 1.2.2)
+  windows (3.0.5)
+    ohai (>= 4.0.0)
+  yum (5.0.1)
+  yum-epel (2.1.1)
+    compat_resource (>= 12.16.3)
