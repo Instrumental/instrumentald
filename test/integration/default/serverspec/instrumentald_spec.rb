@@ -21,8 +21,8 @@ end
 
 # "should be_running" doesn't seem to work, probably because the init.d script
 # has an exit status of 0 when it is NOT running.
-describe command('sudo /etc/init.d/instrumentald status') do
-  its(:stdout) { should match /"instrumentald" is running/ }
+describe command('sudo /etc/init.d/instrumentald status; sudo systemctl status instrumentald') do
+  its(:stdout) { should match /("instrumentald" is running|Active: active \(running\))/ }
 end
 
 if details[:has_pid]

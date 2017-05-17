@@ -38,7 +38,7 @@ class instrumentald(
     owner   => "nobody",
     mode    => "0700",
     before => Package["instrumentald"],
-    notify  => Exec["instrumentald-restart"]
+    notify  => Service['instrumentald']
   }
 
   file { "/tmp/instrumentald_scripts/test_script.bash":
@@ -46,7 +46,7 @@ class instrumentald(
     mode    => "0700",
     before => Package["instrumentald"],
     content => template("instrumentald/test_script.bash.erb"),
-    notify  => Exec["instrumentald-restart"]
+    notify  => Service['instrumentald']
   }
 
   file { "instrumental-config":
@@ -55,12 +55,12 @@ class instrumentald(
     mode    => "0440",
     require => Package["instrumentald"],
     content => template("instrumentald/instrumentald.toml.erb"),
-    notify  => Exec["instrumentald-restart"]
+    notify  => Service['instrumentald']
   }
 
-  exec { "instrumentald-restart" :
-    refreshonly => true,
-    command     => "/etc/init.d/instrumentald restart",
-    user        => "root"
+  service { 'instrumentald':
+    ensure  => 'running',
+    enable  => true,
+    require => File['instrumental-config'],
   }
 }

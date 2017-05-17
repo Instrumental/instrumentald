@@ -4,9 +4,11 @@ After=syslog.target
 After=network.target
 
 [Service]
-Type=simple
-ExecStart=/opt/instrumentald/instrumentald -c /etc/instrumentald.toml -p /opt/instrumentald/instrumentald.pid -l /opt/instrumentald/instrumentald.log -s /opt/instrumentald/.instrumental_scripts -t /opt/instrumentald/ foreground
-
+Type=forking
+PIDFile=/opt/instrumentald/instrumentald.pid
+ExecStart=/opt/instrumentald/instrumentald -c /etc/instrumentald.toml -p /opt/instrumentald/instrumentald.pid -l /opt/instrumentald/instrumentald.log -s /opt/instrumentald/.instrumental_scripts -t /opt/instrumentald/ start
+User=nobody
+Group=nogroup
 TimeoutSec=60
 
 [Install]
