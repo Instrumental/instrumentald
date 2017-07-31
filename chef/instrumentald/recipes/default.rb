@@ -90,6 +90,12 @@ when "debian", "rhel", "fedora"
     owner "nobody"
   end
 
+  template "/tmp/instrumentald_scripts/test_script_no_extension" do
+    source "test_script.bash.erb"
+    mode "0700"
+    owner "nobody"
+  end
+
   service "instrumentald" do
     action :restart
   end
