@@ -54,7 +54,7 @@ class instrumentald(
     mode    => "0700",
     before  => Package["instrumentald"],
     content => template("instrumentald/test_script.bash.erb"),
-    notify  => Exec["instrumentald-restart"]
+    notify  => Service["instrumentald"]
   }
 
   file { "instrumental-config":

@@ -1,3 +1,8 @@
+### 1.1.0 [August 1, 2017]
+ * Upgrade Telegraf to 1.2.1 to prevent MacOS crash bug
+ * Fix systemd script when installing from debs, and other systemd fixes
+ * Allow pluginscripts to have no file extension
+
 ### 1.0.4 [May 8, 2017]
  * Fix issue with plugin script permission checking
 
