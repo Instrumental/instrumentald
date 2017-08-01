@@ -23,6 +23,11 @@ platforms:
     driver_config:
       box: nocm_ubuntu-12.04
       box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-12.04-64-nocm/versions/1.0.1/providers/virtualbox.box
+  - name: nocm_ubuntu-16.04
+    driver_plugin: vagrant
+    driver_config:
+      box: nocm_ubuntu-16.04
+      box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-16.04-64-nocm/versions/1.0.0/providers/virtualbox.box
   - name: nocm_centos-6.6
     driver_plugin: vagrant
     driver_config:
