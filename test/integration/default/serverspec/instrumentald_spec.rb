@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'serverspec'
 
 details = {}
@@ -64,8 +65,12 @@ describe command("timeout 5s /opt/instrumentald/instrumentald -e -s /tmp/instrum
     should include(<<~CONF)
       test_script.test_script.metric:1.0
     CONF
+    should include(<<~CONF)
+      test_script_no_extension.test_script.metric:1.0
+    CONF
   end
 end
+
 describe file("/tmp/instrumentald_scripts/log") do
   its(:content) do
     should match /instrumentald test script success/
