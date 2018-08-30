@@ -1,3 +1,6 @@
+### 1.1.0 [August 30 1, 2018]
+ * Correct version config in the postgresql_extensible section to improve postgresql 10 compatibility
+
 ### 1.1.0 [August 1, 2017]
  * Upgrade Telegraf to 1.2.1 to prevent MacOS crash bug
  * Fix systemd script when installing from debs, and other systemd fixes
