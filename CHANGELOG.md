@@ -1,4 +1,4 @@
-### 1.1.0 [August 30 1, 2018]
+### 1.1.1 [August 30 1, 2018]
  * Correct version config in the postgresql_extensible section to improve postgresql 10 compatibility
 
 ### 1.1.0 [August 1, 2017]
